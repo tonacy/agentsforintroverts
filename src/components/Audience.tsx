@@ -8,15 +8,15 @@ const audiences = [
 
 export function Audience() {
   return (
-    <section className="border-t border-rule px-6 py-24 sm:py-32">
+    <section className="relative bg-paper px-6 py-24 sm:py-32 border-t border-rule">
       <div className="mx-auto max-w-4xl">
         <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
           <header>
-            <p className="text-sm font-medium uppercase tracking-widest text-ink-faint">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-camel-muted">
               For you if
             </p>
             <h2 className="mt-4 font-display text-4xl font-light tracking-tight text-ink sm:text-5xl">
-              Who this is for
+              Who this<br className="hidden sm:block" /> is for
             </h2>
             <p className="mt-6 text-lg text-ink-muted leading-relaxed">
               If any of these sound like you, you&apos;re in the right place.
@@ -31,8 +31,8 @@ export function Audience() {
                   index !== audiences.length - 1 ? "border-b border-rule" : ""
                 }`}
               >
-                <span className="text-ember text-lg">→</span>
-                <span className="text-lg text-ink">{audience}</span>
+                <span className="text-rust text-sm">●</span>
+                <span className="text-lg text-ink leading-relaxed">{audience}</span>
               </li>
             ))}
           </ul>
