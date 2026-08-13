@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="border-t border-rule bg-paper-warm px-6 py-16">
+    <footer className="border-t border-rule bg-linen px-6 py-16">
       <div className="mx-auto max-w-4xl">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -15,13 +15,13 @@ export function Footer() {
           <div className="flex flex-col gap-3 text-right sm:items-end">
             <a
               href="https://agentsforintroverts.com"
-              className="text-ink-muted transition-colors hover:text-navy"
+              className="text-ink-muted transition-colors hover:text-leaf"
             >
               agentsforintroverts.com
             </a>
             <a
               href="mailto:tonacy@gmail.com"
-              className="text-ink-muted transition-colors hover:text-navy"
+              className="text-ink-muted transition-colors hover:text-leaf"
             >
               Contact
             </a>

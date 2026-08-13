@@ -5,7 +5,7 @@ export function Founder() {
         <div className="grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16">
           {/* Avatar and name */}
           <div>
-            <div className="flex h-20 w-20 items-center justify-center bg-navy font-display text-3xl font-light text-paper rounded-sm">
+            <div className="flex h-20 w-20 items-center justify-center bg-leaf font-display text-3xl font-light text-paper rounded-sm">
               T
             </div>
             <p className="mt-6 font-display text-2xl font-light text-ink">
@@ -13,7 +13,7 @@ export function Founder() {
             </p>
             <a
               href="mailto:tonacy@gmail.com"
-              className="mt-3 inline-flex items-center gap-2 text-rust transition-colors hover:text-rust/80 text-sm"
+              className="mt-3 inline-flex items-center gap-2 text-terracotta transition-colors hover:text-terracotta-deep text-sm"
             >
               Want me to set this up for you?
               <svg
@@ -33,7 +33,7 @@ export function Founder() {
           </div>
 
           {/* Quote/story */}
-          <article className="border-l-2 border-rule-warm pl-8 lg:pl-12">
+          <article className="border-l-2 border-terracotta-soft pl-8 lg:pl-12">
             <h2 className="sr-only">A note from the founder</h2>
             <div className="space-y-6 font-display text-xl font-light leading-relaxed text-ink sm:text-2xl sm:leading-relaxed">
               <p>
@@ -45,7 +45,8 @@ export function Founder() {
               </p>
               <p className="text-ink-muted">
                 Agents changed that for me. Now I have systems that handle the 
-                social logistics while I stay in flow. This playbook is what 
+                social logistics while I protect my focus — and actually show up 
+                for the people and events that matter. This playbook is what 
                 I&apos;ve learned building those systems.
               </p>
             </div>

@@ -15,9 +15,9 @@ const sourceSans = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  title: "Agents for Introverts — Let AI handle the loud work",
+  title: "Agents for Introverts — Deep work in the sun",
   description:
-    "AI agents that handle inbox triage, follow-ups, scheduling, group chats, and meetup logistics — so introverts can stay in deep work where they belong.",
+    "AI agents that handle inbox triage, follow-ups, scheduling, group chats, and meetup logistics — so introverts can protect their focus and still show up for people who matter.",
   keywords: [
     "AI agents",
     "automation",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Agents for Introverts",
     description:
-      "Stay in the cave. Let agents go outside. AI agents for people who'd rather ship than network.",
+      "Deep work in the sun. Agents take the errands. AI agents for people who'd rather ship than network.",
     url: "https://agentsforintroverts.com",
     siteName: "Agents for Introverts",
     type: "website",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Agents for Introverts",
     description:
-      "Stay in the cave. Let agents go outside. AI agents for people who'd rather ship than network.",
+      "Deep work in the sun. Agents take the errands. AI agents for people who'd rather ship than network.",
   },
   metadataBase: new URL("https://agentsforintroverts.com"),
 };

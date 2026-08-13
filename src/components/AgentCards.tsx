@@ -4,31 +4,31 @@ const agents = [
   {
     glyph: "envelope",
     name: "Inbox Agent",
-    scene: "7:42 AM — Rain on the window. The inbox agent is already three deep in your email, flagging what matters, archiving the noise.",
+    scene: "7:42 AM — Sunlight through the blinds. The inbox agent is already three deep in your email, flagging what matters, archiving the noise. You sip your tea.",
     action: "Triages, drafts replies, surfaces urgency.",
   },
   {
     glyph: "clock",
     name: "Follow-up Agent",
-    scene: "Tuesday, somewhere in the city. A conversation went cold. The follow-up agent sends a gentle nudge you'd never send yourself.",
+    scene: "Tuesday, at the community garden. A conversation went cold. The follow-up agent sends a gentle nudge you'd never send yourself — keeps the connection warm.",
     action: "Tracks threads, handles the persistence.",
   },
   {
     glyph: "calendar",
     name: "Scheduling Agent",
-    scene: "Back-and-forth #7. Someone wants 'sometime next week.' The scheduling agent negotiates while you stay in flow.",
+    scene: "Back-and-forth #7. Someone wants 'sometime next week.' The scheduling agent negotiates while you finish your deep work, undisturbed.",
     action: "Protects focus blocks, handles timezone math.",
   },
   {
     glyph: "message",
     name: "Group Chat Agent",
-    scene: "247 unread in Slack. The group chat agent reads it all, summarizes the signal, drafts your reply.",
+    scene: "247 unread in Slack. The group chat agent reads it all, summarizes the signal, drafts your reply. You actually make it to the afternoon workshop.",
     action: "Monitors channels, flags mentions, drafts responses.",
   },
   {
     glyph: "map",
     name: "Meetup Agent",
-    scene: "Friday, 6 PM. Eight people, three preferences, one reservation. The meetup agent handled the choreography while you coded.",
+    scene: "Friday, 6 PM — the local café patio. Eight people, three preferences, one reservation. The meetup agent handled the choreography so you could show up rested.",
     action: "RSVPs, locations, the social logistics.",
   },
 ];
@@ -65,31 +65,31 @@ function AgentGlyph({ type }: { type: string }) {
       </svg>
     ),
   };
-  return <span className="text-navy">{glyphs[type]}</span>;
+  return <span className="text-leaf">{glyphs[type]}</span>;
 }
 
 export function AgentCards() {
   return (
     <section className="relative">
-      {/* Full-bleed exterior image strip */}
+      {/* Full-bleed exterior image strip - solarpunk street scene */}
       <div className="relative w-full overflow-hidden">
         <div className="relative aspect-[21/9] sm:aspect-[3/1] lg:aspect-[4/1]">
           <Image
-            src="/agents-outside.png"
-            alt="View through rain-streaked window: blocky agent figures on wet city streets — one with umbrella, one mailing letters, one carrying coffee, one hailing a taxi"
+            src="/agents-street-solarpunk.png"
+            alt="Sunny solarpunk street: friendly brass helper figures at a notice board, carrying produce, and biking with flowers through a green market neighborhood"
             fill
             className="object-cover object-center"
             priority
           />
           {/* Subtle gradient overlays for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-street/60" />
-          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-street/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-street/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-leaf/10" />
         </div>
         
         {/* Caption overlay */}
         <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 sm:pb-8">
-          <p className="mx-auto max-w-4xl font-display text-sm sm:text-base italic text-paper/80 drop-shadow-sm">
-            Outside: rain, logistics, small talk. They handle it.
+          <p className="mx-auto max-w-4xl font-display text-sm sm:text-base italic text-paper/90 drop-shadow-sm">
+            Outside: the market, the meetup, the friendly nudge. They handle it so you can show up when it counts.
           </p>
         </div>
       </div>
@@ -98,7 +98,7 @@ export function AgentCards() {
       <div className="section-outside relative px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-4xl">
           <header className="mb-14">
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-outside">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-garden">
               Dispatches from outside
             </p>
             <h2 className="mt-4 font-display text-4xl font-light tracking-tight text-street sm:text-5xl">
@@ -106,7 +106,7 @@ export function AgentCards() {
             </h2>
             <p className="mt-6 max-w-2xl text-lg text-outside leading-relaxed">
               Each one handles a different kind of social coordination — 
-              the kind that pulls you out of the cave.
+              the kind that drains your energy before you can be present for what matters.
             </p>
           </header>
 
@@ -115,7 +115,7 @@ export function AgentCards() {
               <li
                 key={agent.name}
                 className={`group py-8 ${
-                  index !== agents.length - 1 ? "border-b border-rain/20" : ""
+                  index !== agents.length - 1 ? "border-b border-leaf/15" : ""
                 }`}
               >
                 <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:gap-6">
@@ -132,7 +132,7 @@ export function AgentCards() {
                     <p className="font-display text-base italic text-outside leading-relaxed">
                       &ldquo;{agent.scene}&rdquo;
                     </p>
-                    <p className="text-sm text-rain uppercase tracking-wide">
+                    <p className="text-sm text-garden uppercase tracking-wide">
                       {agent.action}
                     </p>
                   </div>
@@ -142,9 +142,9 @@ export function AgentCards() {
           </ol>
 
           {/* Visual break - return to warmth */}
-          <div className="mt-14 pt-8 border-t border-rain/20 text-center">
+          <div className="mt-14 pt-8 border-t border-leaf/15 text-center">
             <p className="font-display text-lg italic text-outside">
-              Meanwhile, you&apos;re still inside. Coffee&apos;s warm.
+              Meanwhile, you&apos;re still in your studio. Sun&apos;s warm. Tea&apos;s ready.
             </p>
           </div>
         </div>

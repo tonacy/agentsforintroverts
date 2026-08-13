@@ -53,12 +53,12 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
       <div
         className={`flex items-center gap-3 border-l-2 px-5 py-4 ${
           isDark
-            ? "border-camel bg-navy/50 max-w-md mx-auto"
-            : "border-rust bg-rust-soft max-w-md"
+            ? "border-brass-glow bg-leaf/30 max-w-md mx-auto"
+            : "border-leaf bg-leaf-soft max-w-md"
         }`}
       >
         <svg
-          className={`h-5 w-5 shrink-0 ${isDark ? "text-camel" : "text-rust"}`}
+          className={`h-5 w-5 shrink-0 ${isDark ? "text-brass-glow" : "text-leaf"}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -103,10 +103,10 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
           placeholder="you@example.com"
           className={`w-full border px-4 py-3 transition-colors sm:border-r-0 rounded-sm sm:rounded-r-none ${
             isDark
-              ? `bg-navy border-paper/20 text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-camel/50 ${
+              ? `bg-leaf border-paper/20 text-paper placeholder:text-paper/50 focus:outline-none focus:ring-2 focus:ring-brass/50 ${
                   status === "error" ? "border-red-400" : "hover:border-paper/30"
                 }`
-              : `bg-white border-rule-strong text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brass/30 ${
+              : `bg-white border-rule-strong text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-leaf/30 ${
                   status === "error"
                     ? "border-red-500"
                     : "hover:border-ink-faint"
@@ -128,8 +128,8 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
         type="submit"
         className={`px-6 py-3 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98] rounded-sm sm:rounded-l-none ${
           isDark
-            ? "bg-camel text-navy-deep hover:bg-camel-muted focus:ring-camel focus:ring-offset-navy-deep"
-            : "bg-navy text-paper hover:bg-navy-deep focus:ring-brass focus:ring-offset-paper"
+            ? "bg-brass text-leaf-deep hover:bg-brass-glow focus:ring-brass focus:ring-offset-leaf-deep"
+            : "bg-leaf text-paper hover:bg-leaf-deep focus:ring-leaf focus:ring-offset-paper"
         }`}
       >
         Get the free playbook

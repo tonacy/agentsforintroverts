@@ -3,16 +3,16 @@ const audiences = [
   "Developers who hate context-switching to coordinate",
   "Creators who need deep work time protected",
   "Anyone who finds social logistics draining",
-  "People who want systems, not more effort",
+  "People who want to show up for friends without burning out on planning",
 ];
 
 export function Audience() {
   return (
-    <section className="relative bg-paper px-6 py-24 sm:py-32 border-t border-rule">
+    <section className="relative bg-cream px-6 py-24 sm:py-32 border-t border-rule">
       <div className="mx-auto max-w-4xl">
         <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
           <header>
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-camel-muted">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-leaf-muted">
               For you if
             </p>
             <h2 className="mt-4 font-display text-4xl font-light tracking-tight text-ink sm:text-5xl">
@@ -31,7 +31,7 @@ export function Audience() {
                   index !== audiences.length - 1 ? "border-b border-rule" : ""
                 }`}
               >
-                <span className="text-rust text-sm">●</span>
+                <span className="text-leaf text-sm">●</span>
                 <span className="text-lg text-ink leading-relaxed">{audience}</span>
               </li>
             ))}
