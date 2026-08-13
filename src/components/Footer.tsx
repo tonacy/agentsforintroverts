@@ -1,35 +1,35 @@
 export function Footer() {
   return (
-    <footer className="border-t border-stone-800/50 bg-stone-950 px-6 py-12">
-      <div className="mx-auto max-w-5xl">
-        <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+    <footer className="border-t border-rule bg-paper-warm px-6 py-16">
+      <div className="mx-auto max-w-4xl">
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-lg font-semibold text-stone-100">
+            <p className="font-display text-xl font-normal text-ink">
               Agents for Introverts
             </p>
-            <p className="mt-1 text-sm text-stone-500">
+            <p className="mt-2 text-ink-muted">
               AI agents for people who&apos;d rather ship than network.
             </p>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col gap-3 text-right sm:items-end">
             <a
               href="https://agentsforintroverts.com"
-              className="text-sm text-stone-400 transition-colors hover:text-stone-300"
+              className="text-ink-muted transition-colors hover:text-ember"
             >
               agentsforintroverts.com
             </a>
             <a
               href="mailto:tonacy@gmail.com"
-              className="text-sm text-stone-400 transition-colors hover:text-stone-300"
+              className="text-ink-muted transition-colors hover:text-ember"
             >
               Contact
             </a>
           </div>
         </div>
 
-        <div className="mt-8 border-t border-stone-800/50 pt-8 text-center">
-          <p className="text-sm text-stone-600">
+        <div className="mt-12 pt-8 border-t border-rule">
+          <p className="text-sm text-ink-faint">
             © {new Date().getFullYear()} Tony Llongueras. Built with agents, obviously.
           </p>
         </div>

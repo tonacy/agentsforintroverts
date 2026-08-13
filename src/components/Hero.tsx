@@ -4,30 +4,45 @@ export function Hero() {
   return (
     <section
       id="get-playbook"
-      className="relative flex min-h-[90vh] flex-col items-center justify-center px-6 pt-24 pb-16"
+      className="relative min-h-[90vh] flex flex-col justify-center px-6 pt-32 pb-24 sm:pt-40 sm:pb-32"
     >
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-stone-950 via-stone-950 to-stone-900" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-950/20 via-transparent to-transparent" />
-
-      <div className="mx-auto max-w-3xl text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-stone-100 sm:text-5xl lg:text-6xl">
+      <div className="mx-auto w-full max-w-4xl">
+        <h1 className="font-display text-5xl font-light leading-[1.1] tracking-tight text-ink sm:text-7xl lg:text-8xl">
           Stay in the cave.
           <br />
-          <span className="text-teal-400">Let agents go outside.</span>
+          <span className="italic text-ember">Let agents go outside.</span>
         </h1>
 
-        <p className="mt-6 text-lg leading-relaxed text-stone-400 sm:text-xl">
-          AI agents that handle the loud work — inbox triage, follow-ups, scheduling,
-          group chats, meetup logistics — so you can stay in deep work where you belong.
+        <p className="mt-10 max-w-xl text-xl leading-relaxed text-ink-muted sm:text-2xl sm:leading-relaxed">
+          AI agents that handle the loud work — inbox triage, follow-ups,
+          scheduling, group chats, meetup logistics — so you can stay in deep
+          work where you belong.
         </p>
 
-        <div className="mt-10">
+        <div className="mt-16 max-w-md">
+          <p className="mb-4 text-sm font-medium uppercase tracking-widest text-ink-faint">
+            Free playbook
+          </p>
           <EmailForm variant="hero" />
+          <p className="mt-4 text-base text-ink-faint">
+            The Quiet Operator&apos;s Agent Stack — five agents for people who&apos;d
+            rather ship than network.
+          </p>
         </div>
+      </div>
 
-        <p className="mt-4 text-sm text-stone-500">
-          Free playbook: <span className="text-stone-400">The Quiet Operator&apos;s Agent Stack</span> — 5 agents for people who&apos;d rather ship than network.
-        </p>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-ink-faint">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          className="animate-[bounce_2s_ease-in-out_infinite] motion-reduce:animate-none"
+        >
+          <path d="M12 5v14M5 12l7 7 7-7" />
+        </svg>
       </div>
     </section>
   );
