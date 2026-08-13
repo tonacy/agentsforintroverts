@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const agents = [
   {
     glyph: "envelope",
@@ -68,57 +70,83 @@ function AgentGlyph({ type }: { type: string }) {
 
 export function AgentCards() {
   return (
-    <section className="section-outside relative px-6 py-24 sm:py-32">
-      <div className="mx-auto max-w-4xl">
-        <header className="mb-16">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-outside">
-            Dispatches from outside
+    <section className="relative">
+      {/* Full-bleed exterior image strip */}
+      <div className="relative w-full overflow-hidden">
+        <div className="relative aspect-[21/9] sm:aspect-[3/1] lg:aspect-[4/1]">
+          <Image
+            src="/agents-outside.png"
+            alt="View through rain-streaked window: blocky agent figures on wet city streets — one with umbrella, one mailing letters, one carrying coffee, one hailing a taxi"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          {/* Subtle gradient overlays for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-street/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-street/30" />
+        </div>
+        
+        {/* Caption overlay */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 sm:pb-8">
+          <p className="mx-auto max-w-4xl font-display text-sm sm:text-base italic text-paper/80 drop-shadow-sm">
+            Outside: rain, logistics, small talk. They handle it.
           </p>
-          <h2 className="mt-4 font-display text-4xl font-light tracking-tight text-street sm:text-5xl">
-            Five agents. Five types of work<br className="hidden sm:block" /> you no longer do yourself.
-          </h2>
-          <p className="mt-6 max-w-2xl text-lg text-outside leading-relaxed">
-            Each one handles a different kind of social coordination — 
-            the kind that pulls you out of the cave.
-          </p>
-        </header>
+        </div>
+      </div>
 
-        <ol className="space-y-0">
-          {agents.map((agent, index) => (
-            <li
-              key={agent.name}
-              className={`group py-8 ${
-                index !== agents.length - 1 ? "border-b border-rain/20" : ""
-              }`}
-            >
-              <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:gap-6">
-                {/* Glyph */}
-                <div className="flex items-start gap-3 sm:flex-col sm:items-center sm:pt-1">
-                  <AgentGlyph type={agent.glyph} />
+      {/* Dispatches content */}
+      <div className="section-outside relative px-6 py-20 sm:py-28">
+        <div className="mx-auto max-w-4xl">
+          <header className="mb-14">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-outside">
+              Dispatches from outside
+            </p>
+            <h2 className="mt-4 font-display text-4xl font-light tracking-tight text-street sm:text-5xl">
+              Five agents. Five types of work<br className="hidden sm:block" /> you no longer do yourself.
+            </h2>
+            <p className="mt-6 max-w-2xl text-lg text-outside leading-relaxed">
+              Each one handles a different kind of social coordination — 
+              the kind that pulls you out of the cave.
+            </p>
+          </header>
+
+          <ol className="space-y-0">
+            {agents.map((agent, index) => (
+              <li
+                key={agent.name}
+                className={`group py-8 ${
+                  index !== agents.length - 1 ? "border-b border-rain/20" : ""
+                }`}
+              >
+                <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:gap-6">
+                  {/* Glyph */}
+                  <div className="flex items-start gap-3 sm:flex-col sm:items-center sm:pt-1">
+                    <AgentGlyph type={agent.glyph} />
+                  </div>
+
+                  {/* Content */}
+                  <div className="space-y-3">
+                    <h3 className="font-display text-xl font-normal text-street sm:text-2xl">
+                      {agent.name}
+                    </h3>
+                    <p className="font-display text-base italic text-outside leading-relaxed">
+                      &ldquo;{agent.scene}&rdquo;
+                    </p>
+                    <p className="text-sm text-rain uppercase tracking-wide">
+                      {agent.action}
+                    </p>
+                  </div>
                 </div>
+              </li>
+            ))}
+          </ol>
 
-                {/* Content */}
-                <div className="space-y-3">
-                  <h3 className="font-display text-xl font-normal text-street sm:text-2xl">
-                    {agent.name}
-                  </h3>
-                  <p className="font-display text-base italic text-outside leading-relaxed">
-                    &ldquo;{agent.scene}&rdquo;
-                  </p>
-                  <p className="text-sm text-rain uppercase tracking-wide">
-                    {agent.action}
-                  </p>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        {/* Visual break - return to warmth */}
-        <div className="mt-16 pt-8 border-t border-rain/20 text-center">
-          <p className="font-display text-lg italic text-outside">
-            Meanwhile, you&apos;re still inside. Coffee&apos;s warm.
-          </p>
+          {/* Visual break - return to warmth */}
+          <div className="mt-14 pt-8 border-t border-rain/20 text-center">
+            <p className="font-display text-lg italic text-outside">
+              Meanwhile, you&apos;re still inside. Coffee&apos;s warm.
+            </p>
+          </div>
         </div>
       </div>
     </section>
