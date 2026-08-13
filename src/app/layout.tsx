@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
-import { Fraunces, Source_Sans_3 } from "next/font/google";
+import { Newsreader, IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
+const newsreader = Newsreader({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-serif",
   display: "swap",
+  style: ["normal", "italic"],
 });
 
-const sourceSans = Source_Sans_3({
+const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  variable: "--font-body",
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Agents for Introverts — Deep work in the sun",
+  title: "Agents for Introverts — The Quiet Operator's Agent Stack",
   description:
-    "AI agents that handle inbox triage, follow-ups, scheduling, group chats, and meetup logistics — protecting your deep work so you can show up when it matters.",
+    "How I use AI agents to handle inbox triage, follow-ups, scheduling, group chats, and meetup logistics — so I can show up when it matters. Get the free playbook.",
   keywords: [
     "AI agents",
     "automation",
@@ -31,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Agents for Introverts",
     description:
-      "Deep work in the sun. Agents take the errands. AI agents for people who'd rather ship than network.",
+      "How I use five AI agents to stay in flow. Steal the stack.",
     url: "https://agentsforintroverts.com",
     siteName: "Agents for Introverts",
     type: "website",
@@ -40,7 +48,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Agents for Introverts",
     description:
-      "Deep work in the sun. Agents take the errands. AI agents for people who'd rather ship than network.",
+      "How I use five AI agents to stay in flow. Steal the stack.",
   },
   metadataBase: new URL("https://agentsforintroverts.com"),
 };
@@ -51,8 +59,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${sourceSans.variable}`}>
-      <body className="min-h-screen bg-paper font-body text-ink antialiased">
+    <html lang="en" className={`${newsreader.variable} ${ibmPlexMono.variable} ${inter.variable}`}>
+      <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         {children}
       </body>
     </html>

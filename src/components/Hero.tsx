@@ -2,29 +2,31 @@ import { EmailForm } from "./EmailForm";
 
 export function Hero() {
   return (
-    <section id="get-playbook" className="pt-28 pb-20 sm:pt-36 sm:pb-28">
-      <div className="mx-auto max-w-[900px] px-6">
-        <div className="max-w-[640px]">
-          <h1 className="font-display text-4xl font-light leading-[1.15] tracking-tight text-ink sm:text-5xl lg:text-[56px]">
-            Deep work in the sun.
-            <br />
-            <span className="text-leaf">Agents take the errands.</span>
-          </h1>
-
-          <p className="mt-8 max-w-[520px] text-lg leading-relaxed text-ink-muted">
-            Your AI social secretary — handling correspondence, calendars, RSVPs,
-            and the room — so you can show up when it matters.
-          </p>
-
-          <div className="mt-12 max-w-[400px]">
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.15em] text-ink-faint">
-              Free playbook
+    <section className="pt-12 pb-16 sm:pt-16 sm:pb-20">
+      <div className="mx-auto max-w-[1000px] px-6">
+        <div className="grid gap-12 lg:grid-cols-[1fr_340px] lg:gap-16">
+          <div>
+            <p className="font-mono text-sm uppercase tracking-wider text-leaf">
+              Tuesday, 13:04
             </p>
-            <EmailForm />
-            <p className="mt-4 text-sm text-ink-faint leading-relaxed">
-              The Quiet Operator&apos;s Agent Stack — five agents for people who
-              build more than they broadcast.
+            <h1 className="mt-4 font-serif text-5xl leading-[1.1] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+              I have<br />0 unread.
+            </h1>
+            <p className="mt-8 max-w-[480px] font-serif text-xl leading-relaxed text-ink-muted sm:text-2xl">
+              Eleven things were handled while I was writing. One of them is worth my attention.
             </p>
+          </div>
+
+          <div id="playbook" className="lg:pt-8">
+            <p className="font-serif text-ink-muted leading-relaxed">
+              I run a stack of five AI agents as my social secretary — they handle correspondence, calendars, RSVPs, and the room. This is how I stay in flow.
+            </p>
+            <div className="mt-6 border-t border-rule pt-6">
+              <EmailForm />
+              <p className="mt-3 font-mono text-xs text-ink-faint">
+                Free — The Quiet Operator&apos;s Agent Stack. Five setups, no spam.
+              </p>
+            </div>
           </div>
         </div>
       </div>

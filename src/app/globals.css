@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-display: var(--font-display), "Georgia", serif;
-  --font-body: var(--font-body), system-ui, sans-serif;
+  --font-serif: var(--font-serif), "Georgia", serif;
+  --font-mono: var(--font-mono), "Menlo", monospace;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
   
-  /* Paper base - warm cream like sun-bleached paper */
+  /* Paper base - warm cream */
   --color-paper: #FDFBF7;
   --color-paper-warm: #FAF6F0;
   
@@ -13,16 +14,16 @@
   --color-ink-muted: #444444;
   --color-ink-faint: #888888;
   
-  /* Single accent: deep forest/leaf green (solarpunk chlorophyll) */
+  /* Single accent: deep forest green */
   --color-leaf: #0f4a38;
   --color-leaf-light: #1a6b52;
-  
-  /* Terracotta (rare, optional) */
-  --color-terra: #9c4a2d;
   
   /* Hairline rules */
   --color-rule: rgba(17, 17, 17, 0.12);
   --color-rule-light: rgba(17, 17, 17, 0.06);
+  
+  /* Highlight for the "needs you" row */
+  --color-highlight: #FAF6F0;
 }
 
 html {

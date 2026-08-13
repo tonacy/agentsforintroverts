@@ -1,9 +1,9 @@
 import {
   Nav,
   Hero,
-  AgentCards,
+  HandledList,
+  TheFive,
   Audience,
-  CTABand,
   Footer,
 } from "@/components";
 
@@ -13,9 +13,9 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
-        <AgentCards />
+        <HandledList />
+        <TheFive />
         <Audience />
-        <CTABand />
       </main>
       <Footer />
     </>

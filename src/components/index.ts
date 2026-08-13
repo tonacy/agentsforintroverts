@@ -1,7 +1,7 @@
 export { EmailForm } from "./EmailForm";
 export { Nav } from "./Nav";
 export { Hero } from "./Hero";
-export { AgentCards } from "./AgentCards";
+export { HandledList } from "./HandledList";
+export { TheFive } from "./TheFive";
 export { Audience } from "./Audience";
-export { CTABand } from "./CTABand";
 export { Footer } from "./Footer";

@@ -35,9 +35,9 @@ export function EmailForm() {
 
   if (status === "success") {
     return (
-      <div className="flex items-center gap-3 border-l-2 border-leaf bg-[rgba(15,74,56,0.05)] px-4 py-3">
+      <div className="flex items-center gap-3 border-b border-leaf py-3">
         <svg
-          className="h-5 w-5 shrink-0 text-leaf"
+          className="h-4 w-4 shrink-0 text-leaf"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -49,16 +49,15 @@ export function EmailForm() {
             d="M5 13l4 4L19 7"
           />
         </svg>
-        <p className="text-sm text-ink-muted">
-          Check your inbox for{" "}
-          <span className="text-ink">The Quiet Operator&apos;s Agent Stack</span>
+        <p className="font-serif text-sm text-ink-muted">
+          Check your inbox for the playbook.
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:gap-0">
+    <form onSubmit={handleSubmit} className="flex items-center gap-4 border-b border-rule pb-3">
       <div className="flex-1">
         <label htmlFor="email" className="sr-only">
           Email address
@@ -72,26 +71,24 @@ export function EmailForm() {
             setEmail(e.target.value);
             if (status === "error") setStatus("idle");
           }}
-          placeholder="you@example.com"
-          className={`w-full border px-4 py-3 text-ink placeholder:text-ink-faint bg-white transition-colors focus:outline-none focus:ring-1 focus:ring-leaf sm:border-r-0 ${
-            status === "error"
-              ? "border-terra"
-              : "border-rule hover:border-ink-faint"
+          placeholder="you@quiet.dev"
+          className={`w-full bg-transparent font-serif text-ink placeholder:text-ink-faint focus:outline-none ${
+            status === "error" ? "text-red-700" : ""
           }`}
           aria-invalid={status === "error"}
           aria-describedby={status === "error" ? "email-error" : undefined}
         />
         {status === "error" && (
-          <p id="email-error" className="mt-2 text-sm text-terra">
+          <p id="email-error" className="mt-1 font-mono text-xs text-red-700">
             {errorMessage}
           </p>
         )}
       </div>
       <button
         type="submit"
-        className="border border-leaf bg-leaf px-6 py-3 font-medium text-paper transition-colors hover:bg-leaf-light focus:outline-none focus:ring-1 focus:ring-leaf focus:ring-offset-2 focus:ring-offset-paper"
+        className="font-mono text-sm text-leaf transition-colors hover:text-leaf-light whitespace-nowrap"
       >
-        Get the playbook
+        Send it →
       </button>
     </form>
   );
