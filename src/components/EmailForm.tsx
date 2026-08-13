@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 
-interface EmailFormProps {
-  variant?: "hero" | "cta";
-}
-
-export function EmailForm({ variant = "hero" }: EmailFormProps) {
+export function EmailForm() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -32,33 +28,16 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
       return;
     }
 
-    // TODO: Integrate with Resend/Supabase for actual email capture
-    // For now, simulate a successful submission
-    // Example integration:
-    // const response = await fetch('/api/subscribe', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email }),
-    // });
-    // if (!response.ok) throw new Error('Failed to subscribe');
-
+    // TODO: Integrate with email service (Resend/Supabase)
     setStatus("success");
     setEmail("");
   };
 
-  const isDark = variant === "cta";
-
   if (status === "success") {
     return (
-      <div
-        className={`flex items-center gap-3 border-l-2 px-5 py-4 ${
-          isDark
-            ? "border-camel bg-navy/50 max-w-md mx-auto"
-            : "border-rust bg-rust-soft max-w-md"
-        }`}
-      >
+      <div className="flex items-center gap-3 border-l-2 border-leaf bg-[rgba(15,74,56,0.05)] px-4 py-3">
         <svg
-          className={`h-5 w-5 shrink-0 ${isDark ? "text-camel" : "text-rust"}`}
+          className="h-5 w-5 shrink-0 text-leaf"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -70,30 +49,23 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
             d="M5 13l4 4L19 7"
           />
         </svg>
-        <p className={isDark ? "text-paper/80" : "text-ink-muted"}>
+        <p className="text-sm text-ink-muted">
           Check your inbox for{" "}
-          <span className={`font-medium ${isDark ? "text-paper" : "text-ink"}`}>
-            The Quiet Operator&apos;s Agent Stack
-          </span>
+          <span className="text-ink">The Quiet Operator&apos;s Agent Stack</span>
         </p>
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={`flex flex-col gap-3 sm:flex-row sm:gap-0 ${
-        variant === "cta" ? "max-w-md mx-auto" : ""
-      }`}
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:gap-0">
       <div className="flex-1">
-        <label htmlFor={`email-${variant}`} className="sr-only">
+        <label htmlFor="email" className="sr-only">
           Email address
         </label>
         <input
           type="email"
-          id={`email-${variant}`}
+          id="email"
           name="email"
           value={email}
           onChange={(e) => {
@@ -101,38 +73,25 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
             if (status === "error") setStatus("idle");
           }}
           placeholder="you@example.com"
-          className={`w-full border px-4 py-3 transition-colors sm:border-r-0 rounded-sm sm:rounded-r-none ${
-            isDark
-              ? `bg-navy border-paper/20 text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-camel/50 ${
-                  status === "error" ? "border-red-400" : "hover:border-paper/30"
-                }`
-              : `bg-white border-rule-strong text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brass/30 ${
-                  status === "error"
-                    ? "border-red-500"
-                    : "hover:border-ink-faint"
-                }`
+          className={`w-full border px-4 py-3 text-ink placeholder:text-ink-faint bg-white transition-colors focus:outline-none focus:ring-1 focus:ring-leaf sm:border-r-0 ${
+            status === "error"
+              ? "border-terra"
+              : "border-rule hover:border-ink-faint"
           }`}
           aria-invalid={status === "error"}
-          aria-describedby={status === "error" ? `error-${variant}` : undefined}
+          aria-describedby={status === "error" ? "email-error" : undefined}
         />
         {status === "error" && (
-          <p
-            id={`error-${variant}`}
-            className={`mt-2 text-sm ${isDark ? "text-red-300" : "text-red-600"}`}
-          >
+          <p id="email-error" className="mt-2 text-sm text-terra">
             {errorMessage}
           </p>
         )}
       </div>
       <button
         type="submit"
-        className={`px-6 py-3 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98] rounded-sm sm:rounded-l-none ${
-          isDark
-            ? "bg-camel text-navy-deep hover:bg-camel-muted focus:ring-camel focus:ring-offset-navy-deep"
-            : "bg-navy text-paper hover:bg-navy-deep focus:ring-brass focus:ring-offset-paper"
-        }`}
+        className="border border-leaf bg-leaf px-6 py-3 font-medium text-paper transition-colors hover:bg-leaf-light focus:outline-none focus:ring-1 focus:ring-leaf focus:ring-offset-2 focus:ring-offset-paper"
       >
-        Get the free playbook
+        Get the playbook
       </button>
     </form>
   );

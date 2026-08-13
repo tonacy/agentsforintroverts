@@ -1,38 +1,36 @@
 const audiences = [
-  "Founders who'd rather build than network",
-  "Developers who hate context-switching to coordinate",
-  "Creators who need deep work time protected",
+  "Founders who build more than they broadcast",
+  "Developers who hate context-switching for coordination",
+  "Creators who need deep work protected",
   "Anyone who finds social logistics draining",
-  "People who want systems, not more effort",
 ];
 
 export function Audience() {
   return (
-    <section className="relative bg-paper px-6 py-24 sm:py-32 border-t border-rule">
-      <div className="mx-auto max-w-4xl">
-        <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
+    <section className="border-t border-rule bg-paper-warm">
+      <div className="mx-auto max-w-[900px] px-6 py-20 sm:py-24">
+        <div className="grid gap-8 lg:grid-cols-[200px_1fr] lg:gap-16">
           <header>
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-camel-muted">
+            <p className="text-xs font-medium uppercase tracking-[0.15em] text-ink-faint">
               For you if
             </p>
-            <h2 className="mt-4 font-display text-4xl font-light tracking-tight text-ink sm:text-5xl">
-              Who this<br className="hidden sm:block" /> is for
+            <h2 className="mt-3 font-display text-2xl font-light tracking-tight text-ink sm:text-3xl">
+              Who this is for
             </h2>
-            <p className="mt-6 text-lg text-ink-muted leading-relaxed">
-              If any of these sound like you, you&apos;re in the right place.
-            </p>
           </header>
 
           <ul className="space-y-0">
             {audiences.map((audience, index) => (
               <li
                 key={audience}
-                className={`flex items-baseline gap-4 py-5 ${
-                  index !== audiences.length - 1 ? "border-b border-rule" : ""
+                className={`flex items-baseline gap-4 py-4 ${
+                  index !== audiences.length - 1
+                    ? "border-b border-rule-light"
+                    : ""
                 }`}
               >
-                <span className="text-rust text-sm">●</span>
-                <span className="text-lg text-ink leading-relaxed">{audience}</span>
+                <span className="text-leaf text-xs">●</span>
+                <span className="text-ink-muted">{audience}</span>
               </li>
             ))}
           </ul>
