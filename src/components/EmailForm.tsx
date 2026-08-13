@@ -49,12 +49,12 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
   if (status === "success") {
     return (
       <div
-        className={`flex items-center gap-3 rounded-lg border border-teal-600/30 bg-teal-950/20 px-6 py-4 ${
+        className={`flex items-center gap-3 border-l-2 border-ember bg-ember-soft px-5 py-4 ${
           variant === "cta" ? "max-w-md mx-auto" : ""
         }`}
       >
         <svg
-          className="h-5 w-5 shrink-0 text-teal-500"
+          className="h-5 w-5 shrink-0 text-ember"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -66,8 +66,11 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
             d="M5 13l4 4L19 7"
           />
         </svg>
-        <p className="text-stone-200">
-          Check your inbox for <span className="font-medium text-white">The Quiet Operator&apos;s Agent Stack</span>
+        <p className="text-ink-muted">
+          Check your inbox for{" "}
+          <span className="font-medium text-ink">
+            The Quiet Operator&apos;s Agent Stack
+          </span>
         </p>
       </div>
     );
@@ -76,7 +79,7 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`flex flex-col gap-3 sm:flex-row sm:gap-2 ${
+      className={`flex flex-col gap-3 sm:flex-row sm:gap-0 ${
         variant === "cta" ? "max-w-md mx-auto" : ""
       }`}
     >
@@ -94,23 +97,23 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
             if (status === "error") setStatus("idle");
           }}
           placeholder="you@example.com"
-          className={`w-full rounded-lg border bg-stone-900/50 px-4 py-3 text-stone-100 placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-colors ${
+          className={`w-full border bg-white px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-ember/30 transition-colors sm:border-r-0 ${
             status === "error"
-              ? "border-red-500/50"
-              : "border-stone-700/50 hover:border-stone-600"
+              ? "border-red-500"
+              : "border-rule-strong hover:border-ink-faint"
           }`}
           aria-invalid={status === "error"}
           aria-describedby={status === "error" ? `error-${variant}` : undefined}
         />
         {status === "error" && (
-          <p id={`error-${variant}`} className="mt-2 text-sm text-red-400">
+          <p id={`error-${variant}`} className="mt-2 text-sm text-red-600">
             {errorMessage}
           </p>
         )}
       </div>
       <button
         type="submit"
-        className="rounded-lg bg-teal-600 px-6 py-3 font-medium text-white transition-all hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:ring-offset-2 focus:ring-offset-stone-900 active:scale-[0.98]"
+        className="bg-ink px-6 py-3 font-medium text-paper transition-colors hover:bg-ink-muted focus:outline-none focus:ring-2 focus:ring-ember focus:ring-offset-2 focus:ring-offset-paper active:scale-[0.98]"
       >
         Get the free playbook
       </button>

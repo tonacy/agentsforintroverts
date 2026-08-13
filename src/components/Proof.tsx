@@ -18,31 +18,32 @@ const proofPoints = [
 
 export function Proof() {
   return (
-    <section className="px-6 py-24">
-      <div className="mx-auto max-w-5xl">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-100 sm:text-4xl">
+    <section className="bg-paper-warm px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-4xl">
+        <header className="mb-16">
+          <p className="text-sm font-medium uppercase tracking-widest text-ink-faint">
+            Currently
+          </p>
+          <h2 className="mt-4 font-display text-4xl font-light tracking-tight text-ink sm:text-5xl">
             What I&apos;m building
           </h2>
-          <p className="mt-4 text-lg text-stone-400">
-            Real projects, real agent setups, real results.
-          </p>
-        </div>
+        </header>
 
-        <div className="mt-16 grid gap-8 sm:grid-cols-3">
-          {proofPoints.map((point) => (
-            <div
-              key={point.title}
-              className="relative border-l-2 border-teal-600/30 pl-6"
-            >
-              <div className="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-teal-500" />
-              <h3 className="text-lg font-semibold text-stone-100">
-                {point.title}
-              </h3>
-              <p className="mt-2 text-stone-400 leading-relaxed">
-                {point.description}
-              </p>
-            </div>
+        <div className="grid gap-12 sm:grid-cols-3 sm:gap-8">
+          {proofPoints.map((point, index) => (
+            <article key={point.title} className="relative">
+              <span className="font-display text-6xl font-light text-rule-strong absolute -top-4 -left-2 select-none">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div className="relative pt-8">
+                <h3 className="font-display text-xl font-normal text-ink">
+                  {point.title}
+                </h3>
+                <p className="mt-3 text-ink-muted leading-relaxed">
+                  {point.description}
+                </p>
+              </div>
+            </article>
           ))}
         </div>
       </div>
