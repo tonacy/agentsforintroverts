@@ -6,13 +6,13 @@ export function Nav() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link
           href="/"
-          className="font-display text-lg font-normal tracking-tight text-ink hover:text-navy transition-colors"
+          className="font-display text-lg font-normal tracking-tight text-ink hover:text-leaf transition-colors"
         >
           Agents for Introverts
         </Link>
         <a
           href="#get-playbook"
-          className="bg-navy px-4 py-2 text-sm font-medium text-paper transition-all hover:bg-navy-deep focus:outline-none focus:ring-2 focus:ring-brass focus:ring-offset-2 focus:ring-offset-paper active:scale-[0.98] rounded-sm"
+          className="bg-leaf px-4 py-2 text-sm font-medium text-paper transition-all hover:bg-leaf-deep focus:outline-none focus:ring-2 focus:ring-brass focus:ring-offset-2 focus:ring-offset-paper active:scale-[0.98] rounded-sm"
         >
           Get the playbook
         </a>

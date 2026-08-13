@@ -4,41 +4,50 @@
   --font-display: var(--font-display), "Georgia", serif;
   --font-body: var(--font-body), system-ui, sans-serif;
   
-  /* Cream paper base */
-  --color-paper: #FAF7F2;
-  --color-paper-warm: #F5EEE4;
-  --color-paper-lamp: #FDF8F0;
+  /* Solarpunk palette: linen, leaf, terracotta, sky, sun-brass, cream */
   
-  /* Ink hierarchy */
-  --color-ink: #1C1917;
-  --color-ink-muted: #44403C;
-  --color-ink-faint: #78716C;
+  /* Linen/cream paper base - warm sunlit interiors */
+  --color-paper: #FAF6F0;
+  --color-paper-warm: #F5EDE2;
+  --color-paper-lamp: #FFFBF5;
+  --color-linen: #F8F4ED;
+  --color-cream: #FFF9F0;
   
-  /* Cozy palette - masculine warmth */
-  --color-navy: #1E3A5F;
-  --color-navy-deep: #152A45;
-  --color-navy-soft: rgba(30, 58, 95, 0.08);
-  --color-camel: #C4A574;
-  --color-camel-muted: #B89B6A;
-  --color-rust: #A65D3F;
-  --color-rust-soft: rgba(166, 93, 63, 0.12);
-  --color-brass: #C9A227;
-  --color-brass-glow: #D4B44A;
+  /* Ink hierarchy - softer, warmer blacks */
+  --color-ink: #2D2A26;
+  --color-ink-muted: #524E48;
+  --color-ink-faint: #8A857D;
   
-  /* Ember accent (kept for CTAs) */
-  --color-ember: #B45309;
-  --color-ember-glow: #D97706;
-  --color-ember-soft: rgba(180, 83, 9, 0.08);
+  /* Primary: Leaf green - hopeful, natural */
+  --color-leaf: #4A7C59;
+  --color-leaf-deep: #3D6B4A;
+  --color-leaf-soft: rgba(74, 124, 89, 0.12);
+  --color-leaf-muted: #6B9E7A;
   
-  /* Outside/cool tones */
-  --color-outside: #4A5568;
-  --color-rain: #718096;
-  --color-street: #2D3748;
+  /* Accent: Terracotta - handmade warmth */
+  --color-terracotta: #C67D52;
+  --color-terracotta-deep: #A8654A;
+  --color-terracotta-soft: rgba(198, 125, 82, 0.15);
   
-  /* Rules */
-  --color-rule: rgba(28, 25, 23, 0.1);
-  --color-rule-strong: rgba(28, 25, 23, 0.2);
-  --color-rule-warm: rgba(196, 165, 116, 0.3);
+  /* Sky blue - hopeful, open */
+  --color-sky: #7EB5D6;
+  --color-sky-deep: #5A9BC4;
+  --color-sky-soft: rgba(126, 181, 214, 0.15);
+  
+  /* Sun-brass - warm golden light */
+  --color-brass: #D4A84B;
+  --color-brass-glow: #E6BD5C;
+  --color-brass-soft: rgba(212, 168, 75, 0.12);
+  
+  /* Outside/street - warm community tones (not cold/rainy) */
+  --color-outside: #5D6B5E;
+  --color-garden: #6B8A6B;
+  --color-street: #4A5548;
+  
+  /* Rules - warm, subtle */
+  --color-rule: rgba(45, 42, 38, 0.1);
+  --color-rule-strong: rgba(45, 42, 38, 0.2);
+  --color-rule-warm: rgba(198, 125, 82, 0.25);
 }
 
 html {
@@ -52,20 +61,21 @@ body {
 }
 
 ::selection {
-  background-color: var(--color-rust-soft);
+  background-color: var(--color-leaf-soft);
   color: var(--color-ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-brass);
+  outline: 2px solid var(--color-leaf);
   outline-offset: 2px;
 }
 
-/* Lamp-warm interior sections */
+/* Sunlit interior sections - warm, hopeful */
 .section-interior {
   background: linear-gradient(
     180deg,
     var(--color-paper-lamp) 0%,
+    var(--color-cream) 50%,
     var(--color-paper-warm) 100%
   );
   position: relative;
@@ -77,18 +87,19 @@ body {
   inset: 0;
   background: radial-gradient(
     ellipse 80% 60% at 30% 20%,
-    rgba(201, 162, 39, 0.04) 0%,
+    rgba(212, 168, 75, 0.06) 0%,
     transparent 70%
   );
   pointer-events: none;
 }
 
-/* Cool outside sections */
+/* Outside sections - green, community-warm (not cold/rainy) */
 .section-outside {
   background: linear-gradient(
     180deg,
-    #E8E6E3 0%,
-    #DDD9D4 100%
+    #F0EDE8 0%,
+    #E8E4DC 50%,
+    #F5F2ED 100%
   );
 }
 
