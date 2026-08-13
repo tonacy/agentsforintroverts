@@ -3,23 +3,28 @@ import Image from "next/image";
 const agents = [
   {
     name: "Inbox Agent",
-    line: "Triages email, drafts replies, surfaces what matters.",
+    line: "Sorts the correspondence, drafts replies, surfaces what matters.",
+    image: "/agents/01-inbox.png",
   },
   {
     name: "Follow-up Agent",
-    line: "Tracks open threads, sends the nudge you won't.",
+    line: "Tracks open threads, sends the note you'd rather not.",
+    image: "/agents/02-follow-up.png",
   },
   {
     name: "Scheduling Agent",
-    line: "Protects focus blocks, handles the back-and-forth.",
+    line: "Guards your calendar, handles the back-and-forth.",
+    image: "/agents/03-scheduling.png",
   },
   {
     name: "Group Chat Agent",
-    line: "Monitors channels, summarizes signal, drafts responses.",
+    line: "Monitors the room, summarizes signal, drafts responses.",
+    image: "/agents/04-group-chat.png",
   },
   {
     name: "Meetup Agent",
-    line: "RSVPs, locations, the coordination you'd rather skip.",
+    line: "RSVPs, invitations, the coordination you'd rather skip.",
+    image: "/agents/05-meetup.png",
   },
 ];
 
@@ -41,15 +46,22 @@ export function AgentCards() {
           {agents.map((agent, index) => (
             <li
               key={agent.name}
-              className={`flex items-baseline gap-6 py-5 ${
+              className={`flex items-center gap-5 py-6 ${
                 index !== agents.length - 1 ? "border-b border-rule-light" : ""
               }`}
             >
-              <span className="font-body text-sm tabular-nums text-ink-faint w-6 shrink-0">
+              <span className="font-body text-sm tabular-nums text-ink-faint w-6 shrink-0 self-start pt-1">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4">
-                <h3 className="font-display text-lg text-ink sm:w-44 sm:shrink-0">
+              <Image
+                src={agent.image}
+                alt=""
+                width={56}
+                height={56}
+                className="w-14 h-14 shrink-0 object-contain"
+              />
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4 min-w-0">
+                <h3 className="font-display text-lg text-ink sm:w-40 sm:shrink-0">
                   {agent.name}
                 </h3>
                 <p className="text-ink-muted">{agent.line}</p>
@@ -67,7 +79,7 @@ export function AgentCards() {
             className="w-8 h-8 opacity-60"
           />
           <p className="text-sm text-ink-faint">
-            They handle the coordination. You stay in flow.
+            Your social secretary handles the correspondence. You stay in flow.
           </p>
         </div>
       </div>

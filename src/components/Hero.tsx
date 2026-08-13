@@ -12,9 +12,8 @@ export function Hero() {
           </h1>
 
           <p className="mt-8 max-w-[520px] text-lg leading-relaxed text-ink-muted">
-            AI agents that handle inbox triage, follow-ups, scheduling, group
-            chats, and meetup logistics — protecting your deep work so you can
-            show up when it matters.
+            Your AI social secretary — handling correspondence, calendars, RSVPs,
+            and the room — so you can show up when it matters.
           </p>
 
           <div className="mt-12 max-w-[400px]">
