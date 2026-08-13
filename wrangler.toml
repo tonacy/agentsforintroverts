@@ -1,0 +1,10 @@
+name = "agentsforintroverts"
+compatibility_date = "2024-09-23"
+
+# Cloudflare Pages project configuration
+# The 'pages_build_output_dir' tells Wrangler where to find the static export
+pages_build_output_dir = "out"
+
+# No additional configuration needed for a static site
+# Custom domain (agentsforintroverts.com) is configured in the Cloudflare dashboard
+# after the first deploy: Pages > agentsforintroverts > Custom domains
