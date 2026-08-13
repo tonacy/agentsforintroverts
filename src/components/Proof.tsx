@@ -18,24 +18,25 @@ const proofPoints = [
 
 export function Proof() {
   return (
-    <section className="bg-paper-warm px-6 py-24 sm:py-32">
-      <div className="mx-auto max-w-4xl">
+    <section className="section-interior relative px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-4xl relative z-10">
         <header className="mb-16">
-          <p className="text-sm font-medium uppercase tracking-widest text-ink-faint">
-            Currently
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-camel-muted">
+            Currently building
           </p>
           <h2 className="mt-4 font-display text-4xl font-light tracking-tight text-ink sm:text-5xl">
-            What I&apos;m building
+            What I&apos;m working on
           </h2>
         </header>
 
         <div className="grid gap-12 sm:grid-cols-3 sm:gap-8">
           {proofPoints.map((point, index) => (
-            <article key={point.title} className="relative">
-              <span className="font-display text-6xl font-light text-rule-strong absolute -top-4 -left-2 select-none">
+            <article key={point.title} className="relative group">
+              {/* Decorative number */}
+              <span className="font-display text-6xl font-light text-rule-warm absolute -top-4 -left-2 select-none opacity-60">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <div className="relative pt-8">
+              <div className="relative pt-10 pl-1">
                 <h3 className="font-display text-xl font-normal text-ink">
                   {point.title}
                 </h3>

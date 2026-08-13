@@ -15,13 +15,13 @@ export function Footer() {
           <div className="flex flex-col gap-3 text-right sm:items-end">
             <a
               href="https://agentsforintroverts.com"
-              className="text-ink-muted transition-colors hover:text-ember"
+              className="text-ink-muted transition-colors hover:text-navy"
             >
               agentsforintroverts.com
             </a>
             <a
               href="mailto:tonacy@gmail.com"
-              className="text-ink-muted transition-colors hover:text-ember"
+              className="text-ink-muted transition-colors hover:text-navy"
             >
               Contact
             </a>

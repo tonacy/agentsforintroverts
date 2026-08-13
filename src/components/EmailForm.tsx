@@ -46,15 +46,19 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
     setEmail("");
   };
 
+  const isDark = variant === "cta";
+
   if (status === "success") {
     return (
       <div
-        className={`flex items-center gap-3 border-l-2 border-ember bg-ember-soft px-5 py-4 ${
-          variant === "cta" ? "max-w-md mx-auto" : ""
+        className={`flex items-center gap-3 border-l-2 px-5 py-4 ${
+          isDark
+            ? "border-camel bg-navy/50 max-w-md mx-auto"
+            : "border-rust bg-rust-soft max-w-md"
         }`}
       >
         <svg
-          className="h-5 w-5 shrink-0 text-ember"
+          className={`h-5 w-5 shrink-0 ${isDark ? "text-camel" : "text-rust"}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -66,9 +70,9 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
             d="M5 13l4 4L19 7"
           />
         </svg>
-        <p className="text-ink-muted">
+        <p className={isDark ? "text-paper/80" : "text-ink-muted"}>
           Check your inbox for{" "}
-          <span className="font-medium text-ink">
+          <span className={`font-medium ${isDark ? "text-paper" : "text-ink"}`}>
             The Quiet Operator&apos;s Agent Stack
           </span>
         </p>
@@ -97,23 +101,36 @@ export function EmailForm({ variant = "hero" }: EmailFormProps) {
             if (status === "error") setStatus("idle");
           }}
           placeholder="you@example.com"
-          className={`w-full border bg-white px-4 py-3 text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-ember/30 transition-colors sm:border-r-0 ${
-            status === "error"
-              ? "border-red-500"
-              : "border-rule-strong hover:border-ink-faint"
+          className={`w-full border px-4 py-3 transition-colors sm:border-r-0 rounded-sm sm:rounded-r-none ${
+            isDark
+              ? `bg-navy border-paper/20 text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-camel/50 ${
+                  status === "error" ? "border-red-400" : "hover:border-paper/30"
+                }`
+              : `bg-white border-rule-strong text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brass/30 ${
+                  status === "error"
+                    ? "border-red-500"
+                    : "hover:border-ink-faint"
+                }`
           }`}
           aria-invalid={status === "error"}
           aria-describedby={status === "error" ? `error-${variant}` : undefined}
         />
         {status === "error" && (
-          <p id={`error-${variant}`} className="mt-2 text-sm text-red-600">
+          <p
+            id={`error-${variant}`}
+            className={`mt-2 text-sm ${isDark ? "text-red-300" : "text-red-600"}`}
+          >
             {errorMessage}
           </p>
         )}
       </div>
       <button
         type="submit"
-        className="bg-ink px-6 py-3 font-medium text-paper transition-colors hover:bg-ink-muted focus:outline-none focus:ring-2 focus:ring-ember focus:ring-offset-2 focus:ring-offset-paper active:scale-[0.98]"
+        className={`px-6 py-3 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98] rounded-sm sm:rounded-l-none ${
+          isDark
+            ? "bg-camel text-navy-deep hover:bg-camel-muted focus:ring-camel focus:ring-offset-navy-deep"
+            : "bg-navy text-paper hover:bg-navy-deep focus:ring-brass focus:ring-offset-paper"
+        }`}
       >
         Get the free playbook
       </button>
