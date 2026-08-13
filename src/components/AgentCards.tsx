@@ -75,8 +75,8 @@ export function AgentCards() {
       <div className="relative w-full overflow-hidden">
         <div className="relative aspect-[21/9] sm:aspect-[3/1] lg:aspect-[4/1]">
           <Image
-            src="/agents-outside-solarpunk.png"
-            alt="Sunny solarpunk neighborhood: friendly craft-like helper figures in a green walkable street with market stalls, notice boards, bikes, and rooftop gardens"
+            src="/agents-street-solarpunk.png"
+            alt="Sunny solarpunk street: friendly brass helper figures at a notice board, carrying produce, and biking with flowers through a green market neighborhood"
             fill
             className="object-cover object-center"
             priority
