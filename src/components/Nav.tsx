@@ -3,27 +3,41 @@ import Image from "next/image";
 
 export function Nav() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-rule bg-paper/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-[900px] items-center justify-between px-6 py-4">
+    <nav className="border-b border-rule bg-paper">
+      <div className="mx-auto flex max-w-[1000px] items-center justify-between px-6 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2 font-display text-lg tracking-tight text-ink transition-colors hover:text-leaf"
+          className="flex items-center gap-2 font-mono text-sm tracking-tight text-ink transition-colors hover:text-leaf"
         >
           <Image
             src="/mark.png"
             alt=""
-            width={28}
-            height={28}
-            className="w-7 h-7"
+            width={24}
+            height={24}
+            className="w-6 h-6"
           />
           <span>Agents for Introverts</span>
         </Link>
-        <a
-          href="#get-playbook"
-          className="border border-leaf bg-leaf px-4 py-2 text-sm font-medium text-paper transition-all hover:bg-leaf-light focus:outline-none focus:ring-1 focus:ring-leaf focus:ring-offset-2 focus:ring-offset-paper"
-        >
-          Get the playbook
-        </a>
+        <div className="flex items-center gap-6 font-mono text-sm">
+          <a
+            href="#the-five"
+            className="text-ink-muted transition-colors hover:text-ink"
+          >
+            The five
+          </a>
+          <a
+            href="#who-its-for"
+            className="text-ink-muted transition-colors hover:text-ink"
+          >
+            Who it&apos;s for
+          </a>
+          <a
+            href="#playbook"
+            className="text-ink border-b border-ink pb-0.5 transition-colors hover:text-leaf hover:border-leaf"
+          >
+            Playbook
+          </a>
+        </div>
       </div>
     </nav>
   );
