@@ -2,9 +2,7 @@ import {
   Nav,
   Hero,
   AgentCards,
-  Proof,
   Audience,
-  Founder,
   CTABand,
   Footer,
 } from "@/components";
@@ -16,9 +14,7 @@ export default function Home() {
       <main>
         <Hero />
         <AgentCards />
-        <Proof />
         <Audience />
-        <Founder />
         <CTABand />
       </main>
       <Footer />
