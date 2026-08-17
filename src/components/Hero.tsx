@@ -1,11 +1,11 @@
 import { EmailForm } from "./EmailForm";
 
-const gutterTicks = [
-  { time: "07:12", text: "meetup declined" },
-  { time: "09:31", text: "follow-up sent" },
-  { time: "10:14", text: "41 msgs → 2 lines" },
-  { time: "11:02", text: "Thu morning held" },
-  { time: "12:40", text: "digest queued" },
+const doors = [
+  { surface: "email", status: "soon" },
+  { surface: "X", status: "soon" },
+  { surface: "calendar", status: "staffed" },
+  { surface: "linkedin.com/in/tonyll", status: null, href: "https://linkedin.com/in/tonyll" },
+  { surface: "substack", status: "not live" },
 ];
 
 export function Hero() {
@@ -53,27 +53,33 @@ export function Hero() {
                 Free — The Quiet Operator&apos;s Agent Stack. Five setups, no spam.
               </p>
             </div>
+            <p className="mt-6 font-serif text-ink-muted italic leading-relaxed">
+              Your best work happens in the four hours nobody schedules over.
+            </p>
           </div>
 
-          {/* Gutter ticks column - hidden below 1100px */}
+          {/* Doors gutter column - hidden below 1100px */}
           <div className="hidden min-[1100px]:block font-mono text-[11px] text-ink-faint leading-relaxed pt-8">
-            {gutterTicks.slice(0, -1).map((tick) => (
-              <div key={tick.time} className="mb-2 text-right opacity-60">
-                <span>{tick.time}</span>
-                <span className="ml-2">{tick.text}</span>
+            {doors.map((door) => (
+              <div key={door.surface} className="mb-2 text-right">
+                {door.href ? (
+                  <a
+                    href={door.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-leaf hover:text-leaf-light transition-colors"
+                  >
+                    {door.surface}
+                  </a>
+                ) : (
+                  <span className="opacity-60">
+                    {door.surface}
+                    <span className="mx-1">·</span>
+                    {door.status}
+                  </span>
+                )}
               </div>
             ))}
-            <div className="mb-2 text-right">
-              <span className="opacity-60">{gutterTicks[gutterTicks.length - 1].time}</span>
-              <span 
-                className="ml-2 inline-block overflow-hidden whitespace-nowrap border-r border-transparent opacity-60"
-                style={{
-                  animation: 'tick-type 2.5s steps(14, end) forwards, tick-cursor 2.5s step-end forwards',
-                }}
-              >
-                {gutterTicks[gutterTicks.length - 1].text}
-              </span>
-            </div>
           </div>
         </div>
       </div>
