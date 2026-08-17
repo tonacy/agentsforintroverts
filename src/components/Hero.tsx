@@ -56,19 +56,20 @@ export function Hero() {
             <p className="mt-6 font-serif text-ink-muted italic leading-relaxed">
               Your best work happens in the four hours nobody schedules over.
             </p>
-            {/* LinkedIn link visible below 1100px when gutter is hidden */}
+            {/* LinkedIn fallback - visible below 1100px when gutter is hidden */}
             <a
               href="https://linkedin.com/in/tonyll"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 block min-[1100px]:hidden font-mono text-sm text-leaf hover:text-leaf-light transition-colors"
+              className="linkedin-narrow mt-4 font-mono text-sm text-leaf hover:text-leaf-light transition-colors"
+              data-testid="linkedin-narrow"
             >
               linkedin.com/in/tonyll
             </a>
           </div>
 
-          {/* Doors gutter column - hidden below 1100px */}
-          <div className="hidden min-[1100px]:block font-mono text-[11px] text-ink-faint leading-relaxed pt-8">
+          {/* Doors gutter column - visible at 1100px+ */}
+          <div className="linkedin-gutter font-mono text-[11px] text-ink-faint leading-relaxed pt-8">
             {doors.map((door) => (
               <div key={door.surface} className="mb-2 text-right">
                 {door.href ? (
@@ -77,6 +78,7 @@ export function Hero() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-leaf hover:text-leaf-light transition-colors"
+                    data-testid="linkedin-gutter"
                   >
                     {door.surface}
                   </a>
