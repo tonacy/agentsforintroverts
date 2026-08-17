@@ -20,10 +20,10 @@ export function Nav() {
         </Link>
         <div className="flex items-center gap-6 font-mono text-sm">
           <a
-            href="#the-five"
+            href="#the-rooms"
             className="text-ink-muted transition-colors hover:text-ink"
           >
-            The five
+            The rooms
           </a>
           <a
             href="#who-its-for"

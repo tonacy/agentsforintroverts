@@ -1,52 +1,102 @@
-const agents = [
+const rooms = [
   {
-    name: "Inbox",
-    description: "Sorts the correspondence, drafts replies, surfaces what matters.",
+    surface: "Email",
+    role: "Inbox",
+    status: "coming soon",
+    highlighted: false,
   },
   {
-    name: "Follow-up",
-    description: "Tracks open threads, sends the note you'd rather not.",
+    surface: "X",
+    role: "holds the account",
+    status: "coming soon",
+    highlighted: false,
   },
   {
-    name: "Scheduling",
-    description: "Guards your calendar, handles the back-and-forth.",
+    surface: "Calendar",
+    role: "Scheduling",
+    status: "staffed",
+    highlighted: false,
   },
   {
-    name: "Group chat",
-    description: "Monitors the room, summarizes signal, drafts responses.",
+    surface: "LinkedIn",
+    role: "—",
+    status: "linkedin.com/in/tonyll",
+    href: "https://linkedin.com/in/tonyll",
+    highlighted: true,
   },
   {
-    name: "Meetup",
-    description: "RSVPs, invitations, the coordination you'd rather skip.",
+    surface: "Substack",
+    role: "newsletter",
+    status: "not live yet",
+    highlighted: false,
   },
 ];
 
 export function TheFive() {
   return (
-    <section id="the-five" className="border-t border-rule bg-paper-warm">
+    <section id="the-rooms" className="border-t border-rule bg-paper-warm">
       <div className="mx-auto max-w-[1000px] px-6 py-16 sm:py-20">
-        <h2 className="font-serif text-2xl text-ink sm:text-3xl">
-          The five, plainly
+        <h2 className="font-serif text-3xl leading-tight text-ink sm:text-4xl lg:text-5xl">
+          The rooms.
+          <br />
+          Each one has someone in it.
         </h2>
-        <p className="mt-3 font-serif text-ink-muted">
-          You just watched them work. Here they are.
-        </p>
 
-        <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-          {agents.map((agent, index) => (
-            <li key={agent.name} className="flex flex-col">
-              <span className="font-mono text-xs text-ink-faint">
-                {String(index + 1).padStart(2, "0")}
+        <div className="mt-12 divide-y divide-rule-light">
+          {rooms.map((room) => (
+            <div
+              key={room.surface}
+              className={`group grid gap-4 py-5 sm:grid-cols-[200px_1fr_1fr] sm:items-baseline ${
+                room.highlighted
+                  ? "relative -mx-4 px-4 sm:-mx-6 sm:px-6"
+                  : ""
+              }`}
+            >
+              {room.highlighted && (
+                <div
+                  className="absolute inset-0 bg-paper-warm pointer-events-none"
+                  style={{ animation: "needs-breathe 8s ease-in-out infinite" }}
+                  aria-hidden="true"
+                />
+              )}
+
+              <span
+                className={`relative font-serif text-lg ${
+                  room.highlighted ? "text-ink" : "text-ink-muted"
+                }`}
+              >
+                {room.surface}
               </span>
-              <span className="mt-1 font-serif text-lg text-ink">
-                {agent.name}
+
+              <span
+                className={`relative font-mono text-sm ${
+                  room.highlighted ? "text-ink-muted" : "text-ink-faint"
+                }`}
+              >
+                {room.role}
               </span>
-              <span className="mt-2 text-sm text-ink-muted leading-relaxed">
-                {agent.description}
-              </span>
-            </li>
+
+              {room.href ? (
+                <a
+                  href={room.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative font-mono text-sm text-leaf hover:text-leaf-light transition-colors"
+                >
+                  {room.status}
+                </a>
+              ) : (
+                <span
+                  className={`relative font-mono text-sm ${
+                    room.highlighted ? "text-ink" : "text-ink-faint"
+                  }`}
+                >
+                  {room.status}
+                </span>
+              )}
+            </div>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );
