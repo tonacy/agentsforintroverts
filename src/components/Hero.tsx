@@ -11,8 +11,8 @@ const doors = [
 export function Hero() {
   return (
     <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 overflow-hidden">
-      <div className="mx-auto max-w-[1000px] min-[1100px]:max-w-[1148px] px-6">
-        <div className="grid gap-12 lg:grid-cols-[1fr_300px] lg:gap-16 min-[1100px]:grid-cols-[1fr_300px_148px]">
+      <div className="mx-auto max-w-[1000px] min-[1100px]:max-w-[1168px] px-6">
+        <div className="grid gap-12 lg:grid-cols-[1fr_300px] lg:gap-16 min-[1100px]:grid-cols-[1fr_300px_168px]">
           {/* Headline column */}
           <div className="relative">
             {/* Sun wash - radial gradient behind headline */}
@@ -56,6 +56,15 @@ export function Hero() {
             <p className="mt-6 font-serif text-ink-muted italic leading-relaxed">
               Your best work happens in the four hours nobody schedules over.
             </p>
+            {/* LinkedIn link visible below 1100px when gutter is hidden */}
+            <a
+              href="https://linkedin.com/in/tonyll"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 block min-[1100px]:hidden font-mono text-sm text-leaf hover:text-leaf-light transition-colors"
+            >
+              linkedin.com/in/tonyll
+            </a>
           </div>
 
           {/* Doors gutter column - hidden below 1100px */}
