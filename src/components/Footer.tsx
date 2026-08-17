@@ -20,7 +20,7 @@ export function Footer() {
 
           <div className="flex items-center gap-6 font-mono text-sm text-ink-muted">
             <a
-              href="mailto:tonacy@gmail.com"
+              href="mailto:dood@hey.com"
               className="transition-colors hover:text-leaf"
             >
               Contact
