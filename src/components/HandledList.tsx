@@ -2,7 +2,7 @@ const handledThreads = [
   {
     time: "07:12",
     sender: "Maya Rendell",
-    quote: '"Can you speak at the September meetup? 15 min, very casual."',
+    quote: '"Can you speak at the September meetup?"',
     label: "Meetup",
     action: "Declined warmly. Offered a written Q&A instead — she said yes.",
     highlighted: false,
@@ -10,17 +10,17 @@ const handledThreads = [
   {
     time: "09:05",
     sender: "#build-eng · 41 msgs",
-    quote: '"so are we shipping Friday or slipping to Monday??"',
+    quote: '"so are we shipping Friday..."',
     label: "Group chat",
-    action: "They landed on Monday without you. Two lines, read later.",
+    action: "They landed on Monday without you.",
     highlighted: false,
   },
   {
     time: "09:31",
     sender: "Ben Okonkwo",
-    quote: "Thread cold since June 2nd. You meant to reply. You didn't.",
+    quote: "Thread cold since June 2nd.",
     label: "Follow-up",
-    action: "The note you'd rather not send, sent. In your voice, not a robot's.",
+    action: "The note you'd rather not send, sent.",
     highlighted: false,
   },
   {
@@ -28,15 +28,15 @@ const handledThreads = [
     sender: "Priya Shah",
     quote: '"Free for a quick call Thursday morning?"',
     label: "Scheduling",
-    action: "Moved to Tuesday 14:00. Thursday morning is yours and it knows it.",
+    action: "Moved to Tuesday 14:00.",
     highlighted: false,
   },
   {
     time: "12:40",
     sender: "7 senders",
-    quote: "Newsletters, an invoice, two intros, a calendar invite you'd have opened.",
+    quote: "Newsletters, an invoice, two intros...",
     label: "Inbox",
-    action: "Filed, drafted, batched. One digest waits at 17:00. Six minutes long.",
+    action: "Filed, drafted, batched. Digest at 17:00.",
     highlighted: false,
   },
   {
@@ -66,26 +66,54 @@ export function HandledList() {
           {handledThreads.map((thread) => (
             <div
               key={thread.time + thread.sender}
-              className={`grid gap-4 py-5 sm:grid-cols-[60px_140px_1fr_100px_1fr] sm:items-baseline ${
-                thread.highlighted ? "bg-highlight -mx-4 px-4 sm:-mx-6 sm:px-6" : ""
+              className={`group grid gap-4 py-5 sm:grid-cols-[60px_140px_1fr_100px_1fr] sm:items-baseline transition-colors ${
+                thread.highlighted 
+                  ? "relative -mx-4 px-4 sm:-mx-6 sm:px-6" 
+                  : ""
               }`}
             >
-              <span className="font-mono text-sm text-ink-faint">
+              {/* Needs-you row background wash with breathing animation */}
+              {thread.highlighted && (
+                <div 
+                  className="absolute inset-0 bg-paper-warm pointer-events-none"
+                  style={{ animation: 'needs-breathe 8s ease-in-out infinite' }}
+                  aria-hidden="true"
+                />
+              )}
+              
+              {/* Time - muted for handled rows, leaf for needs-you */}
+              <span className={`relative font-mono text-sm ${
+                thread.highlighted ? "text-leaf font-medium" : "text-ink-faint"
+              }`}>
                 {thread.time}
               </span>
-              <span className="font-serif text-ink">
+              
+              {/* Sender - full ink for needs-you, muted for handled */}
+              <span className={`relative font-serif ${
+                thread.highlighted ? "text-ink text-lg" : "text-ink-muted"
+              }`}>
                 {thread.sender}
               </span>
-              <span className="font-serif text-ink-muted italic">
+              
+              {/* Quote - always italic, full ink for needs-you */}
+              <span className={`relative font-serif italic ${
+                thread.highlighted ? "text-ink" : "text-ink-faint"
+              }`}>
                 {thread.quote}
               </span>
-              <span className={`font-mono text-xs uppercase tracking-wider ${
-                thread.highlighted ? "text-leaf" : "text-leaf"
+              
+              {/* Label - leaf ONLY for needs-you, gray mono for others */}
+              <span className={`relative font-mono text-xs uppercase tracking-wider ${
+                thread.highlighted ? "text-leaf font-medium" : "text-tag-muted"
               }`}>
                 {thread.label}
               </span>
-              <span className={`font-serif italic ${
-                thread.highlighted ? "text-ink font-medium" : "text-ink-muted"
+              
+              {/* Action - leaf for needs-you, muted for handled with hover darkening */}
+              <span className={`relative font-serif italic ${
+                thread.highlighted 
+                  ? "text-leaf" 
+                  : "text-ink-faint group-hover:text-ink-muted transition-colors"
               }`}>
                 {thread.action}
               </span>

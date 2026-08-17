@@ -24,6 +24,19 @@
   
   /* Highlight for the "needs you" row */
   --color-highlight: #FAF6F0;
+  
+  /* Sun wash */
+  --color-sun: #F3E4B8;
+  
+  /* Tag gray for handled rows */
+  --color-tag-muted: #999999;
+  
+  /* Animation durations */
+  --animate-sun-breathe: sun-breathe 12s ease-in-out infinite;
+  --animate-needs-breathe: needs-breathe 8s ease-in-out infinite;
+  --animate-zero-fade: zero-fade 500ms ease-out 200ms forwards;
+  --animate-tick-type: tick-type 2.5s steps(18, end) forwards;
+  --animate-tick-cursor: tick-cursor 2.5s step-end forwards;
 }
 
 html {
@@ -42,6 +55,31 @@ body {
 :focus-visible {
   outline: 1px solid var(--color-leaf);
   outline-offset: 2px;
+}
+
+@keyframes sun-breathe {
+  0%, 100% { opacity: 0.28; }
+  50% { opacity: 0.38; }
+}
+
+@keyframes needs-breathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes zero-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes tick-type {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes tick-cursor {
+  0%, 99% { border-right-color: var(--color-ink-faint); }
+  100% { border-right-color: transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
