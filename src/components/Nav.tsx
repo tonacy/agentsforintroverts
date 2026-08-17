@@ -18,26 +18,12 @@ export function Nav() {
           />
           <span>Agents for Introverts</span>
         </Link>
-        <div className="flex items-center gap-6 font-mono text-sm">
-          <a
-            href="#the-rooms"
-            className="text-ink-muted transition-colors hover:text-ink"
-          >
-            The rooms
-          </a>
-          <a
-            href="#who-its-for"
-            className="text-ink-muted transition-colors hover:text-ink"
-          >
-            Who it&apos;s for
-          </a>
-          <a
-            href="#playbook"
-            className="text-ink border-b border-ink pb-0.5 transition-colors hover:text-leaf hover:border-leaf"
-          >
-            Playbook
-          </a>
-        </div>
+        <a
+          href="#playbook"
+          className="font-mono text-sm text-ink border-b border-ink pb-0.5 transition-colors hover:text-leaf hover:border-leaf"
+        >
+          Playbook
+        </a>
       </div>
     </nav>
   );

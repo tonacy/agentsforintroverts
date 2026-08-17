@@ -2,8 +2,6 @@ import {
   Nav,
   Hero,
   HandledList,
-  TheFive,
-  Audience,
   Footer,
 } from "@/components";
 
@@ -14,8 +12,6 @@ export default function Home() {
       <main>
         <Hero />
         <HandledList />
-        <TheFive />
-        <Audience />
       </main>
       <Footer />
     </>
