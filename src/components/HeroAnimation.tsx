@@ -47,20 +47,20 @@ export function HeroAnimation({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: trigger animation on client mount
     setPhase("building");
 
-    // Lines arrive one by one (~3.2s), then crescendo to flood
+    // Lines arrive one by one (~3.5s), then crescendo to flood
     const floodTimer = setTimeout(() => {
       setPhase("flood");
-    }, 3500);
+    }, 3800);
 
     // Hold on flood ~0.7s, then clearing
     const clearTimer = setTimeout(() => {
       setPhase("clearing");
-    }, 4200);
+    }, 4500);
 
-    // Total ~7s
+    // Total ~7.5s
     const settleTimer = setTimeout(() => {
       setPhase("settled");
-    }, 7000);
+    }, 7500);
 
     return () => {
       if (!animationStarted.current) {

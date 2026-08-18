@@ -184,29 +184,29 @@ body {
   transform: translateY(8px);
 }
 
-/* Line 0: appears at 0ms, sits alone for ~1.2s */
+/* Line 0: appears at 200ms (render buffer), sits alone for ~1.5s */
 .arrival-line-0 {
-  animation: line-arrive 400ms ease-out 0ms forwards;
+  animation: line-arrive 400ms ease-out 200ms forwards;
 }
 
-/* Line 1: appears at ~1200ms - after a real beat */
+/* Line 1: appears at ~1700ms - pronounced beat after first line */
 .arrival-line-1 {
-  animation: line-arrive 350ms ease-out 1200ms forwards;
+  animation: line-arrive 350ms ease-out 1700ms forwards;
 }
 
-/* Line 2: appears at ~1800ms (gap: 600ms) */
+/* Line 2: appears at ~2300ms (gap: 600ms) */
 .arrival-line-2 {
-  animation: line-arrive 300ms ease-out 1800ms forwards;
+  animation: line-arrive 300ms ease-out 2300ms forwards;
 }
 
-/* Line 3: appears at ~2300ms (gap shortens to 500ms) */
+/* Line 3: appears at ~2800ms (gap shortens to 500ms) */
 .arrival-line-3 {
-  animation: line-arrive 250ms ease-out 2300ms forwards;
+  animation: line-arrive 250ms ease-out 2800ms forwards;
 }
 
-/* Line 4: appears at ~2700ms (gap shortens to 400ms) */
+/* Line 4: appears at ~3100ms (gap shortens to 300ms) */
 .arrival-line-4 {
-  animation: line-arrive 200ms ease-out 2700ms forwards;
+  animation: line-arrive 200ms ease-out 3100ms forwards;
 }
 
 @keyframes line-arrive {
