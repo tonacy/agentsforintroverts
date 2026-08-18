@@ -150,6 +150,234 @@ body {
   font-style: italic;
 }
 
+/* ========================================
+   HERO LOAD ANIMATION
+   Beat: 0-200ms fill, 400-1600ms clear, 1600-2200ms settle
+   ======================================== */
+
+.hero-animation {
+  position: relative;
+}
+
+/* Full-bleed torrent flood - covers entire viewport initially */
+.torrent-flood {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--color-paper);
+}
+
+.torrent-flood-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: 60px 8px 8px;
+  gap: 4px;
+}
+
+.torrent-flood-column {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+.torrent-flood-line {
+  white-space: nowrap;
+}
+
+.torrent-flood-dim {
+  color: var(--color-torrent-dim);
+}
+
+.torrent-flood-text {
+  color: var(--color-torrent);
+}
+
+/* Sun clearing effect - grows from center */
+.sun-clear {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 0% 0% at 50% 45%,
+    var(--color-paper) 0%,
+    var(--color-paper) 60%,
+    transparent 100%
+  );
+  opacity: 0;
+}
+
+/* Hero content wrapper */
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Phase: filling (0-400ms) - torrent visible, content hidden */
+.hero-animation--filling .torrent-flood {
+  opacity: 1;
+}
+
+.hero-animation--filling .sun-clear {
+  opacity: 0;
+}
+
+.hero-animation--filling .anim-headline,
+.hero-animation--filling .anim-subhead,
+.hero-animation--filling .anim-arrived,
+.hero-animation--filling .anim-translate {
+  opacity: 0;
+}
+
+.hero-animation--filling .torrent-column {
+  opacity: 0;
+}
+
+/* Phase: clearing (400-2200ms) - sun grows, torrent recedes, content reveals */
+.hero-animation--clearing .torrent-flood {
+  animation: torrent-recede 1200ms ease-out forwards;
+}
+
+.hero-animation--clearing .sun-clear {
+  animation: sun-grow 1200ms ease-out forwards;
+}
+
+/* Headline settles at 1600-2200ms (1200ms delay from clearing start) */
+.hero-animation--clearing .anim-headline {
+  animation: content-settle 500ms ease-out 1200ms forwards;
+  opacity: 0;
+}
+
+.hero-animation--clearing .anim-subhead {
+  animation: content-settle 450ms ease-out 1300ms forwards;
+  opacity: 0;
+}
+
+.hero-animation--clearing .anim-arrived {
+  animation: content-settle 400ms ease-out 1350ms forwards;
+  opacity: 0;
+}
+
+.hero-animation--clearing .anim-translate {
+  animation: content-settle 400ms ease-out 1450ms forwards;
+  opacity: 0;
+}
+
+.hero-animation--clearing .torrent-column {
+  animation: gutter-reveal 800ms ease-out 800ms forwards;
+  opacity: 0;
+}
+
+/* Phase: settled - normal tempo page */
+.hero-animation--settled .torrent-flood,
+.hero-animation--settled .sun-clear {
+  display: none;
+}
+
+.hero-animation--settled .anim-headline,
+.hero-animation--settled .anim-subhead,
+.hero-animation--settled .anim-arrived,
+.hero-animation--settled .anim-translate {
+  opacity: 1;
+}
+
+.hero-animation--settled .torrent-column {
+  opacity: 1;
+}
+
+/* Keyframes */
+@keyframes torrent-recede {
+  0% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    opacity: 0;
+    clip-path: inset(0 calc(50% - 20px) 0 calc(50% - 20px));
+  }
+}
+
+@keyframes sun-grow {
+  0% {
+    opacity: 0;
+    background: radial-gradient(
+      ellipse 0% 0% at 50% 45%,
+      var(--color-paper) 0%,
+      var(--color-paper) 60%,
+      transparent 100%
+    );
+  }
+  20% {
+    opacity: 1;
+    background: radial-gradient(
+      ellipse 20% 15% at 50% 45%,
+      var(--color-paper) 0%,
+      var(--color-paper) 60%,
+      transparent 100%
+    );
+  }
+  100% {
+    opacity: 1;
+    background: radial-gradient(
+      ellipse 200% 200% at 50% 45%,
+      var(--color-paper) 0%,
+      var(--color-paper) 60%,
+      transparent 100%
+    );
+  }
+}
+
+@keyframes content-settle {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes gutter-reveal {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Mobile: thin whisper edges during animation */
+@media (max-width: 899px) {
+  .torrent-flood-inner {
+    padding: 60px 4px 4px;
+    gap: 2px;
+  }
+  
+  .torrent-flood-column {
+    font-size: 8px;
+    line-height: 1.4;
+  }
+  
+  @keyframes torrent-recede {
+    0% {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+    100% {
+      opacity: 0;
+      clip-path: inset(0 calc(50% - 12px) 0 calc(50% - 12px));
+    }
+  }
+}
+
+/* ======================================== */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -158,5 +386,26 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  
+  .hero-animation--filling .torrent-flood,
+  .hero-animation--clearing .torrent-flood,
+  .hero-animation--filling .sun-clear,
+  .hero-animation--clearing .sun-clear {
+    display: none !important;
+  }
+  
+  .hero-animation--filling .anim-headline,
+  .hero-animation--filling .anim-subhead,
+  .hero-animation--filling .anim-arrived,
+  .hero-animation--filling .anim-translate,
+  .hero-animation--clearing .anim-headline,
+  .hero-animation--clearing .anim-subhead,
+  .hero-animation--clearing .anim-arrived,
+  .hero-animation--clearing .anim-translate,
+  .hero-animation--filling .torrent-column,
+  .hero-animation--clearing .torrent-column {
+    opacity: 1 !important;
+    animation: none !important;
   }
 }

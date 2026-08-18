@@ -1,4 +1,5 @@
 import { EmailForm } from "./EmailForm";
+import { HeroAnimation } from "./HeroAnimation";
 
 const torrentPhrases = [
   "reply", "intro", "ask", "mention", "thread", "invite"
@@ -33,8 +34,9 @@ function TorrentColumn({ side }: { side: "left" | "right" }) {
 
 export function Hero() {
   return (
-    <section className="relative min-h-[calc(100vh-60px)] overflow-hidden">
-      <div className="tempo-grid">
+    <HeroAnimation>
+      <section className="hero-section relative min-h-[calc(100vh-60px)] overflow-hidden">
+        <div className="tempo-grid">
         {/* Left torrent margin */}
         <TorrentColumn side="left" />
 
@@ -50,17 +52,17 @@ export function Hero() {
           <div className="relative z-10 flex-1 flex flex-col">
             {/* Headline */}
             <div className="max-w-[600px] mx-auto text-center flex-1 flex flex-col justify-center">
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-[56px] leading-[1.15] tracking-tight text-ink italic">
+              <h1 className="anim-headline font-serif text-4xl sm:text-5xl lg:text-[56px] leading-[1.15] tracking-tight text-ink italic">
                 Out there the feeds never stop.<br />
                 In here I get a slow one.
               </h1>
               
-              <p className="mt-6 sm:mt-8 font-serif text-lg sm:text-xl text-ink-muted leading-relaxed max-w-[480px] mx-auto">
+              <p className="anim-subhead mt-6 sm:mt-8 font-serif text-lg sm:text-xl text-ink-muted leading-relaxed max-w-[480px] mx-auto">
                 Lived experience goes out. The world comes in. Agents translate both. This is the pace.
               </p>
 
               {/* Arrived line */}
-              <div className="mt-10 sm:mt-14">
+              <div className="anim-arrived mt-10 sm:mt-14">
                 <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-arrived-label">
                   Arrived
                 </p>
@@ -71,7 +73,7 @@ export function Hero() {
             </div>
 
             {/* Agents translate row */}
-            <div className="mt-12 sm:mt-16 text-center">
+            <div className="anim-translate mt-12 sm:mt-16 text-center">
               <p className="font-mono text-xs text-ink-faint tracking-wide">
                 agents translate
               </p>
@@ -94,7 +96,7 @@ export function Hero() {
               <p className="font-serif italic text-ink-muted text-sm mt-1">durable thinking</p>
             </div>
 
-            {/* Playbook capture */}
+            {/* Playbook capture - always visible, never blocked */}
             <div id="playbook" className="mt-10 sm:mt-14 max-w-[400px] mx-auto w-full">
               <EmailForm />
               <p className="mt-3 text-center font-mono text-xs text-ink-faint">
@@ -108,5 +110,6 @@ export function Hero() {
         <TorrentColumn side="right" />
       </div>
     </section>
+    </HeroAnimation>
   );
 }
