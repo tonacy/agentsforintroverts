@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const torrentPhrases = ["reply", "intro", "ask", "mention", "thread", "invite"];
 
@@ -15,21 +15,21 @@ function generateTorrentLines(count: number): string[] {
 
 export function HeroAnimation({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<"filling" | "clearing" | "settled">("settled");
+  const animationStarted = useRef(false);
 
   useEffect(() => {
+    if (animationStarted.current) return;
+    
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hasPlayed = sessionStorage.getItem("hero-animation-played");
     
     if (prefersReducedMotion || hasPlayed) return;
     
+    animationStarted.current = true;
+    sessionStorage.setItem("hero-animation-played", "1");
+    
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: trigger animation on client mount
     setPhase("filling");
-  }, []);
-
-  useEffect(() => {
-    if (phase !== "filling") return;
-    
-    sessionStorage.setItem("hero-animation-played", "1");
 
     const clearTimer = setTimeout(() => {
       setPhase("clearing");
@@ -43,7 +43,7 @@ export function HeroAnimation({ children }: { children: React.ReactNode }) {
       clearTimeout(clearTimer);
       clearTimeout(settleTimer);
     };
-  }, [phase]);
+  }, []);
 
   const torrentLines = generateTorrentLines(80);
 
