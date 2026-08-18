@@ -1,98 +1,111 @@
 import { EmailForm } from "./EmailForm";
 
-const doors = [
-  { surface: "email", status: "soon" },
-  { surface: "X", status: "soon" },
-  { surface: "calendar", status: "staffed" },
-  { surface: "linkedin.com/in/tonyll", status: null, href: "https://linkedin.com/in/tonyll" },
-  { surface: "substack", status: "not live" },
+const torrentPhrases = [
+  "reply", "intro", "ask", "mention", "thread", "invite"
 ];
+
+function TorrentColumn({ side }: { side: "left" | "right" }) {
+  const label = side === "left" ? "lived experience" : "the world";
+  const alignment = side === "left" ? "text-right" : "text-left";
+  
+  const lines: string[] = [];
+  for (let i = 0; i < 60; i++) {
+    const phrase = torrentPhrases[i % torrentPhrases.length];
+    lines.push(`example ${phrase}`);
+  }
+
+  return (
+    <div className={`torrent-column torrent-${side} font-mono text-[10px] leading-[1.6] text-torrent ${alignment} select-none`}>
+      <div className="torrent-label font-mono text-[9px] uppercase tracking-wider text-torrent-label mb-3">
+        {label}
+      </div>
+      <div className="torrent-lines" aria-hidden="true">
+        {lines.map((line, i) => (
+          <div key={i} className="whitespace-nowrap">
+            <span className="text-torrent-dim">example</span>{" "}
+            <span className="text-torrent">{line.replace("example ", "")}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function Hero() {
   return (
-    <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 overflow-hidden">
-      <div className="mx-auto max-w-[1000px] min-[1100px]:max-w-[1168px] px-6">
-        <div className="grid gap-12 lg:grid-cols-[1fr_300px] lg:gap-16 min-[1100px]:grid-cols-[1fr_300px_168px]">
-          {/* Headline column */}
-          <div className="relative">
-            {/* Sun wash - radial gradient behind headline */}
-            <div 
-              className="absolute -top-8 -left-16 w-[500px] h-[400px] pointer-events-none"
-              style={{
-                background: 'radial-gradient(ellipse 70% 60% at 30% 40%, var(--color-sun) 0%, transparent 70%)',
-                animation: 'sun-breathe 12s ease-in-out infinite',
-              }}
-              aria-hidden="true"
-            />
-            
-            <p className="relative font-mono text-sm uppercase tracking-wider text-leaf">
-              Tuesday, 13:04
-            </p>
-            <h1 className="relative mt-4 font-serif text-5xl leading-[1.1] tracking-tight text-ink sm:text-6xl lg:text-7xl">
-              I have<br />
-              <span 
-                className="inline-block"
-                style={{ animation: 'zero-fade 500ms ease-out 200ms forwards', opacity: 0 }}
-              >
-                0
-              </span> unread.
-            </h1>
-            <p className="relative mt-8 max-w-[480px] font-serif text-xl leading-relaxed text-ink-muted sm:text-2xl">
-              Eleven things were handled while I was writing. One of them is worth my attention.
-            </p>
-          </div>
+    <section className="relative min-h-[calc(100vh-60px)] overflow-hidden">
+      <div className="tempo-grid">
+        {/* Left torrent margin */}
+        <TorrentColumn side="left" />
 
-          {/* CTA column */}
-          <div id="playbook" className="lg:pt-8">
-            <p className="font-serif text-ink-muted leading-relaxed">
-              I run a stack of five AI agents as my social secretary — they handle correspondence, calendars, RSVPs, and the room. This is how I stay in flow.
-            </p>
-            <div className="mt-6 border-t border-rule pt-6">
+        {/* Center content - the still sun */}
+        <div className="center-content relative flex flex-col justify-between py-8 px-6 sm:py-12 sm:px-10 lg:py-16 lg:px-16">
+          {/* Sun wash background */}
+          <div 
+            className="sun-wash absolute inset-0 pointer-events-none"
+            aria-hidden="true"
+          />
+
+          {/* Main content */}
+          <div className="relative z-10 flex-1 flex flex-col">
+            {/* Headline */}
+            <div className="max-w-[600px] mx-auto text-center flex-1 flex flex-col justify-center">
+              <h1 className="font-serif text-4xl sm:text-5xl lg:text-[56px] leading-[1.15] tracking-tight text-ink italic">
+                Out there the feeds never stop.<br />
+                In here I get a slow one.
+              </h1>
+              
+              <p className="mt-6 sm:mt-8 font-serif text-lg sm:text-xl text-ink-muted leading-relaxed max-w-[480px] mx-auto">
+                Lived experience goes out. The world comes in. Agents translate both. This is the pace.
+              </p>
+
+              {/* Arrived line */}
+              <div className="mt-10 sm:mt-14">
+                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-arrived-label">
+                  Arrived
+                </p>
+                <p className="mt-2 font-serif text-xl sm:text-2xl text-ink">
+                  Thursday morning is still yours.
+                </p>
+              </div>
+            </div>
+
+            {/* Agents translate row */}
+            <div className="mt-12 sm:mt-16 text-center">
+              <p className="font-mono text-xs text-ink-faint tracking-wide">
+                agents translate
+              </p>
+              <div className="mt-4 flex flex-wrap justify-center items-baseline gap-x-3 gap-y-2">
+                <span className="font-serif text-ink">Calendar</span>
+                <span className="font-serif italic text-ink-muted">access to my time</span>
+              </div>
+              <div className="mt-3 flex flex-wrap justify-center items-baseline gap-x-2 gap-y-1 text-sm">
+                <span className="font-serif text-ink">X</span>
+                <span className="font-serif italic text-ink-muted">observation</span>
+                <span className="text-ink-faint mx-1">·</span>
+                <span className="font-serif text-ink">LinkedIn</span>
+                <span className="font-serif italic text-ink-muted">work story</span>
+                <span className="text-ink-faint mx-1">·</span>
+                <span className="font-serif text-ink">Email</span>
+                <span className="font-serif italic text-ink-muted">relationship</span>
+                <span className="text-ink-faint mx-1">·</span>
+                <span className="font-serif text-ink">Newsletter</span>
+              </div>
+              <p className="font-serif italic text-ink-muted text-sm mt-1">durable thinking</p>
+            </div>
+
+            {/* Playbook capture */}
+            <div id="playbook" className="mt-10 sm:mt-14 max-w-[400px] mx-auto w-full">
               <EmailForm />
-              <p className="mt-3 font-mono text-xs text-ink-faint">
+              <p className="mt-3 text-center font-mono text-xs text-ink-faint">
                 Free — The Quiet Operator&apos;s Agent Stack. Five setups, no spam.
               </p>
             </div>
-            <p className="mt-6 font-serif text-ink-muted italic leading-relaxed">
-              Your best work happens in the four hours nobody schedules over.
-            </p>
-            {/* LinkedIn fallback - visible below 1100px when gutter is hidden */}
-            <a
-              href="https://linkedin.com/in/tonyll"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="linkedin-narrow mt-4 font-mono text-sm text-leaf hover:text-leaf-light transition-colors"
-              data-testid="linkedin-narrow"
-            >
-              linkedin.com/in/tonyll
-            </a>
-          </div>
-
-          {/* Doors gutter column - visible at 1100px+ */}
-          <div className="linkedin-gutter font-mono text-[11px] text-ink-faint leading-relaxed pt-8">
-            {doors.map((door) => (
-              <div key={door.surface} className="mb-2 text-right">
-                {door.href ? (
-                  <a
-                    href={door.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-leaf hover:text-leaf-light transition-colors"
-                    data-testid="linkedin-gutter"
-                  >
-                    {door.surface}
-                  </a>
-                ) : (
-                  <span className="opacity-60">
-                    {door.surface}
-                    <span className="mx-1">·</span>
-                    {door.status}
-                  </span>
-                )}
-              </div>
-            ))}
           </div>
         </div>
+
+        {/* Right torrent margin */}
+        <TorrentColumn side="right" />
       </div>
     </section>
   );

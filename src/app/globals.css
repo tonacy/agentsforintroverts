@@ -22,21 +22,17 @@
   --color-rule: rgba(17, 17, 17, 0.12);
   --color-rule-light: rgba(17, 17, 17, 0.06);
   
-  /* Highlight for the "needs you" row */
-  --color-highlight: #FAF6F0;
+  /* Torrent text - very light, low contrast */
+  --color-torrent: rgba(17, 17, 17, 0.22);
+  --color-torrent-dim: rgba(17, 17, 17, 0.14);
+  --color-torrent-label: rgba(17, 17, 17, 0.35);
+  
+  /* Arrived label - warm olive/sage tone */
+  --color-arrived-label: #8B7355;
   
   /* Sun wash */
   --color-sun: #F3E4B8;
-  
-  /* Tag gray for handled rows */
-  --color-tag-muted: #999999;
-  
-  /* Animation durations */
-  --animate-sun-breathe: sun-breathe 12s ease-in-out infinite;
-  --animate-needs-breathe: needs-breathe 8s ease-in-out infinite;
-  --animate-zero-fade: zero-fade 500ms ease-out 200ms forwards;
-  --animate-tick-type: tick-type 2.5s steps(18, end) forwards;
-  --animate-tick-cursor: tick-cursor 2.5s step-end forwards;
+  --color-sun-center: rgba(243, 228, 184, 0.4);
 }
 
 html {
@@ -57,45 +53,101 @@ body {
   outline-offset: 2px;
 }
 
-@keyframes sun-breathe {
-  0%, 100% { opacity: 0.28; }
-  50% { opacity: 0.38; }
+/* Tempo grid - three column layout */
+.tempo-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: calc(100vh - 60px);
 }
 
-@keyframes needs-breathe {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.7; }
+@media (min-width: 900px) {
+  .tempo-grid {
+    grid-template-columns: minmax(120px, 180px) 1fr minmax(120px, 180px);
+  }
 }
 
-@keyframes zero-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@media (min-width: 1200px) {
+  .tempo-grid {
+    grid-template-columns: minmax(160px, 220px) 1fr minmax(160px, 220px);
+  }
 }
 
-@keyframes tick-type {
-  from { width: 0; }
-  to { width: 100%; }
+/* Torrent columns */
+.torrent-column {
+  padding: 24px 16px;
+  overflow: hidden;
+  position: relative;
 }
 
-@keyframes tick-cursor {
-  0%, 99% { border-right-color: var(--color-ink-faint); }
-  100% { border-right-color: transparent; }
+.torrent-left {
+  padding-right: 24px;
 }
 
-/* LinkedIn link visibility - explicit media queries for reliability */
-.linkedin-narrow {
-  display: block;
+.torrent-right {
+  padding-left: 24px;
 }
-.linkedin-gutter {
-  display: none;
+
+.torrent-lines {
+  mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
 }
-@media (min-width: 1100px) {
-  .linkedin-narrow {
+
+/* Hide torrents on mobile, show thin texture strip */
+@media (max-width: 899px) {
+  .torrent-column {
     display: none;
   }
-  .linkedin-gutter {
-    display: block;
+  
+  .center-content {
+    position: relative;
   }
+  
+  .center-content::before,
+  .center-content::after {
+    content: "example reply · example intro · example ask · example mention · example thread · example invite · ";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    line-height: 1.4;
+    color: var(--color-torrent-dim);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    overflow: hidden;
+    opacity: 0.6;
+    white-space: nowrap;
+  }
+  
+  .center-content::before {
+    left: 0;
+    transform: rotate(180deg);
+  }
+  
+  .center-content::after {
+    right: 0;
+  }
+}
+
+/* Sun wash in center */
+.sun-wash {
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 35%,
+    var(--color-sun-center) 0%,
+    transparent 70%
+  );
+  animation: sun-breathe 12s ease-in-out infinite;
+}
+
+@keyframes sun-breathe {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Footer styles */
+.footer-tagline {
+  font-style: italic;
 }
 
 @media (prefers-reduced-motion: reduce) {
