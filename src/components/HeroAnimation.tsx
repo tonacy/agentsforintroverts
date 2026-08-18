@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useSyncExternalStore } from "react";
+import { useState, useEffect } from "react";
 
 const torrentPhrases = ["reply", "intro", "ask", "mention", "thread", "invite"];
 
@@ -13,26 +13,18 @@ function generateTorrentLines(count: number): string[] {
   return lines;
 }
 
-function getInitialPhase(): "filling" | "settled" {
-  if (typeof window === "undefined") return "settled";
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const hasPlayed = sessionStorage.getItem("hero-animation-played");
-  if (prefersReducedMotion || hasPlayed) return "settled";
-  return "filling";
-}
-
-function subscribeToNothing() {
-  return () => {};
-}
-
 export function HeroAnimation({ children }: { children: React.ReactNode }) {
-  const initialPhase = useSyncExternalStore(
-    subscribeToNothing,
-    getInitialPhase,
-    () => "settled" as const
-  );
-  
-  const [phase, setPhase] = useState<"filling" | "clearing" | "settled">(initialPhase);
+  const [phase, setPhase] = useState<"filling" | "clearing" | "settled">("settled");
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const hasPlayed = sessionStorage.getItem("hero-animation-played");
+    
+    if (prefersReducedMotion || hasPlayed) return;
+    
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: trigger animation on client mount
+    setPhase("filling");
+  }, []);
 
   useEffect(() => {
     if (phase !== "filling") return;
