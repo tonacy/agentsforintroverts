@@ -151,15 +151,79 @@ body {
 }
 
 /* ========================================
-   HERO LOAD ANIMATION
-   Beat: 0-200ms fill, 400-1600ms clear, 1600-2200ms settle
+   HERO LOAD ANIMATION - Motion Graphics
+   Beat: arrival → crescendo → flood → sun-hole → settle (~6s)
    ======================================== */
 
 .hero-animation {
   position: relative;
 }
 
-/* Full-bleed torrent flood - covers entire viewport initially */
+/* ========================================
+   ARRIVAL STAGE - Lines appear one at a time
+   ======================================== */
+
+.arrival-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.arrival-line {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--color-torrent);
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* Line 0: appears at 0ms, sits alone */
+.arrival-line-0 {
+  animation: line-arrive 400ms ease-out 0ms forwards;
+}
+
+/* Line 1: appears at ~650ms */
+.arrival-line-1 {
+  animation: line-arrive 350ms ease-out 650ms forwards;
+}
+
+/* Line 2: appears at ~1150ms (gap shortens to 500ms) */
+.arrival-line-2 {
+  animation: line-arrive 300ms ease-out 1150ms forwards;
+}
+
+/* Line 3: appears at ~1550ms (gap shortens to 400ms) */
+.arrival-line-3 {
+  animation: line-arrive 250ms ease-out 1550ms forwards;
+}
+
+/* Line 4: appears at ~1850ms (gap shortens to 300ms) */
+.arrival-line-4 {
+  animation: line-arrive 200ms ease-out 1850ms forwards;
+}
+
+@keyframes line-arrive {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   FLOOD STAGE - Full screen noise
+   ======================================== */
+
 .torrent-flood {
   position: fixed;
   inset: 0;
@@ -177,58 +241,34 @@ body {
   mask-composite: add;
 }
 
-/* Quiet label during fill */
-.torrent-flood-label {
-  position: absolute;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-torrent-label);
-  letter-spacing: 0.1em;
-  opacity: 0;
-  animation: label-fade 800ms ease-out 400ms forwards;
-}
-
-@keyframes label-fade {
-  0% { opacity: 0; }
-  50% { opacity: 0.5; }
-  100% { opacity: 0.4; }
-}
-
 .torrent-flood-inner {
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  padding: 100px 24px 24px;
-  gap: 32px;
+  padding: 80px 16px 16px;
+  gap: 16px;
 }
 
-/* Desktop: 6 columns, larger readable type */
 .torrent-flood-column {
   flex: 1;
   font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 2;
+  font-size: 11px;
+  line-height: 1.8;
   overflow: hidden;
   color: var(--color-torrent);
 }
 
-/* Hide columns beyond 6 on desktop */
 .torrent-flood-column:nth-child(n+7) {
   display: none;
 }
 
 .torrent-flood-line {
   white-space: nowrap;
-  opacity: 0;
-  animation: line-appear 300ms ease-out forwards;
 }
 
-/* Sun clearing effect - transparent hole in center, sun color ring, fades to transparent */
+/* Sun clearing effect - transparent hole in center */
 .sun-clear {
   position: fixed;
   inset: 0;
@@ -236,70 +276,82 @@ body {
   pointer-events: none;
 }
 
-/* Hero content wrapper - above the sun clear so text is readable in the hole */
+/* Hero content wrapper */
 .hero-content {
   position: relative;
   z-index: 102;
 }
 
-/* Phase: filling (0-1900ms) - torrent builds in waves, content hidden */
-.hero-animation--filling .torrent-flood {
-  opacity: 1;
-}
+/* ========================================
+   PHASE: building - lines arriving
+   ======================================== */
 
-.hero-animation--filling .sun-clear {
+.hero-animation--building .anim-headline,
+.hero-animation--building .anim-subhead,
+.hero-animation--building .anim-arrived,
+.hero-animation--building .anim-translate {
   opacity: 0;
 }
 
-.hero-animation--filling .anim-headline,
-.hero-animation--filling .anim-subhead,
-.hero-animation--filling .anim-arrived,
-.hero-animation--filling .anim-translate {
+.hero-animation--building .torrent-column {
   opacity: 0;
 }
 
-.hero-animation--filling .torrent-column {
+/* ========================================
+   PHASE: flood - full screen noise, short hold
+   ======================================== */
+
+.hero-animation--flood .anim-headline,
+.hero-animation--flood .anim-subhead,
+.hero-animation--flood .anim-arrived,
+.hero-animation--flood .anim-translate {
   opacity: 0;
 }
 
-/* Phase: clearing (1900-4000ms) - sun grows, torrent recedes to gutters, content visible */
+.hero-animation--flood .torrent-column {
+  opacity: 0;
+}
+
+/* ========================================
+   PHASE: clearing - sun grows, torrent recedes
+   ======================================== */
+
 .hero-animation--clearing .torrent-flood {
-  animation: torrent-recede 1400ms ease-out forwards;
+  animation: torrent-recede 1800ms ease-out forwards;
 }
 
 .hero-animation--clearing .sun-clear {
   opacity: 1;
-  animation: sun-grow 1400ms ease-out forwards;
+  animation: sun-grow 1800ms ease-out forwards;
 }
 
-/* Content becomes visible as the clearing opens */
 .hero-animation--clearing .anim-headline {
   opacity: 0;
-  animation: content-settle 600ms ease-out 800ms forwards;
+  animation: content-settle 600ms ease-out 1000ms forwards;
 }
 
 .hero-animation--clearing .anim-subhead {
   opacity: 0;
-  animation: content-settle 500ms ease-out 1000ms forwards;
+  animation: content-settle 500ms ease-out 1200ms forwards;
 }
 
 .hero-animation--clearing .anim-arrived {
   opacity: 0;
-  animation: content-settle 500ms ease-out 1200ms forwards;
+  animation: content-settle 500ms ease-out 1400ms forwards;
 }
 
 .hero-animation--clearing .anim-translate {
   opacity: 0;
-  animation: content-settle 500ms ease-out 1400ms forwards;
+  animation: content-settle 500ms ease-out 1600ms forwards;
 }
 
-/* Torrent columns fade in as flood recedes to become the settled rails */
 .hero-animation--clearing .torrent-column {
-  animation: gutter-reveal 800ms ease-out 800ms forwards;
+  animation: gutter-reveal 1000ms ease-out 1000ms forwards;
   opacity: 0;
 }
 
 /* Phase: settled - normal tempo page */
+.hero-animation--settled .arrival-stage,
 .hero-animation--settled .torrent-flood,
 .hero-animation--settled .sun-clear {
   display: none;
@@ -372,36 +424,29 @@ body {
   }
 }
 
-@keyframes line-appear {
-  0% {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Mobile: 2 columns, larger type so lines are readable */
+/* Mobile: arrival lines and flood columns */
 @media (max-width: 899px) {
-  .torrent-flood-label {
-    top: 60px;
-    font-size: 9px;
+  .arrival-stage {
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .arrival-line {
+    font-size: 15px;
   }
   
   .torrent-flood-inner {
-    padding: 90px 16px 16px;
-    gap: 24px;
+    padding: 70px 12px 12px;
+    gap: 16px;
   }
   
   .torrent-flood-column {
-    font-size: 12px;
-    line-height: 1.8;
+    font-size: 10px;
+    line-height: 1.6;
   }
   
-  /* Mobile: show only 2 columns so full phrases are readable */
-  .torrent-flood-column:nth-child(n+3) {
+  /* Mobile: show only 3 columns for density in flood */
+  .torrent-flood-column:nth-child(n+4) {
     display: none;
   }
   
@@ -427,22 +472,27 @@ body {
     scroll-behavior: auto !important;
   }
   
-  .hero-animation--filling .torrent-flood,
+  .hero-animation--building .arrival-stage,
+  .hero-animation--flood .torrent-flood,
   .hero-animation--clearing .torrent-flood,
-  .hero-animation--filling .sun-clear,
   .hero-animation--clearing .sun-clear {
     display: none !important;
   }
   
-  .hero-animation--filling .anim-headline,
-  .hero-animation--filling .anim-subhead,
-  .hero-animation--filling .anim-arrived,
-  .hero-animation--filling .anim-translate,
+  .hero-animation--building .anim-headline,
+  .hero-animation--building .anim-subhead,
+  .hero-animation--building .anim-arrived,
+  .hero-animation--building .anim-translate,
+  .hero-animation--flood .anim-headline,
+  .hero-animation--flood .anim-subhead,
+  .hero-animation--flood .anim-arrived,
+  .hero-animation--flood .anim-translate,
   .hero-animation--clearing .anim-headline,
   .hero-animation--clearing .anim-subhead,
   .hero-animation--clearing .anim-arrived,
   .hero-animation--clearing .anim-translate,
-  .hero-animation--filling .torrent-column,
+  .hero-animation--building .torrent-column,
+  .hero-animation--flood .torrent-column,
   .hero-animation--clearing .torrent-column {
     opacity: 1 !important;
     animation: none !important;
