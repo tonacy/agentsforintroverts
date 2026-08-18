@@ -166,6 +166,15 @@ body {
   z-index: 100;
   overflow: hidden;
   pointer-events: none;
+  --gutter-mask: 50%;
+  -webkit-mask-image: 
+    linear-gradient(to right, black, black var(--gutter-mask), transparent var(--gutter-mask)),
+    linear-gradient(to left, black, black var(--gutter-mask), transparent var(--gutter-mask));
+  mask-image: 
+    linear-gradient(to right, black, black var(--gutter-mask), transparent var(--gutter-mask)),
+    linear-gradient(to left, black, black var(--gutter-mask), transparent var(--gutter-mask));
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
 }
 
 .torrent-flood-inner {
@@ -286,13 +295,20 @@ body {
   opacity: 1;
 }
 
-/* Keyframes */
+/* Custom property for animatable mask stops */
+@property --gutter-mask {
+  syntax: '<length-percentage>';
+  initial-value: 50%;
+  inherits: false;
+}
+
+/* Keyframes - mask clears center, keeps left and right rails */
 @keyframes torrent-recede {
   0% {
-    clip-path: inset(0 0 0 0);
+    --gutter-mask: 50%;
   }
   100% {
-    clip-path: inset(0 calc(50% - 110px) 0 calc(50% - 110px));
+    --gutter-mask: 180px;
   }
 }
 
@@ -354,10 +370,10 @@ body {
   
   @keyframes torrent-recede {
     0% {
-      clip-path: inset(0 0 0 0);
+      --gutter-mask: 50%;
     }
     100% {
-      clip-path: inset(0 calc(50% - 24px) 0 calc(50% - 24px));
+      --gutter-mask: 24px;
     }
   }
 }
