@@ -40,8 +40,12 @@ export function HeroAnimation({ children }: { children: React.ReactNode }) {
     }, 2200);
 
     return () => {
-      clearTimeout(clearTimer);
-      clearTimeout(settleTimer);
+      // Don't clear timers if animation has started — React Strict Mode
+      // will unmount/remount but we want the timers to complete
+      if (!animationStarted.current) {
+        clearTimeout(clearTimer);
+        clearTimeout(settleTimer);
+      }
     };
   }, []);
 
