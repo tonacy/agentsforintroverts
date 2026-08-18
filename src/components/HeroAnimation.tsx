@@ -48,27 +48,16 @@ export function HeroAnimation({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: trigger animation on client mount
     setPhase("building");
 
-    // Line timing: controlled by JS, not CSS animation-delay
-    // Line 0 at 200ms, line 1 at 1700ms (1.5s gap), then faster cascade
+    // Line timing: controlled by JS for precise timing
+    // Line 0 at 200ms (render buffer), line 1 at 1700ms (1.5s solo beat), then cascade
     const lineTimings = [200, 1700, 2300, 2800, 3100];
     const lineTimers = lineTimings.map((delay, idx) => 
       setTimeout(() => setVisibleLines(idx + 1), delay)
     );
 
-    // Flood at 3800ms
-    const floodTimer = setTimeout(() => {
-      setPhase("flood");
-    }, 3800);
-
-    // Clearing at 4500ms
-    const clearTimer = setTimeout(() => {
-      setPhase("clearing");
-    }, 4500);
-
-    // Settled at 7500ms
-    const settleTimer = setTimeout(() => {
-      setPhase("settled");
-    }, 7500);
+    const floodTimer = setTimeout(() => setPhase("flood"), 3800);
+    const clearTimer = setTimeout(() => setPhase("clearing"), 4500);
+    const settleTimer = setTimeout(() => setPhase("settled"), 7500);
 
     return () => {
       if (!animationStarted.current) {
