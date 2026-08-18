@@ -31,6 +31,7 @@ function generateFloodLines(count: number): string[] {
 
 export function HeroAnimation({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<"building" | "flood" | "clearing" | "settled">("settled");
+  const [visibleLines, setVisibleLines] = useState(0);
   const animationStarted = useRef(false);
 
   useEffect(() => {
@@ -47,23 +48,31 @@ export function HeroAnimation({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: trigger animation on client mount
     setPhase("building");
 
-    // Lines arrive one by one (~3.5s), then crescendo to flood
+    // Line timing: controlled by JS, not CSS animation-delay
+    // Line 0 at 200ms, line 1 at 1700ms (1.5s gap), then faster cascade
+    const lineTimings = [200, 1700, 2300, 2800, 3100];
+    const lineTimers = lineTimings.map((delay, idx) => 
+      setTimeout(() => setVisibleLines(idx + 1), delay)
+    );
+
+    // Flood at 3800ms
     const floodTimer = setTimeout(() => {
       setPhase("flood");
     }, 3800);
 
-    // Hold on flood ~0.7s, then clearing
+    // Clearing at 4500ms
     const clearTimer = setTimeout(() => {
       setPhase("clearing");
     }, 4500);
 
-    // Total ~7.5s
+    // Settled at 7500ms
     const settleTimer = setTimeout(() => {
       setPhase("settled");
     }, 7500);
 
     return () => {
       if (!animationStarted.current) {
+        lineTimers.forEach(clearTimeout);
         clearTimeout(floodTimer);
         clearTimeout(clearTimer);
         clearTimeout(settleTimer);
@@ -75,13 +84,13 @@ export function HeroAnimation({ children }: { children: React.ReactNode }) {
 
   return (
     <div className={`hero-animation hero-animation--${phase}`}>
-      {/* Sequential arrival - lines appear one at a time */}
+      {/* Sequential arrival - lines appear one at a time, controlled by JS */}
       {(phase === "building") && (
         <div className="arrival-stage" aria-hidden="true">
-          {heroLines.map((line, idx) => (
+          {heroLines.slice(0, visibleLines).map((line, idx) => (
             <div 
               key={idx} 
-              className={`arrival-line arrival-line-${idx}`}
+              className="arrival-line arrival-line-visible"
             >
               {line}
             </div>
