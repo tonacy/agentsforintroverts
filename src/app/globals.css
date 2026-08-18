@@ -104,7 +104,7 @@ body {
   
   .center-content::before,
   .center-content::after {
-    content: "example reply · example intro · example ask · example mention · example thread · example invite · ";
+    content: "email · a reply · calendar · an ask · X · a mention · LinkedIn · an intro · newsletter · a request · ";
     position: absolute;
     top: 0;
     bottom: 0;
@@ -177,34 +177,55 @@ body {
   mask-composite: add;
 }
 
+/* Quiet label during fill */
+.torrent-flood-label {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-torrent-label);
+  letter-spacing: 0.1em;
+  opacity: 0;
+  animation: label-fade 800ms ease-out 400ms forwards;
+}
+
+@keyframes label-fade {
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0.4; }
+}
+
 .torrent-flood-inner {
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  padding: 60px 8px 8px;
-  gap: 4px;
+  padding: 100px 24px 24px;
+  gap: 32px;
 }
 
+/* Desktop: 6 columns, larger readable type */
 .torrent-flood-column {
   flex: 1;
   font-family: var(--font-mono);
-  font-size: 9px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 2;
   overflow: hidden;
+  color: var(--color-torrent);
+}
+
+/* Hide columns beyond 6 on desktop */
+.torrent-flood-column:nth-child(n+7) {
+  display: none;
 }
 
 .torrent-flood-line {
   white-space: nowrap;
-}
-
-.torrent-flood-dim {
-  color: var(--color-torrent-dim);
-}
-
-.torrent-flood-text {
-  color: var(--color-torrent);
+  opacity: 0;
+  animation: line-appear 300ms ease-out forwards;
 }
 
 /* Sun clearing effect - transparent hole in center, sun color ring, fades to transparent */
@@ -221,7 +242,7 @@ body {
   z-index: 102;
 }
 
-/* Phase: filling (0-400ms) - torrent visible, content hidden behind flood */
+/* Phase: filling (0-1900ms) - torrent builds in waves, content hidden */
 .hero-animation--filling .torrent-flood {
   opacity: 1;
 }
@@ -241,40 +262,40 @@ body {
   opacity: 0;
 }
 
-/* Phase: clearing (400-2200ms) - sun grows, torrent recedes to gutters, content visible in clearing */
+/* Phase: clearing (1900-4000ms) - sun grows, torrent recedes to gutters, content visible */
 .hero-animation--clearing .torrent-flood {
-  animation: torrent-recede 1200ms ease-out forwards;
+  animation: torrent-recede 1400ms ease-out forwards;
 }
 
 .hero-animation--clearing .sun-clear {
   opacity: 1;
-  animation: sun-grow 1200ms ease-out forwards;
+  animation: sun-grow 1400ms ease-out forwards;
 }
 
-/* Content becomes visible as the clearing opens - quick fade, minimal stagger */
+/* Content becomes visible as the clearing opens */
 .hero-animation--clearing .anim-headline {
   opacity: 0;
-  animation: content-settle 400ms ease-out forwards;
+  animation: content-settle 600ms ease-out 800ms forwards;
 }
 
 .hero-animation--clearing .anim-subhead {
   opacity: 0;
-  animation: content-settle 400ms ease-out 100ms forwards;
+  animation: content-settle 500ms ease-out 1000ms forwards;
 }
 
 .hero-animation--clearing .anim-arrived {
   opacity: 0;
-  animation: content-settle 400ms ease-out 200ms forwards;
+  animation: content-settle 500ms ease-out 1200ms forwards;
 }
 
 .hero-animation--clearing .anim-translate {
   opacity: 0;
-  animation: content-settle 400ms ease-out 300ms forwards;
+  animation: content-settle 500ms ease-out 1400ms forwards;
 }
 
 /* Torrent columns fade in as flood recedes to become the settled rails */
 .hero-animation--clearing .torrent-column {
-  animation: gutter-reveal 600ms ease-out 600ms forwards;
+  animation: gutter-reveal 800ms ease-out 800ms forwards;
   opacity: 0;
 }
 
@@ -351,20 +372,36 @@ body {
   }
 }
 
-/* Mobile: fewer columns so words don't clip, thin whisper edges */
+@keyframes line-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile: 2 columns, larger type so lines are readable */
 @media (max-width: 899px) {
+  .torrent-flood-label {
+    top: 60px;
+    font-size: 9px;
+  }
+  
   .torrent-flood-inner {
-    padding: 60px 4px 4px;
-    gap: 4px;
+    padding: 90px 16px 16px;
+    gap: 24px;
   }
   
   .torrent-flood-column {
-    font-size: 8px;
-    line-height: 1.4;
+    font-size: 12px;
+    line-height: 1.8;
   }
   
-  /* Hide excess columns on mobile - show only 4 */
-  .torrent-flood-column:nth-child(n+5) {
+  /* Mobile: show only 2 columns so full phrases are readable */
+  .torrent-flood-column:nth-child(n+3) {
     display: none;
   }
   

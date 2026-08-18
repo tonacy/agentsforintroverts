@@ -1,8 +1,15 @@
 import { EmailForm } from "./EmailForm";
 import { HeroAnimation } from "./HeroAnimation";
 
-const torrentPhrases = [
-  "reply", "intro", "ask", "mention", "thread", "invite"
+const feedLines = [
+  "email · a reply",
+  "email · a follow-up",
+  "calendar · an ask",
+  "X · a mention",
+  "X · a thread",
+  "LinkedIn · an intro",
+  "newsletter · a request",
+  "email · an invite",
 ];
 
 function TorrentColumn({ side }: { side: "left" | "right" }) {
@@ -11,8 +18,7 @@ function TorrentColumn({ side }: { side: "left" | "right" }) {
   
   const lines: string[] = [];
   for (let i = 0; i < 60; i++) {
-    const phrase = torrentPhrases[i % torrentPhrases.length];
-    lines.push(`example ${phrase}`);
+    lines.push(feedLines[i % feedLines.length]);
   }
 
   return (
@@ -23,8 +29,7 @@ function TorrentColumn({ side }: { side: "left" | "right" }) {
       <div className="torrent-lines" aria-hidden="true">
         {lines.map((line, i) => (
           <div key={i} className="whitespace-nowrap">
-            <span className="text-torrent-dim">example</span>{" "}
-            <span className="text-torrent">{line.replace("example ", "")}</span>
+            {line}
           </div>
         ))}
       </div>

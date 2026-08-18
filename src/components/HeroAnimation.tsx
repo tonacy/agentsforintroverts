@@ -2,13 +2,21 @@
 
 import { useState, useEffect, useRef } from "react";
 
-const torrentPhrases = ["reply", "intro", "ask", "mention", "thread", "invite"];
+const feedLines = [
+  "email · a reply",
+  "email · a follow-up",
+  "calendar · an ask",
+  "X · a mention",
+  "X · a thread",
+  "LinkedIn · an intro",
+  "newsletter · a request",
+  "email · an invite",
+];
 
 function generateTorrentLines(count: number): string[] {
   const lines: string[] = [];
   for (let i = 0; i < count; i++) {
-    const phrase = torrentPhrases[i % torrentPhrases.length];
-    lines.push(`example ${phrase}`);
+    lines.push(feedLines[i % feedLines.length]);
   }
   return lines;
 }
@@ -31,17 +39,17 @@ export function HeroAnimation({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: trigger animation on client mount
     setPhase("filling");
 
+    // Build ~1.4s + hold ~0.5s = 1900ms, then clearing
     const clearTimer = setTimeout(() => {
       setPhase("clearing");
-    }, 400);
+    }, 1900);
 
+    // Total ~4s
     const settleTimer = setTimeout(() => {
       setPhase("settled");
-    }, 2200);
+    }, 4000);
 
     return () => {
-      // Don't clear timers if animation has started — React Strict Mode
-      // will unmount/remount but we want the timers to complete
       if (!animationStarted.current) {
         clearTimeout(clearTimer);
         clearTimeout(settleTimer);
@@ -49,20 +57,24 @@ export function HeroAnimation({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const torrentLines = generateTorrentLines(80);
+  const torrentLines = generateTorrentLines(40);
 
   return (
     <div className={`hero-animation hero-animation--${phase}`}>
       {/* Full-bleed torrent overlay - only during animation */}
       {phase !== "settled" && (
         <div className="torrent-flood" aria-hidden="true">
+          <div className="torrent-flood-label">outside · a feed</div>
           <div className="torrent-flood-inner">
-            {Array.from({ length: 12 }).map((_, colIdx) => (
+            {Array.from({ length: 6 }).map((_, colIdx) => (
               <div key={colIdx} className="torrent-flood-column">
                 {torrentLines.map((line, lineIdx) => (
-                  <div key={lineIdx} className="torrent-flood-line">
-                    <span className="torrent-flood-dim">example</span>{" "}
-                    <span className="torrent-flood-text">{line.replace("example ", "")}</span>
+                  <div 
+                    key={lineIdx} 
+                    className="torrent-flood-line"
+                    style={{ animationDelay: `${(colIdx * 80) + (lineIdx * 40)}ms` }}
+                  >
+                    {line}
                   </div>
                 ))}
               </div>
