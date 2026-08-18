@@ -1,9 +1,4 @@
-import {
-  Nav,
-  Hero,
-  HandledList,
-  Footer,
-} from "@/components";
+import { Nav, Hero, Footer } from "@/components";
 
 export default function Home() {
   return (
@@ -11,7 +6,6 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
-        <HandledList />
       </main>
       <Footer />
     </>
