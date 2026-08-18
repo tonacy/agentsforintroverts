@@ -57,7 +57,7 @@ export function EmailForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-4 border-b border-rule pb-3">
+    <form onSubmit={handleSubmit} noValidate className="flex items-center gap-4 border-b border-rule pb-3">
       <div className="flex-1">
         <label htmlFor="email" className="sr-only">
           Email address
@@ -72,7 +72,7 @@ export function EmailForm() {
             if (status === "error") setStatus("idle");
           }}
           placeholder="you@quiet.dev"
-          className={`w-full bg-transparent font-serif text-ink placeholder:text-ink-faint focus:outline-none ${
+          className={`min-h-[44px] w-full bg-transparent font-serif text-ink placeholder:text-ink-faint ${
             status === "error" ? "text-red-700" : ""
           }`}
           aria-invalid={status === "error"}
@@ -86,7 +86,7 @@ export function EmailForm() {
       </div>
       <button
         type="submit"
-        className="font-mono text-sm text-leaf transition-colors hover:text-leaf-light whitespace-nowrap"
+        className="inline-flex min-h-[44px] items-center whitespace-nowrap font-mono text-sm text-leaf transition-colors hover:text-leaf-light"
       >
         Send it →
       </button>
