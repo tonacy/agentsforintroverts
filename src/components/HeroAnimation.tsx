@@ -1,117 +1,137 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
+import {
+  claimOpening,
+  OPENING_DURATION_MS,
+  OPENING_SESSION_KEY,
+} from "@/lib/opening";
 
-const heroLines = [
-  "email · a reply",
-  "calendar · an ask",
-  "X · a mention",
-  "LinkedIn · an intro",
-  "newsletter · a request",
-];
+const arrivalLines = [
+  { delay: "0.15s", left: "50%", top: "52%", size: "19px", text: "email · a reply" },
+  { delay: "0.95s", left: "50%", top: "45%", size: "18px", text: "calendar · an ask" },
+  { delay: "1.60s", left: "33%", top: "56%", size: "16px", text: "X · a mention" },
+  { delay: "1.80s", left: "66%", top: "40%", size: "16px", text: "email · a follow-up" },
+  { delay: "2.00s", left: "39%", top: "34%", size: "15px", text: "LinkedIn · an intro" },
+  { delay: "2.18s", left: "61%", top: "62%", size: "15px", text: "newsletter · a request" },
+  { delay: "2.32s", left: "24%", top: "44%", size: "14px", text: "X · a thread" },
+  { delay: "2.44s", left: "76%", top: "55%", size: "14px", text: "email · an invite" },
+] as const;
 
-const floodLines = [
-  "email · a reply",
-  "email · a follow-up",
-  "calendar · an ask",
-  "X · a mention",
-  "X · a thread",
-  "LinkedIn · an intro",
-  "newsletter · a request",
-  "email · an invite",
-];
+type MotionStyle = CSSProperties & { "--d"?: string };
 
-function generateFloodLines(count: number): string[] {
-  const lines: string[] = [];
-  for (let i = 0; i < count; i++) {
-    lines.push(floodLines[i % floodLines.length]);
+type OpeningWindow = Window & {
+  __afiOpeningBootTimer?: number;
+  __afiOpeningStartedAt?: number;
+};
+
+const openingBootScript = `(() => {
+  const root = document.currentScript?.parentElement;
+  if (!root) return;
+
+  const openingWindow = window;
+  let shouldPlay = false;
+
+  if (!openingWindow.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    try {
+      shouldPlay = openingWindow.sessionStorage.getItem(${JSON.stringify(OPENING_SESSION_KEY)}) === null;
+      if (shouldPlay) {
+        openingWindow.sessionStorage.setItem(${JSON.stringify(OPENING_SESSION_KEY)}, "1");
+      }
+    } catch {
+      shouldPlay = true;
+    }
   }
-  return lines;
-}
 
-export function HeroAnimation({ children }: { children: React.ReactNode }) {
-  const [phase, setPhase] = useState<"building" | "flood" | "clearing" | "settled">("settled");
-  const [visibleLines, setVisibleLines] = useState(0);
-  const animationStarted = useRef(false);
+  if (!shouldPlay) return;
 
-  useEffect(() => {
-    if (animationStarted.current) return;
-    
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const hasPlayed = sessionStorage.getItem("hero-animation-played");
-    
-    if (prefersReducedMotion || hasPlayed) return;
-    
-    animationStarted.current = true;
-    sessionStorage.setItem("hero-animation-played", "1");
-    
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: trigger animation on client mount
-    setPhase("building");
+  openingWindow.__afiOpeningStartedAt = openingWindow.performance.now();
+  root.dataset.opening = "playing";
+  openingWindow.__afiOpeningBootTimer = openingWindow.setTimeout(() => {
+    root.removeAttribute("data-opening");
+    delete openingWindow.__afiOpeningStartedAt;
+    delete openingWindow.__afiOpeningBootTimer;
+  }, ${OPENING_DURATION_MS});
+})();`;
 
-    // Line timing: controlled by JS for precise timing
-    // Line 0 at 200ms (render buffer), line 1 at 1700ms (1.5s solo beat), then cascade
-    const lineTimings = [200, 1700, 2300, 2800, 3100];
-    const lineTimers = lineTimings.map((delay, idx) => 
-      setTimeout(() => setVisibleLines(idx + 1), delay)
-    );
+export function HeroAnimation({ children }: { children: ReactNode }) {
+  const rootRef = useRef<HTMLDivElement>(null);
 
-    const floodTimer = setTimeout(() => setPhase("flood"), 3800);
-    const clearTimer = setTimeout(() => setPhase("clearing"), 4500);
-    const settleTimer = setTimeout(() => setPhase("settled"), 7500);
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) {
+      return;
+    }
+
+    const openingWindow = window as OpeningWindow;
+    const startedBeforeHydration = root.dataset.opening === "playing";
+    const claimedOnNavigation = startedBeforeHydration ? false : claimOpening(window);
+
+    if (!startedBeforeHydration && claimedOnNavigation) {
+      openingWindow.__afiOpeningStartedAt = performance.now();
+      root.dataset.opening = "playing";
+    }
+
+    if (root.dataset.opening !== "playing") {
+      return;
+    }
+
+    if (openingWindow.__afiOpeningBootTimer !== undefined) {
+      window.clearTimeout(openingWindow.__afiOpeningBootTimer);
+      delete openingWindow.__afiOpeningBootTimer;
+    }
+
+    const startedAt = openingWindow.__afiOpeningStartedAt ?? performance.now();
+    openingWindow.__afiOpeningStartedAt = startedAt;
+    const elapsed = Math.max(0, performance.now() - startedAt);
+    const remaining = Math.max(0, OPENING_DURATION_MS - elapsed);
+
+    const finishOpening = () => {
+      root.removeAttribute("data-opening");
+      delete openingWindow.__afiOpeningStartedAt;
+    };
+
+    const timer = window.setTimeout(finishOpening, remaining);
 
     return () => {
-      if (!animationStarted.current) {
-        lineTimers.forEach(clearTimeout);
-        clearTimeout(floodTimer);
-        clearTimeout(clearTimer);
-        clearTimeout(settleTimer);
-      }
+      window.clearTimeout(timer);
     };
   }, []);
 
-  const torrentLines = generateFloodLines(30);
-
   return (
-    <div className={`hero-animation hero-animation--${phase}`}>
-      {/* Sequential arrival - lines appear one at a time, controlled by JS */}
-      {(phase === "building") && (
-        <div className="arrival-stage" aria-hidden="true">
-          {heroLines.slice(0, visibleLines).map((line, idx) => (
-            <div 
-              key={idx} 
-              className="arrival-line arrival-line-visible"
+    <div ref={rootRef} className="hero-open" suppressHydrationWarning>
+      <script
+        type={typeof window === "undefined" ? "text/javascript" : "text/plain"}
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: openingBootScript }}
+      />
+
+      {children}
+
+      <div className="hero-open__sequence" aria-hidden="true">
+        <div className="hero-open__vignette" />
+
+        <div className="hero-open__arrivals">
+          {arrivalLines.map((line) => (
+            <div
+              className="hero-open__arrival-seat"
+              key={`${line.delay}-${line.text}`}
+              style={{ left: line.left, top: line.top }}
             >
-              {line}
+              <div
+                className="hero-open__arrival"
+                style={{ "--d": line.delay, fontSize: line.size } as MotionStyle}
+              >
+                {line.text}
+              </div>
             </div>
           ))}
         </div>
-      )}
-
-      {/* Full-bleed torrent flood - crescendo and hold */}
-      {(phase === "flood" || phase === "clearing") && (
-        <div className="torrent-flood" aria-hidden="true">
-          <div className="torrent-flood-inner">
-            {Array.from({ length: 6 }).map((_, colIdx) => (
-              <div key={colIdx} className="torrent-flood-column">
-                {torrentLines.map((line, lineIdx) => (
-                  <div key={lineIdx} className="torrent-flood-line">
-                    {line}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Sun clearing effect */}
-      {phase === "clearing" && (
-        <div className="sun-clear" aria-hidden="true" />
-      )}
-
-      {/* Main content with reveal */}
-      <div className="hero-content">
-        {children}
       </div>
     </div>
   );

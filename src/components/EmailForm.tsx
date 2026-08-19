@@ -35,12 +35,17 @@ export function EmailForm() {
 
   if (status === "success") {
     return (
-      <div className="flex items-center gap-3 border-b border-leaf py-3">
+      <div
+        className="email-form-frame email-form-success flex items-center gap-3 border-b border-leaf"
+        role="status"
+        aria-live="polite"
+      >
         <svg
           className="h-4 w-4 shrink-0 text-leaf"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -57,39 +62,51 @@ export function EmailForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-4 border-b border-rule pb-3">
-      <div className="flex-1">
-        <label htmlFor="email" className="sr-only">
-          Email address
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            if (status === "error") setStatus("idle");
-          }}
-          placeholder="you@quiet.dev"
-          className={`w-full bg-transparent font-serif text-ink placeholder:text-ink-faint focus:outline-none ${
-            status === "error" ? "text-red-700" : ""
-          }`}
-          aria-invalid={status === "error"}
-          aria-describedby={status === "error" ? "email-error" : undefined}
-        />
-        {status === "error" && (
-          <p id="email-error" className="mt-1 font-mono text-xs text-red-700">
-            {errorMessage}
-          </p>
-        )}
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      className="email-form-frame email-form border-b border-rule"
+    >
+      <div className="email-form__controls flex items-center gap-4">
+        <div className="min-w-0 flex-1">
+          <label htmlFor="email" className="sr-only">
+            Email address
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (status === "error") setStatus("idle");
+            }}
+            placeholder="you@quiet.dev"
+            className={`min-h-[44px] w-full bg-transparent font-serif text-ink placeholder:text-ink-faint ${
+              status === "error" ? "text-red-700" : ""
+            }`}
+            aria-invalid={status === "error"}
+            aria-describedby={status === "error" ? "email-error" : undefined}
+          />
+        </div>
+        <button
+          type="submit"
+          className="playbook-submit inline-flex min-h-[44px] items-center whitespace-nowrap font-mono text-sm text-leaf"
+        >
+          Send it →
+        </button>
       </div>
-      <button
-        type="submit"
-        className="font-mono text-sm text-leaf transition-colors hover:text-leaf-light whitespace-nowrap"
+
+      <p
+        id="email-error"
+        className={`email-form__status font-mono text-xs text-red-700 ${
+          status === "error" ? "email-form__status--visible" : ""
+        }`}
+        aria-live="polite"
+        aria-atomic="true"
       >
-        Send it →
-      </button>
+        {status === "error" ? errorMessage : null}
+      </p>
     </form>
   );
 }
