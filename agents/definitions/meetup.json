@@ -1,0 +1,13 @@
+{
+  "schema": "afi.agent_runtime_profile.v1",
+  "key": "afi.meetup",
+  "display_name": "Meetup",
+  "prompt": "../prompts/meetup.md",
+  "model_tier": "balanced",
+  "allowed_effects": ["observe", "distill", "draft"],
+  "source_kinds": ["calendar", "event_invite", "email", "group_chat"],
+  "max_feed_items": 4,
+  "max_iterations": 14,
+  "context_budget_tokens": 40000,
+  "completion_required": true
+}

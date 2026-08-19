@@ -1,0 +1,391 @@
+{
+  "generatedAt": "2026-08-19T15:00:00Z",
+  "isSynthetic": true,
+  "agents": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Inbox Agent",
+      "role": "Correspondence triage",
+      "systemImage": "tray.full",
+      "mission": "Sorts correspondence, drafts replies, and surfaces only what merits attention.",
+      "availability": "ready",
+      "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
+      "permissions": ["Read synthetic inbox events", "Draft exact previews", "Never send without approval"],
+      "lastRunAt": "2026-08-19T14:54:00Z"
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "name": "Follow-up Agent",
+      "role": "Open-thread keeper",
+      "systemImage": "arrowshape.turn.up.left",
+      "mission": "Tracks open threads and prepares the note that would otherwise stay unsent.",
+      "availability": "ready",
+      "executor": { "provider": "xAI", "executor": "Grok Bot", "runtime": "Hub adapter" },
+      "permissions": ["Read synthetic thread state", "Draft follow-ups", "Never send without approval"],
+      "lastRunAt": "2026-08-19T14:40:00Z"
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "name": "Scheduling Agent",
+      "role": "Calendar guardian",
+      "systemImage": "calendar.badge.clock",
+      "mission": "Handles scheduling back-and-forth while preserving protected focus blocks.",
+      "availability": "ready",
+      "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
+      "permissions": ["Read synthetic calendar", "Draft availability", "Never create events without approval"],
+      "lastRunAt": "2026-08-19T14:48:00Z"
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "name": "Group Chat Agent",
+      "role": "Room listener",
+      "systemImage": "bubble.left.and.bubble.right",
+      "mission": "Monitors a room, extracts decisions, and prepares a compact read-later brief.",
+      "availability": "needsAttention",
+      "executor": { "provider": "xAI", "executor": "Grok Bot", "runtime": "Hub adapter" },
+      "permissions": ["Read synthetic group activity", "Summarize", "No posting permission"],
+      "lastRunAt": "2026-08-19T14:31:00Z"
+    },
+    {
+      "id": "55555555-5555-5555-5555-555555555555",
+      "name": "Meetup Agent",
+      "role": "Invitation coordinator",
+      "systemImage": "person.2.badge.gearshape",
+      "mission": "Prepares RSVP decisions and the coordination around low-stakes gatherings.",
+      "availability": "paused",
+      "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
+      "permissions": ["Read synthetic invitations", "Draft RSVP previews", "Never RSVP without approval"],
+      "lastRunAt": "2026-08-18T18:10:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "name": "Synthetic Mailbox",
+      "kind": "Email",
+      "systemImage": "envelope",
+      "health": "connected",
+      "scope": "Fixture headers, thread state, and clearly synthetic message bodies",
+      "lastIngestedAt": "2026-08-19T14:54:00Z",
+      "itemCount": 18
+    },
+    {
+      "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "name": "Synthetic Calendar",
+      "kind": "Calendar",
+      "systemImage": "calendar",
+      "health": "connected",
+      "scope": "Fixture availability and protected focus blocks",
+      "lastIngestedAt": "2026-08-19T14:48:00Z",
+      "itemCount": 9
+    },
+    {
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Synthetic X Stream",
+      "kind": "X",
+      "systemImage": "at",
+      "health": "degraded",
+      "scope": "Fixture mentions and thread summaries only",
+      "lastIngestedAt": "2026-08-19T14:20:00Z",
+      "itemCount": 6
+    },
+    {
+      "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "name": "Synthetic LinkedIn",
+      "kind": "LinkedIn",
+      "systemImage": "person.crop.square",
+      "health": "connected",
+      "scope": "Fixture introductions and direct messages",
+      "lastIngestedAt": "2026-08-19T14:12:00Z",
+      "itemCount": 4
+    },
+    {
+      "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      "name": "Synthetic Build Room",
+      "kind": "Group chat",
+      "systemImage": "bubble.left.and.bubble.right",
+      "health": "connected",
+      "scope": "Fixture messages in one synthetic project room",
+      "lastIngestedAt": "2026-08-19T14:31:00Z",
+      "itemCount": 41
+    },
+    {
+      "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+      "name": "Synthetic Reading Queue",
+      "kind": "Newsletter",
+      "systemImage": "newspaper",
+      "health": "paused",
+      "scope": "Fixture newsletter titles and summaries",
+      "lastIngestedAt": "2026-08-18T17:00:00Z",
+      "itemCount": 7
+    }
+  ],
+  "items": [
+    {
+      "id": "10000000-0000-0000-0000-000000000001",
+      "timestamp": "2026-08-19T14:48:00Z",
+      "headline": "Thursday morning can stay protected",
+      "whyItMatters": "A synthetic meeting request overlaps the focus block you marked as non-negotiable.",
+      "status": "needsYou",
+      "agentID": "33333333-3333-3333-3333-333333333333",
+      "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
+      "claims": [
+        {
+          "id": "11000000-0000-0000-0000-000000000001",
+          "claim": "The requested time overlaps a protected focus block.",
+          "kind": "direct",
+          "sourceID": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceTitle": "Focus block — Thursday 09:00–12:00",
+          "sourceURL": "https://sources.example.invalid/calendar/focus-42",
+          "sourceCapturedAt": "2026-08-19T14:48:00Z",
+          "excerpt": "Protected: deep work. Decline new meetings unless manually approved."
+        },
+        {
+          "id": "11000000-0000-0000-0000-000000000002",
+          "claim": "Tuesday at 14:00 is open for both fixture participants.",
+          "kind": "derived",
+          "sourceID": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceTitle": "Synthetic availability comparison",
+          "sourceURL": "https://sources.example.invalid/calendar/availability-17",
+          "sourceCapturedAt": "2026-08-19T14:48:00Z",
+          "excerpt": "Tony Example: free. Priya Example: free. Duration requested: 25 minutes."
+        }
+      ],
+      "run": {
+        "id": "12000000-0000-0000-0000-000000000001",
+        "state": "waitingForApproval",
+        "summary": "Evidence gathered and an exact reply preview prepared.",
+        "lastUpdatedAt": "2026-08-19T14:49:00Z"
+      },
+      "action": {
+        "id": "13000000-0000-0000-0000-000000000001",
+        "revision": 1,
+        "kind": "sendMessage",
+        "account": "tony@example.invalid",
+        "channel": "Email",
+        "target": "Priya Example <priya@example.invalid>",
+        "exactPayload": "[SYNTHETIC PREVIEW — NOT SENT]\nHi Priya — Thursday morning is protected, but Tuesday at 2:00 PM works well for a 25-minute call. Would that work for you?\n\nTony",
+        "requiresExplicitApproval": true
+      },
+      "proofLedger": ["proposed"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000002",
+      "timestamp": "2026-08-19T14:40:00Z",
+      "headline": "A dormant introduction has a concise follow-up ready",
+      "whyItMatters": "The thread is useful but easy to postpone; the draft is short enough to review without reopening the whole history.",
+      "status": "needsYou",
+      "agentID": "22222222-2222-2222-2222-222222222222",
+      "executor": { "provider": "xAI", "executor": "Grok Bot", "runtime": "Hub adapter" },
+      "claims": [
+        {
+          "id": "21000000-0000-0000-0000-000000000001",
+          "claim": "No response exists after the synthetic introduction on June 2.",
+          "kind": "direct",
+          "sourceID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceTitle": "Synthetic thread with Ben Example",
+          "sourceURL": "https://sources.example.invalid/mail/thread-ben-02",
+          "sourceCapturedAt": "2026-08-19T14:40:00Z",
+          "excerpt": "Last inbound: June 2. Last outbound: none."
+        }
+      ],
+      "run": {
+        "id": "22000000-0000-0000-0000-000000000001",
+        "state": "waitingForHub",
+        "summary": "Approved locally in the fixture. No provider delivery is claimed.",
+        "lastUpdatedAt": "2026-08-19T14:41:00Z"
+      },
+      "action": {
+        "id": "23000000-0000-0000-0000-000000000001",
+        "revision": 1,
+        "kind": "sendMessage",
+        "account": "tony@example.invalid",
+        "channel": "Email",
+        "target": "Ben Example <ben@example.invalid>",
+        "exactPayload": "[SYNTHETIC PREVIEW — NOT SENT]\nBen — I let this thread go quiet, but the introduction stayed with me. If it is still useful, I would enjoy picking it back up next week.\n\nTony",
+        "requiresExplicitApproval": true
+      },
+      "proofLedger": ["proposed", "approved"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000003",
+      "timestamp": "2026-08-19T14:12:00Z",
+      "headline": "An introduction was accepted by the provider, not yet delivered",
+      "whyItMatters": "Provider acknowledgement is only acceptance of the request. It is not proof that the recipient received it.",
+      "status": "watching",
+      "agentID": "11111111-1111-1111-1111-111111111111",
+      "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
+      "claims": [
+        {
+          "id": "31000000-0000-0000-0000-000000000001",
+          "claim": "The synthetic provider returned acknowledgement ID ack_example_42.",
+          "kind": "direct",
+          "sourceID": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+          "sourceTitle": "Synthetic provider receipt",
+          "sourceURL": "https://sources.example.invalid/provider/ack_example_42",
+          "sourceCapturedAt": "2026-08-19T14:12:30Z",
+          "excerpt": "accepted=true; acknowledgement_id=ack_example_42; delivered_at=null"
+        }
+      ],
+      "run": {
+        "id": "32000000-0000-0000-0000-000000000001",
+        "state": "completed",
+        "summary": "Provider acknowledgement recorded; delivery remains unproven.",
+        "lastUpdatedAt": "2026-08-19T14:12:30Z"
+      },
+      "action": {
+        "id": "33000000-0000-0000-0000-000000000001",
+        "revision": 3,
+        "kind": "sendMessage",
+        "account": "tony-example",
+        "channel": "LinkedIn",
+        "target": "Maya Example",
+        "exactPayload": "[SYNTHETIC HISTORICAL PAYLOAD]\nThanks for the introduction, Maya. I would be glad to compare notes next week.",
+        "requiresExplicitApproval": true
+      },
+      "proofLedger": ["providerAcknowledged"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000004",
+      "timestamp": "2026-08-19T13:22:00Z",
+      "headline": "The synthetic calendar update has delivery proof",
+      "whyItMatters": "The calendar service confirms the fixture event reached both synthetic attendees, but neither has read-confirmed it.",
+      "status": "watching",
+      "agentID": "33333333-3333-3333-3333-333333333333",
+      "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
+      "claims": [
+        {
+          "id": "41000000-0000-0000-0000-000000000001",
+          "claim": "Both synthetic attendee endpoints accepted the calendar update.",
+          "kind": "direct",
+          "sourceID": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceTitle": "Synthetic calendar delivery receipt",
+          "sourceURL": "https://sources.example.invalid/calendar/receipt-88",
+          "sourceCapturedAt": "2026-08-19T13:22:18Z",
+          "excerpt": "delivered=2; bounced=0; read_receipts=0"
+        }
+      ],
+      "run": {
+        "id": "42000000-0000-0000-0000-000000000001",
+        "state": "completed",
+        "summary": "Synthetic delivery evidence recorded.",
+        "lastUpdatedAt": "2026-08-19T13:22:18Z"
+      },
+      "action": {
+        "id": "43000000-0000-0000-0000-000000000001",
+        "revision": 2,
+        "kind": "createCalendarEvent",
+        "account": "tony@example.invalid",
+        "channel": "Calendar",
+        "target": "Tony Example + Priya Example",
+        "exactPayload": "[SYNTHETIC HISTORICAL PAYLOAD]\nTitle: Project check-in\nWhen: Tuesday 14:00–14:25 UTC\nAttendees: tony@example.invalid, priya@example.invalid",
+        "requiresExplicitApproval": true
+      },
+      "proofLedger": ["delivered"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000005",
+      "timestamp": "2026-08-19T12:40:00Z",
+      "headline": "One reply needs attention; six synthetic threads were batched",
+      "whyItMatters": "The slow feed keeps the significant reply visible without asking you to reopen every low-signal thread.",
+      "status": "context",
+      "agentID": "11111111-1111-1111-1111-111111111111",
+      "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
+      "claims": [
+        {
+          "id": "51000000-0000-0000-0000-000000000001",
+          "claim": "Six synthetic inbox threads were classified as low urgency.",
+          "kind": "derived",
+          "sourceID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceTitle": "Synthetic inbox batch",
+          "sourceURL": "https://sources.example.invalid/mail/batch-1240",
+          "sourceCapturedAt": "2026-08-19T12:40:00Z",
+          "excerpt": "6 low urgency; 1 needs attention; 0 external actions executed"
+        }
+      ],
+      "run": {
+        "id": "52000000-0000-0000-0000-000000000001",
+        "state": "completed",
+        "summary": "Read-only triage completed from synthetic fixtures.",
+        "lastUpdatedAt": "2026-08-19T12:40:04Z"
+      },
+      "proofLedger": ["read"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000006",
+      "timestamp": "2026-08-19T09:05:00Z",
+      "headline": "The build room converged on Monday without you",
+      "whyItMatters": "Forty-one synthetic messages reduced to a decision and one unresolved dependency.",
+      "status": "watching",
+      "agentID": "44444444-4444-4444-4444-444444444444",
+      "executor": { "provider": "xAI", "executor": "Grok Bot", "runtime": "Hub adapter" },
+      "claims": [
+        {
+          "id": "61000000-0000-0000-0000-000000000001",
+          "claim": "The synthetic room agreed to ship Monday rather than Friday.",
+          "kind": "direct",
+          "sourceID": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "sourceTitle": "#build-room synthetic transcript",
+          "sourceURL": "https://sources.example.invalid/chat/build-room/decision-12",
+          "sourceCapturedAt": "2026-08-19T09:05:00Z",
+          "excerpt": "Decision: Monday. Owner: Alex Example. Remaining dependency: fixture QA."
+        },
+        {
+          "id": "61000000-0000-0000-0000-000000000002",
+          "claim": "No direct response from Tony Example was requested.",
+          "kind": "inferred",
+          "sourceID": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "sourceTitle": "Mention scan over synthetic transcript",
+          "sourceURL": "https://sources.example.invalid/chat/build-room/mention-scan-12",
+          "sourceCapturedAt": "2026-08-19T09:05:01Z",
+          "excerpt": "Direct mentions: 0. Assigned tasks: 0."
+        }
+      ],
+      "run": {
+        "id": "62000000-0000-0000-0000-000000000001",
+        "state": "completed",
+        "summary": "Synthetic room summarized. No action proposed.",
+        "lastUpdatedAt": "2026-08-19T09:05:05Z"
+      },
+      "proofLedger": ["read"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000007",
+      "timestamp": "2026-08-18T17:12:00Z",
+      "headline": "A synthetic meetup invitation was declined warmly",
+      "whyItMatters": "The historical fixture demonstrates a handled item with confirmed read proof, separate from live proposals.",
+      "status": "handled",
+      "agentID": "55555555-5555-5555-5555-555555555555",
+      "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
+      "claims": [
+        {
+          "id": "71000000-0000-0000-0000-000000000001",
+          "claim": "The synthetic organizer opened the historical response.",
+          "kind": "direct",
+          "sourceID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceTitle": "Synthetic read receipt",
+          "sourceURL": "https://sources.example.invalid/mail/read-receipt-meetup-7",
+          "sourceCapturedAt": "2026-08-18T17:12:00Z",
+          "excerpt": "delivered_at=17:10:02Z; read_at=17:12:00Z"
+        }
+      ],
+      "run": {
+        "id": "72000000-0000-0000-0000-000000000001",
+        "state": "completed",
+        "summary": "Synthetic historical action has read proof.",
+        "lastUpdatedAt": "2026-08-18T17:12:00Z"
+      },
+      "action": {
+        "id": "73000000-0000-0000-0000-000000000001",
+        "revision": 1,
+        "kind": "updateRSVP",
+        "account": "tony@example.invalid",
+        "channel": "Email",
+        "target": "Maya Example <maya@example.invalid>",
+        "exactPayload": "[SYNTHETIC HISTORICAL PAYLOAD]\nThank you for thinking of me. I cannot join this one, but I would be happy to answer the questions in writing.",
+        "requiresExplicitApproval": true
+      },
+      "proofLedger": ["proposed", "approved", "providerAcknowledged", "delivered", "read"]
+    }
+  ]
+}

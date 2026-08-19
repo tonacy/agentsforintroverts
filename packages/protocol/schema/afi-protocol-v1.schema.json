@@ -1,0 +1,671 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentsforintroverts.com/schema/afi-protocol-v1.schema.json",
+  "title": "Agents for Introverts Protocol v1",
+  "description": "Structural wire contracts. Cross-record hash, provenance, replay, approval, and proof invariants are enforced by the package validators and projections.",
+  "oneOf": [
+    { "$ref": "#/$defs/agentDefinition" },
+    { "$ref": "#/$defs/providerConnection" },
+    { "$ref": "#/$defs/run" },
+    { "$ref": "#/$defs/eventEnvelope" },
+    { "$ref": "#/$defs/sourceItem" },
+    { "$ref": "#/$defs/feedItem" },
+    { "$ref": "#/$defs/actionProposal" },
+    { "$ref": "#/$defs/approvalDecision" },
+    { "$ref": "#/$defs/executionReceipt" }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "jsonValue": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "number" },
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/jsonValue" }
+        },
+        { "$ref": "#/$defs/jsonObject" }
+      ]
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+    },
+    "actorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "actor_type"],
+      "properties": {
+        "actor_id": { "$ref": "#/$defs/nonEmptyString" },
+        "actor_type": {
+          "enum": ["user", "agent", "provider", "system", "service"]
+        },
+        "display_name": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "eventProducer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["connection_id", "provider"],
+      "properties": {
+        "connection_id": { "$ref": "#/$defs/nonEmptyString" },
+        "provider": { "$ref": "#/$defs/nonEmptyString" },
+        "external_agent_id": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "sourceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_item_id"],
+      "properties": {
+        "source_item_id": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "AFI canonical SourceItem.source_item_id, not the provider external_id."
+        },
+        "locator": { "$ref": "#/$defs/nonEmptyString" },
+        "excerpt": { "$ref": "#/$defs/nonEmptyString" },
+        "observed_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "embeddedSourceInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_item_id",
+        "external_id",
+        "kind",
+        "captured_at",
+        "content_hash"
+      ],
+      "properties": {
+        "source_item_id": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "AFI canonical identity used by canonical SourceReference values."
+        },
+        "external_id": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Producer/provider-native source identity."
+        },
+        "kind": { "$ref": "#/$defs/nonEmptyString" },
+        "url": { "$ref": "#/$defs/nonEmptyString" },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "captured_at": { "$ref": "#/$defs/timestamp" },
+        "content_hash": { "$ref": "#/$defs/nonEmptyString" },
+        "excerpt": { "$ref": "#/$defs/nonEmptyString" },
+        "metadata": { "$ref": "#/$defs/jsonObject" }
+      }
+    },
+    "eventRunRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["external_id", "agent_key"],
+      "properties": {
+        "external_id": { "$ref": "#/$defs/nonEmptyString" },
+        "agent_key": { "$ref": "#/$defs/nonEmptyString" },
+        "trigger": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "agentDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "agent_id",
+        "slug",
+        "version",
+        "name",
+        "purpose",
+        "system_prompt",
+        "capabilities",
+        "source_kinds",
+        "action_kinds",
+        "enabled",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "schema": { "const": "afi.agent_definition.v1" },
+        "agent_id": { "$ref": "#/$defs/nonEmptyString" },
+        "slug": { "$ref": "#/$defs/nonEmptyString" },
+        "version": { "type": "integer", "minimum": 1 },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "purpose": { "$ref": "#/$defs/nonEmptyString" },
+        "system_prompt": { "$ref": "#/$defs/nonEmptyString" },
+        "capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "source_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "action_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "enabled": { "type": "boolean" },
+        "created_at": { "$ref": "#/$defs/timestamp" },
+        "updated_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "providerConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "connection_id",
+        "user_id",
+        "provider",
+        "adapter",
+        "account_ref",
+        "capabilities",
+        "status",
+        "metadata",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "schema": { "const": "afi.provider_connection.v1" },
+        "connection_id": { "$ref": "#/$defs/nonEmptyString" },
+        "user_id": { "$ref": "#/$defs/nonEmptyString" },
+        "provider": { "$ref": "#/$defs/nonEmptyString" },
+        "adapter": { "$ref": "#/$defs/nonEmptyString" },
+        "account_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "model": { "$ref": "#/$defs/nonEmptyString" },
+        "capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "status": { "enum": ["connected", "disabled", "error"] },
+        "metadata": { "$ref": "#/$defs/jsonObject" },
+        "created_at": { "$ref": "#/$defs/timestamp" },
+        "updated_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "runCompletedData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "summary", "output_ids"],
+      "properties": {
+        "status": { "const": "completed" },
+        "summary": { "$ref": "#/$defs/nonEmptyString" },
+        "output_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "runPartialData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "summary", "completed_steps", "remaining_steps", "checkpoint"],
+      "properties": {
+        "status": { "const": "partial" },
+        "summary": { "$ref": "#/$defs/nonEmptyString" },
+        "completed_steps": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "remaining_steps": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "checkpoint": { "$ref": "#/$defs/jsonObject" }
+      }
+    },
+    "runFailedData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "error"],
+      "properties": {
+        "status": { "const": "failed" },
+        "error": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "message", "retryable"],
+          "properties": {
+            "code": { "$ref": "#/$defs/nonEmptyString" },
+            "message": { "$ref": "#/$defs/nonEmptyString" },
+            "retryable": { "type": "boolean" }
+          }
+        },
+        "checkpoint": { "$ref": "#/$defs/jsonObject" }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "run_id",
+        "user_id",
+        "agent_id",
+        "agent_version",
+        "provider_connection_id",
+        "goal",
+        "input_source_item_ids",
+        "status",
+        "requested_at",
+        "last_sequence"
+      ],
+      "properties": {
+        "schema": { "const": "afi.run.v1" },
+        "run_id": { "$ref": "#/$defs/nonEmptyString" },
+        "user_id": { "$ref": "#/$defs/nonEmptyString" },
+        "agent_id": { "$ref": "#/$defs/nonEmptyString" },
+        "agent_version": { "type": "integer", "minimum": 1 },
+        "provider_connection_id": { "$ref": "#/$defs/nonEmptyString" },
+        "goal": { "$ref": "#/$defs/nonEmptyString" },
+        "input_source_item_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "status": { "enum": ["queued", "running", "completed", "partial", "failed"] },
+        "requested_at": { "$ref": "#/$defs/timestamp" },
+        "started_at": { "$ref": "#/$defs/timestamp" },
+        "ended_at": { "$ref": "#/$defs/timestamp" },
+        "last_sequence": { "type": "integer", "minimum": 0 },
+        "completion": {
+          "oneOf": [
+            { "$ref": "#/$defs/runCompletedData" },
+            { "$ref": "#/$defs/runPartialData" },
+            { "$ref": "#/$defs/runFailedData" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["completed", "partial", "failed"] } } },
+          "then": { "required": ["started_at", "ended_at", "completion"] }
+        }
+      ]
+    },
+    "sourceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "source_item_id",
+        "user_id",
+        "provider_connection_id",
+        "provider",
+        "source_kind",
+        "external_id",
+        "content",
+        "occurred_at",
+        "captured_at",
+        "metadata"
+      ],
+      "properties": {
+        "schema": { "const": "afi.source_item.v1" },
+        "source_item_id": { "$ref": "#/$defs/nonEmptyString" },
+        "user_id": { "$ref": "#/$defs/nonEmptyString" },
+        "provider_connection_id": { "$ref": "#/$defs/nonEmptyString" },
+        "provider": { "$ref": "#/$defs/nonEmptyString" },
+        "source_kind": { "$ref": "#/$defs/nonEmptyString" },
+        "external_id": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Provider-native item identity; SourceReference never targets this value."
+        },
+        "thread_id": { "$ref": "#/$defs/nonEmptyString" },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "content": { "$ref": "#/$defs/nonEmptyString" },
+        "url": { "$ref": "#/$defs/nonEmptyString" },
+        "occurred_at": { "$ref": "#/$defs/timestamp" },
+        "captured_at": { "$ref": "#/$defs/timestamp" },
+        "metadata": { "$ref": "#/$defs/jsonObject" }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "kind", "text", "source_refs"],
+      "properties": {
+        "claim_id": { "$ref": "#/$defs/nonEmptyString" },
+        "kind": { "$ref": "#/$defs/nonEmptyString" },
+        "text": { "$ref": "#/$defs/nonEmptyString" },
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sourceReference" },
+          "x-afi-invariant": "Every reference must exactly match a member of the containing FeedItem.sources array."
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "feedItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "feed_item_id",
+        "user_id",
+        "run_id",
+        "agent_id",
+        "revision",
+        "title",
+        "summary",
+        "lane",
+        "why_it_matters",
+        "claims",
+        "sources",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "schema": { "const": "afi.feed_item.v1" },
+        "feed_item_id": { "$ref": "#/$defs/nonEmptyString" },
+        "user_id": { "$ref": "#/$defs/nonEmptyString" },
+        "run_id": { "$ref": "#/$defs/nonEmptyString" },
+        "agent_id": { "$ref": "#/$defs/nonEmptyString" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "summary": { "$ref": "#/$defs/nonEmptyString" },
+        "lane": { "enum": ["needs_you", "handled", "watching", "digest"] },
+        "why_it_matters": { "$ref": "#/$defs/nonEmptyString" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "claims": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/claim" }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sourceReference" }
+        },
+        "status": { "enum": ["unread", "saved", "dismissed", "handled"] },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "x-afi-invariant": "Claim provenance is validated against the exact FeedItem.sources set at runtime."
+    },
+    "actionProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "action_id",
+        "revision",
+        "user_id",
+        "run_id",
+        "agent_id",
+        "provider_connection_id",
+        "action_kind",
+        "rationale",
+        "payload",
+        "payload_hash",
+        "proposed_by",
+        "proposed_at",
+        "sources",
+        "status"
+      ],
+      "properties": {
+        "schema": { "const": "afi.action_proposal.v1" },
+        "action_id": { "$ref": "#/$defs/nonEmptyString" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "user_id": { "$ref": "#/$defs/nonEmptyString" },
+        "run_id": { "$ref": "#/$defs/nonEmptyString" },
+        "agent_id": { "$ref": "#/$defs/nonEmptyString" },
+        "provider_connection_id": { "$ref": "#/$defs/nonEmptyString" },
+        "action_kind": { "$ref": "#/$defs/nonEmptyString" },
+        "rationale": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "User-facing reason for the proposal. Revision-bound, but intentionally outside payload_hash."
+        },
+        "payload": { "$ref": "#/$defs/jsonObject" },
+        "payload_hash": { "$ref": "#/$defs/payloadHash" },
+        "proposed_by": { "$ref": "#/$defs/actorRef" },
+        "proposed_at": { "$ref": "#/$defs/timestamp" },
+        "expires_at": { "$ref": "#/$defs/timestamp" },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sourceReference" }
+        },
+        "status": { "const": "proposed" }
+      },
+      "x-afi-invariant": "payload_hash equals SHA-256 of protocol canonical JSON payload bytes."
+    },
+    "approvalDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "decision_id",
+        "action_id",
+        "action_revision",
+        "payload_hash",
+        "decision",
+        "decided_by",
+        "decided_at"
+      ],
+      "properties": {
+        "schema": { "const": "afi.approval_decision.v1" },
+        "decision_id": { "$ref": "#/$defs/nonEmptyString" },
+        "action_id": { "$ref": "#/$defs/nonEmptyString" },
+        "action_revision": { "type": "integer", "minimum": 1 },
+        "payload_hash": { "$ref": "#/$defs/payloadHash" },
+        "decision": { "enum": ["approved", "rejected"] },
+        "decided_by": {
+          "allOf": [
+            { "$ref": "#/$defs/actorRef" },
+            { "properties": { "actor_type": { "const": "user" } } }
+          ]
+        },
+        "decided_at": { "$ref": "#/$defs/timestamp" },
+        "valid_until": { "$ref": "#/$defs/timestamp" },
+        "reason": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "x-afi-invariant": "The deciding user must own the proposal, differ from proposed_by, and bind its current action_id, revision, and payload_hash."
+    },
+    "executionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "receipt_id",
+        "action_id",
+        "action_revision",
+        "payload_hash",
+        "provider_connection_id",
+        "status",
+        "occurred_at",
+        "evidence"
+      ],
+      "properties": {
+        "schema": { "const": "afi.execution_receipt.v1" },
+        "receipt_id": { "$ref": "#/$defs/nonEmptyString" },
+        "action_id": { "$ref": "#/$defs/nonEmptyString" },
+        "action_revision": { "type": "integer", "minimum": 1 },
+        "payload_hash": { "$ref": "#/$defs/payloadHash" },
+        "provider_connection_id": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "enum": ["provider_acknowledged", "delivered", "read", "failed"] },
+        "occurred_at": { "$ref": "#/$defs/timestamp" },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "external_id"],
+          "properties": {
+            "source": { "$ref": "#/$defs/nonEmptyString" },
+            "external_id": { "$ref": "#/$defs/nonEmptyString" },
+            "detail": { "$ref": "#/$defs/jsonObject" }
+          }
+        }
+      }
+    },
+    "feedItemPublishedData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feed_item"],
+      "properties": { "feed_item": { "$ref": "#/$defs/feedItem" } }
+    },
+    "feedItemUpdatedData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feed_item", "previous_revision"],
+      "properties": {
+        "feed_item": { "$ref": "#/$defs/feedItem" },
+        "previous_revision": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "feedItemWithdrawnData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feed_item_id", "feed_item_revision", "reason", "withdrawn_by"],
+      "properties": {
+        "feed_item_id": { "$ref": "#/$defs/nonEmptyString" },
+        "feed_item_revision": { "type": "integer", "minimum": 1 },
+        "reason": { "$ref": "#/$defs/nonEmptyString" },
+        "withdrawn_by": { "$ref": "#/$defs/actorRef" }
+      }
+    },
+    "actionProposedData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposal"],
+      "properties": { "proposal": { "$ref": "#/$defs/actionProposal" } }
+    },
+    "actionApprovalDecidedData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision"],
+      "properties": { "decision": { "$ref": "#/$defs/approvalDecision" } }
+    },
+    "actionExecutionReceiptData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt"],
+      "properties": { "receipt": { "$ref": "#/$defs/executionReceipt" } }
+    },
+    "feedbackRecordedData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feedback_id", "feed_item_id", "feedback_kind", "value", "recorded_by"],
+      "properties": {
+        "feedback_id": { "$ref": "#/$defs/nonEmptyString" },
+        "feed_item_id": { "$ref": "#/$defs/nonEmptyString" },
+        "feedback_kind": { "$ref": "#/$defs/nonEmptyString" },
+        "value": { "$ref": "#/$defs/jsonValue" },
+        "recorded_by": { "$ref": "#/$defs/actorRef" }
+      }
+    },
+    "eventEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "event_id",
+        "idempotency_key",
+        "occurred_at",
+        "producer",
+        "run",
+        "sequence",
+        "kind",
+        "data",
+        "sources"
+      ],
+      "properties": {
+        "schema": { "const": "afi.event.v1" },
+        "event_id": { "$ref": "#/$defs/nonEmptyString" },
+        "idempotency_key": { "$ref": "#/$defs/nonEmptyString" },
+        "occurred_at": { "$ref": "#/$defs/timestamp" },
+        "producer": { "$ref": "#/$defs/eventProducer" },
+        "run": { "$ref": "#/$defs/eventRunRef" },
+        "sequence": { "type": "integer", "minimum": 1 },
+        "kind": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Open string. Unknown kinds remain structurally valid."
+        },
+        "data": { "$ref": "#/$defs/jsonObject" },
+        "sources": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/embeddedSourceInput" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "run.started" } }, "required": ["kind"] },
+          "then": {
+            "properties": {
+              "data": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["status"],
+                "properties": { "status": { "const": "running" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "run.completed" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/runCompletedData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "run.partial" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/runPartialData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "run.failed" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/runFailedData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "feed.item.published" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/feedItemPublishedData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "feed.item.updated" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/feedItemUpdatedData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "feed.item.withdrawn" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/feedItemWithdrawnData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "action.proposed" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/actionProposedData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "action.approval_decided" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/actionApprovalDecidedData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "action.execution_receipt.recorded" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/actionExecutionReceiptData" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "feedback.recorded" } }, "required": ["kind"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/feedbackRecordedData" } } }
+        }
+      ],
+      "x-afi-invariant": "Terminal status is valid only with run.completed, run.partial, or run.failed. Canonical feed/action source IDs exactly cover embedded envelope source_item_id values. Entity run/provider IDs bind to eventRunRef/eventProducer fields."
+    }
+  }
+}

@@ -1,102 +1,97 @@
 # Agents for Introverts
 
-Marketing site for [agentsforintroverts.com](https://agentsforintroverts.com) — AI agents that handle the loud work so introverts can stay in deep work.
+This repository now contains both the public brand site and the first private
+product: **Quiet Desk**, a provider-neutral agent feed for calm, sourced review.
 
-## Tech Stack
+Codex and Grok can run the same five roles through one bounded MCP tool surface.
+Their signed events land in Quiet Hub, which owns the append-only event log and
+canonical feed, run, and source projections. The native Mac app is the review
+surface; providers are executors, never the system of record.
 
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4
-- **Deployment**: Cloudflare Pages (static export)
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm
-
-### Local Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
+```text
+Codex (local STDIO) ─┐
+                     ├─ MCP bridge ─ signed afi.event.v1 ─ Quiet Hub ─ Slow Feed
+Grok (remote HTTPS) ─┘                                      │
+                                                           └─ source doors
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the site.
+## What is built
 
-### Build
+- `apps/quiet-desk/` — native SwiftUI Mac app with three calm destinations:
+  Now, Activity, and Agents & Sources. Detail stays behind an on-demand
+  inspector; the app currently ships with clearly synthetic fixtures and no
+  provider-side execution code.
+- `packages/protocol/` — provider-neutral TypeScript contracts, JSON Schema,
+  deterministic projection helpers, canonical payload hashing, fixtures, and
+  invariant tests.
+- `services/hub/` — Cloudflare Worker + D1 append-only hub with HMAC ingestion,
+  replay/idempotency controls, read authentication, and deterministic feed/run/
+  source projection.
+- `services/mcp/` — one MCP surface with local STDIO transport for Codex and
+  authenticated Streamable HTTP for Grok-compatible remote connectors.
+- `agents/` — five bounded runtime profiles and prompts: Inbox, Follow-up,
+  Scheduling, Group Chat, and Meetup.
+- `docs/` — architecture, threat model, provider activation, and the short list
+  of product decisions to review.
+
+External actions stop at an exact proposal. Approval, provider acknowledgement,
+delivery, and read remain separate evidence; the provider bridge exposes no
+approve or execute tool.
+
+## Verify the product
 
 ```bash
+npm run test:agents
+npm run test:protocol
+npm run test:hub
+npm run test:mcp
+npm run test:integration
+npm run test:mac
+npm run lint
 npm run build
 ```
 
-This creates a static export in the `out/` directory.
+## Run Quiet Desk
 
-## Deployment (Cloudflare Pages)
+```bash
+cd apps/quiet-desk
+swift run
+```
 
-### First-time Setup
+To create an ad-hoc signed local `.app` bundle:
 
-1. **Install Wrangler CLI** (included as dev dependency, or install globally):
-   ```bash
-   npm install -g wrangler
-   ```
+```bash
+cd apps/quiet-desk
+./scripts/package-app.sh
+open ".build/arm64-apple-macosx/release/Quiet Desk.app"
+```
 
-2. **Login to Cloudflare**:
-   ```bash
-   wrangler login
-   ```
+The initial Mac build is a product and safety prototype backed by synthetic
+fixtures. The hub and MCP bridge are functional locally, but no production hub,
+real inbox/calendar/chat scope, provider connector, or external executor is
+configured by this change.
 
-3. **Deploy**:
-   ```bash
-   npm run deploy
-   ```
+## Connect providers
 
-   This builds the site and deploys to Cloudflare Pages. On first deploy, Wrangler will create the `agentsforintroverts` project.
+Start with [the provider activation guide](docs/CONNECT_PROVIDERS.md) and
+[the review checklist](docs/REVIEW_CHECKLIST.md). Use different hub connection
+IDs and HMAC secrets for Codex and Grok, keep the first source read-only, and do
+not authorize an executor during the first live-source test.
 
-### Subsequent Deploys
+## Public site
+
+The existing Next.js 16 static site remains the public
+[agentsforintroverts.com](https://agentsforintroverts.com) brand surface.
+
+```bash
+npm install
+npm run dev
+```
+
+Deployment remains an explicit, separate action:
 
 ```bash
 npm run deploy
 ```
 
-### Custom Domain Setup
-
-After the first deploy:
-
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. Navigate to **Workers & Pages** → **agentsforintroverts** → **Custom domains**
-3. Add `agentsforintroverts.com`
-4. Follow Cloudflare's DNS instructions to point your domain
-
-## Project Structure
-
-```
-src/
-├── app/
-│   ├── globals.css      # Global styles and Tailwind config
-│   ├── layout.tsx       # Root layout with metadata
-│   └── page.tsx         # Home page
-└── components/
-    ├── index.ts         # Component exports
-    ├── EmailForm.tsx    # Email capture form (client-side)
-    ├── Nav.tsx          # Navigation bar
-    ├── Hero.tsx         # Hero section with headline
-    ├── AgentCards.tsx   # The 5 agent cards
-    ├── Proof.tsx        # Proof points section
-    ├── Audience.tsx     # Target audience section
-    ├── Founder.tsx      # Founder note from Tony
-    ├── CTABand.tsx      # Final CTA section
-    └── Footer.tsx       # Site footer
-```
-
-## Email Capture
-
-The email form is client-side only with validation. See the `TODO` comment in `src/components/EmailForm.tsx` for integration with Resend/Supabase when ready.
-
-## License
-
-Private — Tony Llongueras
+Private project — Tony Llongueras.

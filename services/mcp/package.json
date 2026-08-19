@@ -1,0 +1,24 @@
+{
+  "name": "@agents-for-introverts/quiet-desk-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start:stdio": "node dist/stdio.js",
+    "start:http": "node dist/http.js",
+    "test": "npm run build && node --test dist/tests/*.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^20.19.11",
+    "typescript": "^5.9.2"
+  }
+}

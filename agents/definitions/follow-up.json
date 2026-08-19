@@ -1,0 +1,13 @@
+{
+  "schema": "afi.agent_runtime_profile.v1",
+  "key": "afi.follow-up",
+  "display_name": "Follow-up",
+  "prompt": "../prompts/follow-up.md",
+  "model_tier": "balanced",
+  "allowed_effects": ["observe", "distill", "draft"],
+  "source_kinds": ["email", "direct_message", "group_chat", "calendar"],
+  "max_feed_items": 5,
+  "max_iterations": 16,
+  "context_budget_tokens": 50000,
+  "completion_required": true
+}

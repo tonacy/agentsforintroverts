@@ -1,0 +1,13 @@
+{
+  "schema": "afi.agent_runtime_profile.v1",
+  "key": "afi.inbox",
+  "display_name": "Inbox",
+  "prompt": "../prompts/inbox.md",
+  "model_tier": "balanced",
+  "allowed_effects": ["observe", "distill", "draft"],
+  "source_kinds": ["email", "newsletter", "direct_message"],
+  "max_feed_items": 7,
+  "max_iterations": 18,
+  "context_budget_tokens": 60000,
+  "completion_required": true
+}

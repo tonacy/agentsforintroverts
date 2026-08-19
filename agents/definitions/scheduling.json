@@ -1,0 +1,13 @@
+{
+  "schema": "afi.agent_runtime_profile.v1",
+  "key": "afi.scheduling",
+  "display_name": "Scheduling",
+  "prompt": "../prompts/scheduling.md",
+  "model_tier": "balanced",
+  "allowed_effects": ["observe", "distill", "draft"],
+  "source_kinds": ["calendar", "email", "direct_message"],
+  "max_feed_items": 5,
+  "max_iterations": 14,
+  "context_budget_tokens": 40000,
+  "completion_required": true
+}

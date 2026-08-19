@@ -1,0 +1,13 @@
+{
+  "schema": "afi.agent_runtime_profile.v1",
+  "key": "afi.group-chat",
+  "display_name": "Group Chat",
+  "prompt": "../prompts/group-chat.md",
+  "model_tier": "balanced",
+  "allowed_effects": ["observe", "distill", "draft"],
+  "source_kinds": ["group_chat", "direct_message"],
+  "max_feed_items": 6,
+  "max_iterations": 18,
+  "context_budget_tokens": 60000,
+  "completion_required": true
+}

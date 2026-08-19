@@ -1,0 +1,30 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "agents-for-introverts-hub",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "agents-for-introverts-hub",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "MAX_BODY_BYTES": "262144",
+    "REPLAY_WINDOW_SECONDS": "300",
+    "MAX_EVENTS_PER_READ": "10000"
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.01
+    }
+  }
+}

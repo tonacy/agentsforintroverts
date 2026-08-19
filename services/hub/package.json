@@ -1,0 +1,14 @@
+{
+  "name": "@agents-for-introverts/hub",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "cf-types": "wrangler types --config wrangler.jsonc",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "test": "tsc --project tsconfig.test.json && node --test .test-dist/test/*.test.js"
+  }
+}

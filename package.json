@@ -4,9 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint .",
+    "test:agents": "node --test agents/agents.test.mjs",
+    "test:protocol": "npm --prefix packages/protocol test",
+    "test:hub": "npm --prefix services/hub test",
+    "test:mcp": "npm --prefix services/mcp test",
+    "test:integration": "node scripts/run-integration-tests.mjs",
+    "test:mac": "swift test --package-path apps/quiet-desk",
+    "verify": "node scripts/verify.mjs",
     "deploy": "npm run build && wrangler pages deploy out --project-name agentsforintroverts"
   },
   "dependencies": {

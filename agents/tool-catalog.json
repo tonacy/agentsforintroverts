@@ -1,0 +1,70 @@
+{
+  "schema": "afi.tool-catalog.v1",
+  "tools": [
+    {
+      "name": "list_capabilities",
+      "effect": "read",
+      "description": "Discover the source kinds, operations, scopes, and current connection health available to this run."
+    },
+    {
+      "name": "list_feed_items",
+      "effect": "read",
+      "description": "List Quiet Desk feed items with lane, agent, time, status, and text filters."
+    },
+    {
+      "name": "get_feed_item",
+      "effect": "read",
+      "description": "Read one feed item with its claims, source references, run, proposal, and proof states."
+    },
+    {
+      "name": "list_sources",
+      "effect": "read",
+      "description": "List minimized source records and user-openable deep links without returning secrets."
+    },
+    {
+      "name": "get_source",
+      "effect": "read",
+      "description": "Read one source record and the claims that cite it."
+    },
+    {
+      "name": "publish_feed_item",
+      "effect": "write_internal",
+      "description": "Publish a distilled feed item whose every claim cites one or more supplied source records."
+    },
+    {
+      "name": "update_feed_item",
+      "effect": "write_internal",
+      "description": "Append a revision to an existing feed item after reading its current revision."
+    },
+    {
+      "name": "withdraw_feed_item",
+      "effect": "write_internal",
+      "description": "Withdraw an incorrect or no-longer-useful feed item while preserving the audit trail."
+    },
+    {
+      "name": "propose_action",
+      "effect": "proposal_only",
+      "description": "Create an exact, expiring external-action proposal with target, account, revision, payload preview, and payload hash."
+    },
+    {
+      "name": "record_feedback",
+      "effect": "write_internal",
+      "description": "Record a user preference or correction against a feed item."
+    },
+    {
+      "name": "complete_run",
+      "effect": "write_internal",
+      "description": "End a run explicitly as completed, partial, or failed with completed steps, remaining steps, and a concise summary."
+    }
+  ],
+  "intentionally_absent": [
+    {
+      "name": "approve_action",
+      "reason": "Approval is a user authority and cannot be delegated to the proposing provider."
+    },
+    {
+      "name": "execute_action",
+      "reason": "The MVP has no trusted external executor; proposals remain drafts until that boundary is implemented and reviewed."
+    }
+  ]
+}

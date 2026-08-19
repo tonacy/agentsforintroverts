@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "apps/quiet-desk/.build/**",
+    "packages/protocol/dist/**",
+    "services/hub/.test-dist/**",
+    "services/hub/worker-configuration.d.ts",
+    "services/mcp/dist/**",
   ]),
 ]);
 
