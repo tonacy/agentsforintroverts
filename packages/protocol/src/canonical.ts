@@ -156,3 +156,17 @@ export function hashActionPayload(payload: JsonObject): string {
 export function isPayloadHash(value: string): boolean {
   return /^sha256:[a-f0-9]{64}$/.test(value);
 }
+
+/**
+ * Hash any protocol JSON value using the same canonical bytes as action
+ * approvals. The more general name is used by Context Kernel records and
+ * ledger events; hashActionPayload remains for the v1 action API.
+ */
+export function hashCanonicalValue(value: JsonValue | unknown): string {
+  return `sha256:${sha256Hex(canonicalJson(value))}`;
+}
+
+/** A canonical lower-case SHA-256 protocol hash. */
+export function isCanonicalHash(value: unknown): value is string {
+  return typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value);
+}

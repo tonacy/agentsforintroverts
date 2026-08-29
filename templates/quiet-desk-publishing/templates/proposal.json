@@ -1,0 +1,18 @@
+{
+  "schema": "afi.publication_proposal.v0",
+  "id": "proposal_replace_me",
+  "status": "proposed",
+  "authorship_threshold": "established",
+  "human_seed_refs": ["capture_replace_me"],
+  "source_refs": [],
+  "context_statement_refs": [],
+  "channel": "replace_me",
+  "account": "replace_me",
+  "target": "replace_me",
+  "payload": "replace_me",
+  "revision": 1,
+  "payload_sha256": "compute_after_payload_is_frozen",
+  "created_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "expires_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "approval": null
+}

@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 
 import { createHubApp } from "../services/hub/.test-dist/src/app.js";
@@ -10,6 +13,14 @@ import {
   HubClient,
   signatureInput,
 } from "../services/mcp/dist/hub-client.js";
+import { LocalContextGateway } from "../services/mcp/dist/local-context-gateway.js";
+import {
+  ContextKernel,
+  canonicalJson,
+  initializeContextWorkspace,
+  sha256,
+} from "../services/context-kernel/dist/src/index.js";
+import { sealEntity } from "../packages/protocol/dist/index.js";
 
 const NOW = new Date("2026-08-19T12:00:00.000Z");
 const HUB_URL = "https://quiet-hub.integration.test";
@@ -28,6 +39,9 @@ const source = {
   captured_at: "2026-08-19T11:55:00.000Z",
   content_hash: `sha256:${"a".repeat(64)}`,
   title: "Dinner planning thread",
+  author: "friend@example.test",
+  excerpt: "Thursday or Friday evening both work for dinner.",
+  metadata: { mailbox: "personal", labels: ["inbox"] },
 };
 
 function responsePayload(response) {
@@ -92,6 +106,8 @@ test("HubClient and Quiet Hub preserve provenance, idempotency, proof boundaries
   // A retry deliberately reuses the first event ID while rotating the nonce.
   // This proves hub idempotency without tripping the replay guard.
   const ids = [
+    "event-source-integration-1",
+    "nonce-source-integration-001",
     "event-feed-integration-1",
     "nonce-feed-integration-0001",
     "event-feed-integration-1",
@@ -126,10 +142,36 @@ test("HubClient and Quiet Hub preserve provenance, idempotency, proof boundaries
     storage: "memory",
   });
 
-  const feedInput = {
+  const sourceReceipt = await client.observeSource({
     run_id: RUN_ID,
     agent_key: AGENT_KEY,
     sequence: 1,
+    trigger: "source_event",
+    ...source,
+  });
+  assert.equal(sourceReceipt.accepted, true);
+  assert.equal(sourceReceipt.duplicate, false);
+  assert.equal(sourceReceipt.event_id, "event-source-integration-1");
+
+  const observedEvent = (await store.listEvents())
+    .find((event) => event.kind === "source.observed");
+  assert.ok(observedEvent, "source capture should be retained before interpretation");
+  assert.deepEqual(observedEvent.data, { source_item_id: source.source_item_id });
+  assert.deepEqual(observedEvent.sources, [source]);
+  assert.equal("summary" in observedEvent.data, false);
+  assert.equal("claims" in observedEvent.data, false);
+
+  const observedSourceProjection = await client.listSources({ kind: "email", limit: 10 });
+  assert.equal(observedSourceProjection.count, 1);
+  assert.deepEqual(observedSourceProjection.items[0].feed_ids, []);
+  assert.equal(observedSourceProjection.items[0].author, source.author);
+  assert.equal(observedSourceProjection.items[0].excerpt, source.excerpt);
+  assert.deepEqual(observedSourceProjection.items[0].metadata, source.metadata);
+
+  const feedInput = {
+    run_id: RUN_ID,
+    agent_key: AGENT_KEY,
+    sequence: 2,
     feed_item_id: "feed-integration-1",
     headline: "A dinner invitation needs a reply",
     summary: "A friend offered Thursday or Friday for dinner.",
@@ -170,7 +212,7 @@ test("HubClient and Quiet Hub preserve provenance, idempotency, proof boundaries
   assert.equal(duplicatePublication.accepted, true);
   assert.equal(duplicatePublication.duplicate, true);
   assert.equal(duplicatePublication.event_id, firstPublication.event_id);
-  assert.equal((await store.listEvents()).length, 1);
+  assert.equal((await store.listEvents()).length, 2);
 
   const feedProjection = await client.listFeed({ agent_key: AGENT_KEY, limit: 10 });
   assert.equal(feedProjection.count, 1);
@@ -207,7 +249,7 @@ test("HubClient and Quiet Hub preserve provenance, idempotency, proof boundaries
   const actionResult = await client.proposeAction({
     run_id: RUN_ID,
     agent_key: AGENT_KEY,
-    sequence: 2,
+    sequence: 3,
     action_id: "action-email-integration-1",
     revision: 1,
     operation: boundActionPayload.operation,
@@ -237,10 +279,10 @@ test("HubClient and Quiet Hub preserve provenance, idempotency, proof boundaries
   const completion = await client.completeRun({
     run_id: RUN_ID,
     agent_key: AGENT_KEY,
-    sequence: 3,
+    sequence: 4,
     status: "completed",
-    summary: "Published one sourced feed item and prepared one approval-gated draft.",
-    completed_steps: ["Read source", "Publish feed item", "Prepare draft"],
+    summary: "Observed one source, published one sourced feed item, and prepared one approval-gated draft.",
+    completed_steps: ["Observe source", "Read source", "Publish feed item", "Prepare draft"],
     remaining_steps: [],
     sources: [],
   });
@@ -252,12 +294,13 @@ test("HubClient and Quiet Hub preserve provenance, idempotency, proof boundaries
   assert.equal(runResponse.status, 200);
   const { run } = await responsePayload(runResponse);
   assert.equal(run.status, "completed");
-  assert.equal(run.event_count, 3);
+  assert.equal(run.event_count, 4);
   assert.equal(run.feed_item_count, 1);
   assert.deepEqual(run.events.map((event) => [event.sequence, event.kind]), [
-    [1, "feed.item.published"],
-    [2, "action.proposed"],
-    [3, "run.completed"],
+    [1, "source.observed"],
+    [2, "feed.item.published"],
+    [3, "action.proposed"],
+    [4, "run.completed"],
   ]);
 
   const approvalRequest = providerAuthorityRequest(
@@ -306,7 +349,252 @@ test("HubClient and Quiet Hub preserve provenance, idempotency, proof boundaries
   assert.equal(receiptResponse.status, 403);
   assert.equal((await responsePayload(receiptResponse)).error.code, "forbidden_authority");
 
-  assert.equal((await store.listEvents()).length, 3);
+  assert.equal((await store.listEvents()).length, 4);
   assert.equal("approveAction" in client, false);
   assert.equal("executeAction" in client, false);
+});
+
+test("two provider harnesses share one corrected Context Pack without gaining user authority", async (context) => {
+  const parent = await mkdtemp(join(tmpdir(), "afi-root-context-integration-"));
+  context.after(() => rm(parent, { recursive: true, force: true }));
+  const root = join(parent, "workspace");
+  const { kernel } = await initializeContextWorkspace(root, {
+    owner_id: "integration-owner",
+    created_at: NOW.toISOString(),
+  });
+
+  const explicitId = ContextKernel.newEntityId();
+  const explicitEntity = sealEntity({
+    schema: "afi.context_statement.v1",
+    entity_type: "context_statement",
+    entity_id: explicitId,
+    owner_id: "integration-owner",
+    revision: 1,
+    created_at: NOW.toISOString(),
+    updated_at: NOW.toISOString(),
+    created_by: { actor_type: "user", actor_id: "integration-owner" },
+    last_modified_by: { actor_type: "user", actor_id: "integration-owner" },
+    provenance: {
+      basis: "explicit",
+      evidence_refs: [],
+      human_seed_refs: [],
+      derived_from_refs: [],
+      external_refs: [],
+      recorded_at: NOW.toISOString(),
+    },
+    retention: {
+      classification: "private",
+      mode: "durable",
+      replication: "local_only",
+      body_storage: "encrypted_object",
+    },
+    basis: "explicit",
+    status: "active",
+    subject: "social participation",
+    predicate: "publishing_discovery_boundary",
+    value: "Publishing should remain separate from discovery.",
+    scope: { kind: "project", id: "agents-for-introverts" },
+  });
+  const explicit = await kernel.change({
+    idempotency_key: "integration-explicit-seed",
+    occurred_at: NOW.toISOString(),
+    actor: { actor_type: "user", actor_id: "integration-owner" },
+    kind: "context.statement.created",
+    basis: "explicit",
+    entity_type: "context_statement",
+    entity_id: explicitId,
+    expected_revision: 0,
+    payload: {
+      protocol_entity_schema: explicitEntity.schema,
+      protocol_record_hash: explicitEntity.record_hash,
+    },
+    body: canonicalJson(explicitEntity),
+  });
+
+  const firstHarness = await LocalContextGateway.open({
+    root,
+    actorId: "integration-agent-a",
+    roles: ["afi.daily-conversation"],
+  });
+  const opened = await firstHarness.openRun({
+    role: "afi.daily-conversation",
+    goal: "Find one low-noise place to participate",
+    idempotency_key: "integration/open",
+    bounds: { max_iterations: 6, context_budget_tokens: 4_096, source_limit: 3 },
+  });
+  const runId = opened.run_id;
+
+  const evidenceContent = {
+    excerpt: "A recurring public discussion concerns publishing without opening a discovery feed.",
+  };
+  const evidence = await firstHarness.recordEvidence({
+    run_id: runId,
+    evidence_id: "integration-public-source",
+    evidence_class: "public_source",
+    occurred_at: NOW.toISOString(),
+    captured_at: NOW.toISOString(),
+    content_hash: `sha256:${sha256(canonicalJson(evidenceContent))}`,
+    content: evidenceContent,
+    retention_class: "hub_eligible",
+    source_url: "https://example.test/context-integration",
+    external_id: "context-integration",
+    provenance: [],
+  });
+  const evidenceRef = {
+    entity_type: "evidence_item",
+    entity_id: evidence.entity.entity_id,
+    revision: evidence.entity.revision,
+  };
+  const explicitRef = {
+    entity_type: "context_statement",
+    entity_id: explicit.event.entity.id,
+    revision: explicit.event.entity.revision,
+  };
+  const thread = await firstHarness.appendContextEvent({
+    run_id: runId,
+    event_id: "integration-thread-proposal",
+    idempotency_key: "integration/thread",
+    kind: "thread.proposed",
+    entity: { entity_type: "thread", entity_id: "external-thread", expected_revision: 0 },
+    occurred_at: NOW.toISOString(),
+    payload: {
+      title: "Feedless social participation",
+      summary: "People are discussing ways to publish without entering algorithmic discovery feeds.",
+      status: "watching",
+      claims: [{
+        claim_id: "feedless-publishing",
+        text: "A recurring public discussion concerns feedless publishing.",
+        evidence_refs: [evidenceRef],
+        first_seen_at: NOW.toISOString(),
+        last_seen_at: NOW.toISOString(),
+        occurrence_count: 1,
+      }],
+      context_refs: [explicitRef],
+      participant_refs: [],
+      first_seen_at: NOW.toISOString(),
+      last_seen_at: NOW.toISOString(),
+    },
+    provenance: [
+      { ref: evidenceRef, relation: "supported_by", observed_at: NOW.toISOString() },
+      { ref: explicitRef, relation: "relevant_to" },
+    ],
+  });
+  const threadRef = {
+    entity_type: "thread",
+    entity_id: thread.entity.entity_id,
+    revision: thread.entity.revision,
+  };
+  const selection = await firstHarness.appendContextEvent({
+    run_id: runId,
+    event_id: "integration-selection-proposal",
+    idempotency_key: "integration/selection",
+    kind: "selection.proposed",
+    entity: { entity_type: "selection_run", entity_id: "external-selection", expected_revision: 0 },
+    occurred_at: NOW.toISOString(),
+    payload: {
+      evaluation_kind: "place_selection",
+      question: "Is this a low-noise place to contribute the publishing/discovery principle?",
+      method: "Evaluate relevance, evidence, human cost, and whether a concrete contribution is available.",
+      candidates: [{
+        candidate_id: "feedless-discussion",
+        label: "Feedless publishing discussion",
+        disposition: "recommended",
+        rationale: "It directly matches the explicit design principle and requires only one bounded reply.",
+        score: 0.9,
+        evidence_refs: [evidenceRef],
+      }],
+      evaluated_count: 1,
+      rejected_count: 0,
+      result: "recommendation",
+      recommended_candidate_ids: ["feedless-discussion"],
+      limitations: ["Synthetic integration source; no live network verification."],
+      completed_at: NOW.toISOString(),
+    },
+    provenance: [
+      { ref: evidenceRef, relation: "evaluated_from", observed_at: NOW.toISOString() },
+      { ref: threadRef, relation: "narrows" },
+    ],
+  });
+  const selectionRef = {
+    entity_type: "selection_run",
+    entity_id: selection.entity.entity_id,
+    revision: selection.entity.revision,
+  };
+  await firstHarness.appendContextEvent({
+    run_id: runId,
+    event_id: "integration-place-proposal",
+    idempotency_key: "integration/place",
+    kind: "place.proposed",
+    entity: { entity_type: "place", entity_id: "external-place", expected_revision: 0 },
+    occurred_at: NOW.toISOString(),
+    payload: {
+      thread_ref: threadRef,
+      selection_run_ref: selectionRef,
+      title: "Feedless publishing discussion",
+      source_door: {
+        provider: "web",
+        kind: "discussion",
+        external_id: "context-integration",
+        uri: "https://example.test/context-integration",
+        observed_at: NOW.toISOString(),
+      },
+      opportunity: "Contribute a concrete product principle to a recurring discussion.",
+      contribution: "Share the publishing/discovery separation as an explicit design principle.",
+      people_refs: [],
+      next_move: "Prepare one exact reply for user review; do not publish it.",
+      human_cost: "low",
+      status: "proposed",
+      expires_at: new Date(NOW.getTime() + 7 * 24 * 60 * 60 * 1_000).toISOString(),
+    },
+    provenance: [
+      { ref: threadRef, relation: "belongs_to" },
+      { ref: selectionRef, relation: "selected_by" },
+      { ref: evidenceRef, relation: "supported_by", observed_at: NOW.toISOString() },
+    ],
+  });
+
+  const firstPack = await firstHarness.assembleContext({
+    run_id: runId,
+    role: "afi.daily-conversation",
+    goal: "Find one low-noise place to participate",
+    token_budget: 4_096,
+  });
+  const secondHarness = await LocalContextGateway.open({
+    root,
+    actorId: "integration-agent-b",
+    roles: ["afi.daily-conversation"],
+  });
+  const secondPack = await secondHarness.assembleContext({
+    run_id: runId,
+    role: "afi.daily-conversation",
+    goal: "Find one low-noise place to participate",
+    token_budget: 4_096,
+  });
+  assert.equal(secondPack.context_pack_id, firstPack.context_pack_id);
+  assert.equal(secondPack.watermark.last_event_hash, firstPack.watermark.last_event_hash);
+  assert.equal(secondPack.context.explicit.length, 1);
+  assert.equal(secondPack.context.observed.length, 1);
+  assert.ok(secondPack.context.inferred.some((item) => item.entity_type === "place"));
+
+  await assert.rejects(() => secondHarness.appendContextEvent({
+    run_id: runId,
+    event_id: "integration-explicit-overwrite",
+    idempotency_key: "integration/overwrite",
+    kind: "context.statement.proposed",
+    entity: {
+      entity_type: "context_statement",
+      entity_id: explicit.event.entity.id,
+      expected_revision: 1,
+    },
+    occurred_at: NOW.toISOString(),
+    payload: {
+      basis: "inferred",
+      status: "proposed",
+      subject: "social participation",
+      predicate: "publishing_discovery_boundary",
+      value: "An agent changed the explicit preference.",
+      scope: { kind: "project", id: "agents-for-introverts" },
+    },
+    provenance: [],
+  }), /explicit.*context/i);
 });

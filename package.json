@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test:agents": "node --test agents/agents.test.mjs",
     "test:protocol": "npm --prefix packages/protocol test",
+    "test:context": "npm --prefix services/context-kernel test",
     "test:hub": "npm --prefix services/hub test",
     "test:mcp": "npm --prefix services/mcp test",
     "test:integration": "node scripts/run-integration-tests.mjs",

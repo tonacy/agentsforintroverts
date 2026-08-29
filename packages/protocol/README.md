@@ -47,3 +47,43 @@ model.
 
 JSON Schema is exported at `./schema` and runtime invariants are implemented by
 the validators and projections exported from the package root.
+
+## Product projection boundary
+
+The Quiet Desk Mac client may project canonical feed and source records into
+higher-level **human threads**: recurring discourse matched to revisioned
+personal context, narrowed toward at most three people, and optionally linked to
+one exact handoff proposal. Protocol v1 deliberately does not treat recurrence as
+consensus or mint this product view as a new authority record.
+
+Every thread claim must still resolve to exact canonical source evidence. Living
+context must preserve whether a statement was explicit, observed, or inferred.
+Any external handoff remains an ordinary `ActionProposal`, so proposed, approved,
+provider acknowledged, delivered, and read retain their independent proof rules.
+The current Mac implementation demonstrates this projection with clearly
+synthetic fixtures; a canonical live thread/context contract is a later protocol
+decision, not an implied capability of v1.
+
+## Context Kernel protocol
+
+The package now also exports the harness-neutral `afi.ledger_event.v1` contract.
+It preserves durable Evidence Items, Context Statements, Conversation Outcomes,
+Decisions, Threads, Selection Runs, Places, Drafts, and Feedback Signals as
+revisioned entity snapshots in an append-only SHA-256 event chain.
+
+`ContextPack` and `ScratchCue` are deliberately outside `LedgerEntity`:
+
+- a Context Pack is a derived, hashed view compiled for one purpose and ledger
+  watermark;
+- a Scratch Cue is uncertain, expiring input which cannot become durable merely
+  because an agent observed it.
+
+Use `sealEntity`, `buildLedgerMutationEvent`, `buildLedgerTombstoneEvent`, and
+`projectLedgerEvents` at storage boundaries. `validateContextStatementAuthority` and
+`evaluateContextStatementAuthority` prevent agents from silently asserting
+explicit user context. Explicit statements must be user-originated or bind a
+recorded user confirmation. A confirmation binds the exact revision and hash of
+an earlier active `Decision` which targets the authorized entity. Corrections and deletion are new ledger events;
+historical events are never overwritten, and a tombstone carries no entity body.
+
+The Context Kernel JSON Schema is exported at `./context-schema`.

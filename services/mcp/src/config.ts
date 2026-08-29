@@ -11,6 +11,9 @@ export interface BridgeConfig {
   host: string;
   port: number;
   allowedHosts: string[];
+  contextRoot?: string;
+  contextActorId?: string;
+  contextRoles?: string[];
 }
 
 function optional(value: string | undefined): string | undefined {
@@ -50,6 +53,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): BridgeConfig {
     host: optional(env.QUIET_MCP_HOST) ?? "127.0.0.1",
     port: parsePort(env.QUIET_MCP_PORT),
     allowedHosts: (optional(env.QUIET_MCP_ALLOWED_HOSTS) ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean),
+    contextRoot: optional(env.QUIET_CONTEXT_ROOT),
+    contextActorId: optional(env.QUIET_CONTEXT_AGENT_ID) ?? "local-agent",
+    contextRoles: (optional(env.QUIET_CONTEXT_ROLES) ?? "afi.daily-conversation,afi.common-ground")
       .split(",")
       .map((value) => value.trim())
       .filter(Boolean),

@@ -2,49 +2,52 @@ import XCTest
 @testable import QuietDeskCore
 
 final class CalmInformationArchitectureTests: XCTestCase {
-    func testDefaultDestinationIsNowAndTopLevelHasOnlyThreeChoices() {
-        XCTAssertEqual(QuietDeskDestination.initial, .now)
-        XCTAssertEqual(QuietDeskDestination.allCases, [.now, .activity, .connections])
+    func testDefaultDestinationIsDailyConversationAndTopLevelHasOnlyThreeChoices() {
+        XCTAssertEqual(QuietDeskDestination.initial, .conversation)
+        XCTAssertEqual(QuietDeskDestination.allCases, [.conversation, .activity, .connections])
 
         let titles = QuietDeskDestination.allCases.map(\.title)
         XCTAssertEqual(Set(titles).count, titles.count)
         XCTAssertTrue(titles.allSatisfy { $0.split(separator: " ").count <= 3 })
     }
 
-    func testDefaultSurfaceAdmitsOnlyItemsThatNeedThePerson() throws {
+    func testDailyConversationAdmitsOnlyAFewSupportingHumanThreads() throws {
         let snapshot = try QuietDeskFixtureLoader.load()
-        let attention = snapshot.attentionItems()
+        let threads = snapshot.topLevelThreads()
 
-        XCTAssertEqual(attention.count, 1)
-        XCTAssertTrue(attention.allSatisfy { $0.status == .needsYou })
-        XCTAssertFalse(attention.contains { $0.proofLedger.contains(.approved) })
-        XCTAssertFalse(attention.contains { $0.status == .watching || $0.status == .handled })
+        XCTAssertEqual(threads.count, 2)
+        XCTAssertTrue(threads.allSatisfy { !$0.claims.isEmpty })
+        XCTAssertTrue(threads.allSatisfy { !$0.contextStatementIDs.isEmpty })
+        XCTAssertTrue(threads.allSatisfy { (1...3).contains($0.people.count) })
+        XCTAssertEqual(snapshot.threadReferenceViolations, [])
     }
 
-    func testOperationalStatesRemainAvailableOneLevelDeeper() throws {
+    func testSourceActivityAndApprovalStatesRemainAvailableOneLevelDeeper() throws {
         let snapshot = try QuietDeskFixtureLoader.load()
 
-        XCTAssertEqual(snapshot.activityItems(for: .needsYou).count, 1)
-        XCTAssertEqual(snapshot.activityItems(for: .open).count, 6)
+        XCTAssertEqual(snapshot.activityItems(for: .needsYou).count, 2)
+        XCTAssertEqual(snapshot.activityItems(for: .open).count, 7)
         XCTAssertEqual(snapshot.activityItems(for: .watching).count, 3)
         XCTAssertEqual(snapshot.activityItems(for: .handled).count, 1)
-        XCTAssertEqual(snapshot.activityItems(for: .all).count, 7)
+        XCTAssertEqual(snapshot.activityItems(for: .all).count, 8)
     }
 
-    func testDefaultSurfaceNeverShowsMoreThanThreeItems() throws {
+    func testSupportingSurfaceNeverShowsMoreThanThreeThreads() throws {
         let snapshot = try QuietDeskFixtureLoader.load()
-        let attentionItem = try XCTUnwrap(snapshot.attentionItems().first)
+        let thread = try XCTUnwrap(snapshot.threads.first)
         let crowdedSnapshot = QuietDeskSnapshot(
             generatedAt: snapshot.generatedAt,
             isSynthetic: true,
-            items: Array(repeating: attentionItem, count: 8),
+            items: snapshot.items,
             agents: snapshot.agents,
-            sources: snapshot.sources
+            sources: snapshot.sources,
+            personalContext: snapshot.personalContext,
+            threads: Array(repeating: thread, count: 8)
         )
 
-        XCTAssertEqual(QuietDeskPresentationPolicy.maximumTopLevelAttentionItems, 3)
-        XCTAssertEqual(crowdedSnapshot.attentionItems().count, 8)
-        XCTAssertEqual(crowdedSnapshot.topLevelAttentionItems().count, 3)
+        XCTAssertEqual(QuietDeskPresentationPolicy.maximumTopLevelThreads, 3)
+        XCTAssertEqual(crowdedSnapshot.conversationThreads().count, 8)
+        XCTAssertEqual(crowdedSnapshot.topLevelThreads().count, 3)
     }
 
     func testActivitySearchRetainsSourceAndPayloadProvenance() throws {

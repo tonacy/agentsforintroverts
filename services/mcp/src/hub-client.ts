@@ -176,6 +176,10 @@ export class HubClient implements QuietDeskGateway {
     return this.parse(response);
   }
 
+  connectionState(): { internalWriteConfigured: boolean } {
+    return { internalWriteConfigured: Boolean(this.config.hubSecret) };
+  }
+
   health(): Promise<unknown> {
     return this.read("health");
   }
@@ -194,6 +198,24 @@ export class HubClient implements QuietDeskGateway {
 
   getSource(id: string): Promise<unknown> {
     return this.read(`v1/sources/${encodeURIComponent(id)}`);
+  }
+
+  observeSource(input: Parameters<QuietDeskGateway["observeSource"]>[0]): Promise<unknown> {
+    const source: SourceInput = {
+      source_item_id: input.source_item_id,
+      external_id: input.external_id,
+      kind: input.kind,
+      ...(input.url === undefined ? {} : { url: input.url }),
+      captured_at: input.captured_at,
+      content_hash: input.content_hash,
+      ...(input.title === undefined ? {} : { title: input.title }),
+      ...(input.author === undefined ? {} : { author: input.author }),
+      ...(input.excerpt === undefined ? {} : { excerpt: input.excerpt }),
+      ...(input.metadata === undefined ? {} : { metadata: input.metadata }),
+    };
+    return this.publish("source.observed", input, {
+      source_item_id: source.source_item_id,
+    }, [source]);
   }
 
   publishFeedItem(input: Parameters<QuietDeskGateway["publishFeedItem"]>[0]): Promise<unknown> {

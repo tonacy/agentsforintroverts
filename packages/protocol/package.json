@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Provider-neutral AFI agent, feed, approval, and proof contracts.",
+  "description": "Provider-neutral AFI agent, context ledger, feed, approval, and proof contracts.",
   "sideEffects": false,
   "files": [
     "dist",
@@ -15,7 +15,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./schema": "./schema/afi-protocol-v1.schema.json"
+    "./schema": "./schema/afi-protocol-v1.schema.json",
+    "./context-schema": "./schema/afi-context-kernel-v1.schema.json"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

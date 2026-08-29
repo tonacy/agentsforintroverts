@@ -1,0 +1,28 @@
+{
+  "schema": "afi.agent_runtime_profile.v1",
+  "key": "afi.daily-conversation",
+  "display_name": "Daily Conversation",
+  "prompt": "../prompts/daily-conversation.md",
+  "model_tier": "balanced",
+  "allowed_effects": ["observe", "distill"],
+  "source_kinds": ["human_daily_capture", "public_web", "rss", "social_post", "newsletter"],
+  "runtime_requirements": {
+    "daily_check_in": {
+      "mode_field": "daily_conversation_mode",
+      "allowed_modes": ["short", "deep", "no_new_input", "not_checked"],
+      "default": "not_checked",
+      "persist_by_default": false
+    },
+    "x": {
+      "expected_account_field": "x_expected_account_handle",
+      "visibly_verified_account_field": "x_visibly_verified_account_handle",
+      "account_match_field": "x_account_identity_match",
+      "following_verified_field": "x_following_verified",
+      "failure_status": "partial"
+    }
+  },
+  "max_feed_items": 3,
+  "max_iterations": 24,
+  "context_budget_tokens": 80000,
+  "completion_required": true
+}

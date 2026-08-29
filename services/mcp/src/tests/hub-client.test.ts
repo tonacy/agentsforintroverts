@@ -28,7 +28,7 @@ const source = {
   kind: "email",
   url: "https://mail.example.test/thread/1",
   captured_at: "2026-08-19T03:00:00.000Z",
-  content_hash: "a".repeat(64),
+  content_hash: `sha256:${"a".repeat(64)}`,
 };
 
 interface CapturedFeedEvent {
@@ -60,6 +60,72 @@ interface CapturedActionEvent {
     };
   };
 }
+
+interface CapturedSourceEvent {
+  kind: string;
+  data: Record<string, unknown>;
+  sources: Array<Record<string, unknown>>;
+}
+
+test("observes one source without adding interpretation and preserves the rich Hub receipt", async () => {
+  let event: CapturedSourceEvent | undefined;
+  const receipt = {
+    accepted: true,
+    schema: "afi.event.v1",
+    event_id: "event-source-00000000-0000-4000-8000-000000000001",
+    run_id: "run-source-1",
+    duplicate: false,
+    accepted_at: "2026-08-20T16:31:00.000Z",
+  };
+  const fakeFetch: typeof fetch = async (_input, init) => {
+    event = JSON.parse(String(init?.body)) as CapturedSourceEvent;
+    return new Response(JSON.stringify(receipt), {
+      status: 202,
+      headers: { "content-type": "application/json" },
+    });
+  };
+  const ids = [receipt.event_id, "nonce-source-000000000001"];
+  const client = new HubClient(
+    config,
+    fakeFetch,
+    () => new Date("2026-08-20T16:31:00.000Z"),
+    () => ids.shift() ?? "unexpected-id",
+  );
+  const observedSource = {
+    run_id: receipt.run_id,
+    agent_key: "afi.daily-conversation",
+    sequence: 1,
+    trigger: "source_event",
+    source_item_id: "source-web-1",
+    external_id: "post-1",
+    kind: "web",
+    url: "https://example.test/posts/1",
+    captured_at: "2026-08-20T16:30:00.000Z",
+    content_hash: `sha256:${"b".repeat(64)}`,
+    title: "A public conversation",
+    author: "Example Author",
+    excerpt: "A bounded excerpt retained as source material.",
+    metadata: { publication: "Example", tags: ["agents", "discourse"] },
+  };
+
+  assert.deepEqual(await client.observeSource(observedSource), receipt);
+  assert.equal(event!.kind, "source.observed");
+  assert.deepEqual(event!.data, { source_item_id: observedSource.source_item_id });
+  assert.deepEqual(event!.sources, [{
+    source_item_id: observedSource.source_item_id,
+    external_id: observedSource.external_id,
+    kind: observedSource.kind,
+    url: observedSource.url,
+    captured_at: observedSource.captured_at,
+    content_hash: observedSource.content_hash,
+    title: observedSource.title,
+    author: observedSource.author,
+    excerpt: observedSource.excerpt,
+    metadata: observedSource.metadata,
+  }]);
+  assert.equal("summary" in event!.data, false);
+  assert.equal("claims" in event!.data, false);
+});
 
 test("publishes a signed canonical feed event with claim-level provenance", async () => {
   let request: Request | undefined;

@@ -6,9 +6,12 @@ export function Footer() {
       <div className="mx-auto max-w-[1000px] px-6 py-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
           <p className="font-serif italic text-ink-muted text-sm">
-            A practice, not a product.
+            A practice, becoming a product.
           </p>
-          <nav aria-label="Footer" className="flex items-center gap-5 sm:ml-auto">
+          <nav
+            aria-label="Footer"
+            className="flex flex-wrap items-center gap-x-5 gap-y-1 sm:ml-auto"
+          >
             <Link
               href="/"
               className="nav-link inline-flex min-h-11 items-center font-mono text-xs text-ink-muted"
@@ -22,10 +25,16 @@ export function Footer() {
               Manifesto
             </Link>
             <Link
-              href="/#playbook"
+              href="/made-with/"
               className="nav-link inline-flex min-h-11 items-center font-mono text-xs text-ink-muted"
             >
-              Playbook
+              Made with
+            </Link>
+            <Link
+              href="/#field-notes"
+              className="nav-link inline-flex min-h-11 items-center font-mono text-xs text-ink-muted"
+            >
+              Field Notes
             </Link>
           </nav>
           <p className="font-mono text-xs text-ink-faint">

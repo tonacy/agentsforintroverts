@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 type NavProps = {
-  current?: "manifesto";
+  current?: "manifesto" | "made-with";
 };
 
 export function Nav({ current }: NavProps) {
@@ -14,15 +14,15 @@ export function Nav({ current }: NavProps) {
           className="nav-link flex min-h-11 min-w-0 items-center gap-2 font-mono text-sm tracking-tight text-ink"
         >
           <Image
-            src="/mark.png"
+            src="/brand/network-focus-mark.png"
             alt=""
             width={24}
             height={24}
-            className="w-6 h-6"
+            className="h-6 w-6"
           />
           <span className="truncate">Agents for Introverts</span>
         </Link>
-        <div className="flex shrink-0 items-center gap-4 sm:gap-6">
+        <div className="flex shrink-0 items-center gap-3 sm:gap-5">
           <Link
             href="/manifesto/"
             aria-current={current === "manifesto" ? "page" : undefined}
@@ -35,10 +35,21 @@ export function Nav({ current }: NavProps) {
             Manifesto
           </Link>
           <Link
-            href="/#playbook"
+            href="/made-with/"
+            aria-current={current === "made-with" ? "page" : undefined}
+            className={`nav-link inline-flex min-h-11 items-center border-b font-mono text-xs text-ink sm:text-sm ${
+              current === "made-with"
+                ? "border-ink"
+                : "border-transparent"
+            }`}
+          >
+            Made with
+          </Link>
+          <Link
+            href="/#field-notes"
             className="nav-link nav-link--playbook hidden min-h-11 items-center border-b border-ink font-mono text-xs text-ink min-[480px]:inline-flex sm:text-sm"
           >
-            Playbook
+            Field Notes
           </Link>
         </div>
       </div>

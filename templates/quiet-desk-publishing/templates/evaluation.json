@@ -1,0 +1,42 @@
+{
+  "schema": "afi.pilot_evaluation.v0",
+  "id": "evaluation_replace_me",
+  "pilot": "marketing_geo",
+  "question": "replace_me",
+  "status": "completed",
+  "verdict": "none_worth_recommending",
+  "summary": {
+    "recommendation": null,
+    "approaches_evaluated": 1,
+    "approaches_rejected": 1,
+    "short_reason": "replace_me",
+    "next_authority": "none"
+  },
+  "bounds": {
+    "mode": "read_only",
+    "time_budget_minutes": 15,
+    "query_budget": 0,
+    "spend_authorized": false,
+    "success_criteria": [],
+    "stopping_rule": "replace_me"
+  },
+  "available_data_refs": [],
+  "approaches": [
+    {
+      "id": "approach_replace_me",
+      "name": "replace_me",
+      "source_refs": [],
+      "method": "replace_me",
+      "observed_results": [],
+      "verdict": "rejected",
+      "rejection_reason": "replace_me",
+      "limitations": []
+    }
+  ],
+  "evidence_refs": [],
+  "rationale": "replace_me",
+  "limitations": [],
+  "change_set_ref": null,
+  "created_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "completed_at": "YYYY-MM-DDTHH:MM:SSZ"
+}

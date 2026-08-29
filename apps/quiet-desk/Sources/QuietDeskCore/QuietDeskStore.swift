@@ -98,6 +98,21 @@ public final class QuietDeskStore {
         }.count
     }
 
+    public var visibleThreadCount: Int {
+        snapshot.topLevelThreads().count
+    }
+
+    public var pendingHandoffCount: Int {
+        snapshot.threads.filter { thread in
+            guard let handoffID = thread.handoffFeedItemID,
+                  let handoff = item(id: handoffID)
+            else { return false }
+            return handoff.proofLedger.contains(.proposed)
+                && !handoff.proofLedger.contains(.approved)
+                && handoff.action != nil
+        }.count
+    }
+
     public var handledCount: Int {
         snapshot.items.filter { $0.status == .handled }.count
     }
@@ -144,6 +159,23 @@ public final class QuietDeskStore {
     public func item(id: UUID?) -> FeedItem? {
         guard let id else { return nil }
         return snapshot.items.first { $0.id == id }
+    }
+
+    public func thread(id: UUID?) -> CommonGroundThread? {
+        guard let id else { return nil }
+        return snapshot.thread(id: id)
+    }
+
+    public func handoffItem(for threadID: UUID?) -> FeedItem? {
+        guard let thread = thread(id: threadID),
+              let handoffID = thread.handoffFeedItemID
+        else { return nil }
+        return item(id: handoffID)
+    }
+
+    public func contextStatements(for threadID: UUID?) -> [ContextStatement] {
+        guard let thread = thread(id: threadID) else { return [] }
+        return thread.contextStatementIDs.compactMap { snapshot.contextStatement(id: $0) }
     }
 
     public func agent(id: UUID?) -> AgentProfile? {

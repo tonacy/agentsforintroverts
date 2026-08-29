@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { EmailForm } from "./EmailForm";
+import { FieldNotesStatus } from "./FieldNotesStatus";
 import { HeroAnimation } from "./HeroAnimation";
 
 const fieldLinePool = [
@@ -74,40 +74,44 @@ export function Hero() {
           ))}
         </div>
 
-        <div className="hero-bloom hero-bloom--paper" aria-hidden="true" />
-        <div className="hero-bloom hero-bloom--sun" aria-hidden="true" />
+        <div className="hero-focus-matte" aria-hidden="true" />
 
         <div className="hero-aperture">
-          <p className="hero-land hero-arrived" style={landingDelay("5.1s")}>
+          <p className="hero-land hero-arrived" style={landingDelay("5.65s")}>
             Arrived
           </p>
 
-          <h1 className="hero-land hero-headline" style={landingDelay("5.3s")}>
+          <h1
+            id="hero-headline"
+            className="hero-land hero-headline"
+            style={landingDelay("5.78s")}
+            tabIndex={-1}
+          >
             Out there the feeds never stop. In here I get a slow one.
           </h1>
 
-          <p className="hero-land hero-subhead" style={landingDelay("5.65s")}>
+          <p className="hero-land hero-subhead" style={landingDelay("5.95s")}>
             Lived experience goes out. The world comes in. Agents translate both. This is the pace.
           </p>
 
-          <div className="hero-land hero-rule" style={landingDelay("5.85s")} />
+          <div className="hero-land hero-rule" style={landingDelay("6.08s")} />
 
-          <p className="hero-land hero-thursday" style={landingDelay("5.95s")}>
+          <p className="hero-land hero-thursday" style={landingDelay("6.16s")}>
             Thursday morning is still yours.
           </p>
 
           <div
-            id="playbook"
+            id="field-notes"
             className="hero-land hero-capture"
-            style={landingDelay("6.2s")}
+            style={landingDelay("6.3s")}
           >
-            <EmailForm />
+            <FieldNotesStatus />
             <p className="hero-capture__note">
-              Free — The Quiet Operator&apos;s Agent Stack. Five setups, no spam.
+              A weekly practice for participating without living in the feed.
             </p>
           </div>
 
-          <p className="hero-land hero-translate" style={landingDelay("6.45s")}>
+          <p className="hero-land hero-translate" style={landingDelay("6.42s")}>
             agents translate{" "}
             <span>calendar · X · LinkedIn · email · newsletter</span>
           </p>

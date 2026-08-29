@@ -1,0 +1,566 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentsforintroverts.com/schemas/afi-context-kernel-v1.schema.json",
+  "title": "Agents for Introverts Context Kernel Protocol v1",
+  "description": "Harness-neutral canonical entities, append-only ledger events, derived Context Packs, and ephemeral Scratch Cues.",
+  "oneOf": [
+    { "$ref": "#/$defs/ledgerEvent" },
+    { "$ref": "#/$defs/ledgerEntity" },
+    { "$ref": "#/$defs/contextPack" },
+    { "$ref": "#/$defs/contextPackReceipt" },
+    { "$ref": "#/$defs/scratchCue" }
+  ],
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timeSortableId": {
+      "type": "string",
+      "anyOf": [
+        { "pattern": "^(?:[a-z][a-z0-9_-]*_)?[0-9A-HJKMNP-TV-Z]{26}$" },
+        { "pattern": "^(?:[a-z][a-z0-9_-]*_)?[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" }
+      ]
+    },
+    "actor": {
+      "type": "object",
+      "required": ["actor_id", "actor_type"],
+      "properties": {
+        "actor_id": { "type": "string", "minLength": 1 },
+        "actor_type": { "enum": ["user", "agent", "provider", "system", "service"] },
+        "display_name": { "type": "string", "minLength": 1 }
+      }
+    },
+    "eventProducer": {
+      "type": "object",
+      "required": ["connection_id", "provider"],
+      "properties": {
+        "connection_id": { "type": "string", "minLength": 1 },
+        "provider": { "type": "string", "minLength": 1 },
+        "external_agent_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "entityRef": {
+      "type": "object",
+      "required": ["entity_type", "entity_id"],
+      "properties": {
+        "entity_type": { "type": "string", "minLength": 1 },
+        "entity_id": { "type": "string", "minLength": 1 },
+        "revision": { "type": "integer", "minimum": 1 },
+        "record_hash": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "externalRef": {
+      "type": "object",
+      "required": ["provider", "kind", "external_id"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "minLength": 1 },
+        "external_id": { "type": "string", "minLength": 1 },
+        "uri": { "type": "string", "minLength": 1 },
+        "observed_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["basis", "evidence_refs", "human_seed_refs", "derived_from_refs", "external_refs", "recorded_at"],
+      "properties": {
+        "basis": { "enum": ["explicit", "observed", "inferred", "derived"] },
+        "evidence_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+        "human_seed_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+        "derived_from_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+        "external_refs": { "type": "array", "items": { "$ref": "#/$defs/externalRef" } },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "recorded_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "required": ["classification", "mode", "replication", "body_storage"],
+      "properties": {
+        "classification": { "enum": ["private", "eligible_shared", "public"] },
+        "mode": { "enum": ["durable", "ttl"] },
+        "replication": { "enum": ["local_only", "eligible", "replicated"] },
+        "body_storage": { "enum": ["inline", "encrypted_object", "reference_only"] },
+        "expires_at": { "$ref": "#/$defs/timestamp" }
+      },
+      "if": { "properties": { "mode": { "const": "ttl" } } },
+      "then": { "required": ["expires_at"] }
+    },
+    "entityBase": {
+      "type": "object",
+      "required": ["schema", "entity_type", "entity_id", "owner_id", "revision", "record_hash", "created_at", "updated_at", "created_by", "last_modified_by", "provenance", "retention"],
+      "properties": {
+        "schema": { "type": "string", "minLength": 1 },
+        "entity_type": { "enum": ["evidence_item", "context_statement", "conversation", "decision", "thread", "selection_run", "place", "draft", "feedback_signal"] },
+        "entity_id": { "type": "string", "minLength": 1 },
+        "owner_id": { "type": "string", "minLength": 1 },
+        "revision": { "type": "integer", "minimum": 1 },
+        "record_hash": { "$ref": "#/$defs/hash" },
+        "created_at": { "$ref": "#/$defs/timestamp" },
+        "updated_at": { "$ref": "#/$defs/timestamp" },
+        "created_by": { "$ref": "#/$defs/actor" },
+        "last_modified_by": { "$ref": "#/$defs/actor" },
+        "provenance": { "$ref": "#/$defs/provenance" },
+        "retention": { "$ref": "#/$defs/retention" }
+      }
+    },
+    "evidenceItem": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["evidence_kind", "title", "summary", "captured_at", "metadata"],
+          "properties": {
+            "schema": { "const": "afi.evidence_item.v1" },
+            "entity_type": { "const": "evidence_item" },
+            "evidence_kind": { "enum": ["human_capture", "public_source", "work_artifact", "provider_receipt", "conversation_receipt", "other"] },
+            "title": { "type": "string", "minLength": 1 },
+            "summary": { "type": "string", "minLength": 1 },
+            "occurred_at": { "$ref": "#/$defs/timestamp" },
+            "captured_at": { "$ref": "#/$defs/timestamp" },
+            "content": { "type": "string", "minLength": 1 },
+            "content_object": {
+              "type": "object",
+              "required": ["object_id", "content_hash", "encrypted"],
+              "properties": {
+                "object_id": { "type": "string", "minLength": 1 },
+                "content_hash": { "$ref": "#/$defs/hash" },
+                "encrypted": { "type": "boolean" },
+                "media_type": { "type": "string" },
+                "byte_length": { "type": "integer", "minimum": 0 }
+              }
+            },
+            "source_uri": { "type": "string", "minLength": 1 },
+            "metadata": { "type": "object" }
+          },
+          "anyOf": [
+            { "required": ["content"] },
+            { "required": ["content_object"] },
+            { "required": ["source_uri"] }
+          ]
+        }
+      ]
+    },
+    "contextStatement": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["basis", "status", "subject", "predicate", "value", "scope"],
+          "properties": {
+            "schema": { "const": "afi.context_statement.v1" },
+            "entity_type": { "const": "context_statement" },
+            "basis": { "enum": ["explicit", "observed", "inferred"] },
+            "status": { "enum": ["proposed", "active", "contested", "superseded", "expired"] },
+            "subject": { "type": "string", "minLength": 1 },
+            "predicate": { "type": "string", "minLength": 1 },
+            "value": true,
+            "scope": {
+              "type": "object",
+              "required": ["kind"],
+              "properties": {
+                "kind": { "enum": ["person", "project", "domain", "relationship", "global"] },
+                "id": { "type": "string", "minLength": 1 }
+              },
+              "allOf": [
+                {
+                  "if": { "properties": { "kind": { "const": "global" } }, "required": ["kind"] },
+                  "then": { "not": { "required": ["id"] } },
+                  "else": { "required": ["id"] }
+                }
+              ]
+            },
+            "valid_from": { "$ref": "#/$defs/timestamp" },
+            "valid_until": { "$ref": "#/$defs/timestamp" },
+            "supersedes": { "$ref": "#/$defs/entityRef" }
+          }
+        }
+      ]
+    },
+    "conversation": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["purpose", "mode", "started_at", "participants", "transcript_retention", "human_seed_refs"],
+          "properties": {
+            "schema": { "const": "afi.conversation.v1" },
+            "entity_type": { "const": "conversation" },
+            "purpose": { "type": "string", "minLength": 1 },
+            "mode": { "enum": ["short", "deep", "no_new_input", "other"] },
+            "started_at": { "$ref": "#/$defs/timestamp" },
+            "ended_at": { "$ref": "#/$defs/timestamp" },
+            "participants": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/actor" } },
+            "input_context_pack_id": { "type": "string" },
+            "transcript_retention": { "enum": ["none", "summary_only", "full_private"] },
+            "human_seed_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+            "outcome": {
+              "type": "object",
+              "required": ["disposition", "summary", "learned", "uncertainties", "proposed_context_refs", "decision_refs", "thread_refs", "place_refs", "draft_refs", "action_refs", "carry_forward"],
+              "properties": {
+                "disposition": { "enum": ["understanding_only", "no_new_input", "context_change_proposed", "decision_recorded", "thread_updated", "place_proposed", "draft_prepared", "change_set_prepared", "external_action_proposed"] },
+                "summary": { "type": "string", "minLength": 1 },
+                "learned": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+                "uncertainties": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+                "proposed_context_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+                "decision_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+                "thread_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+                "place_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+                "draft_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+                "action_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+                "carry_forward": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+                "no_action_reason": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "decision": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["decision_kind", "statement", "status", "decided_by", "decided_at", "target_refs"],
+          "properties": {
+            "schema": { "const": "afi.decision.v1" },
+            "entity_type": { "const": "decision" },
+            "decision_kind": { "enum": ["context_confirmation", "context_rejection", "priority", "product", "publishing", "retention", "other"] },
+            "statement": { "type": "string", "minLength": 1 },
+            "status": { "enum": ["active", "superseded", "reversed"] },
+            "decided_by": { "$ref": "#/$defs/actor" },
+            "decided_at": { "$ref": "#/$defs/timestamp" },
+            "effective_until": { "$ref": "#/$defs/timestamp" },
+            "target_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } }
+          }
+        }
+      ]
+    },
+    "thread": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["title", "summary", "status", "claims", "context_refs", "participant_refs", "first_seen_at", "last_seen_at"],
+          "properties": {
+            "schema": { "const": "afi.thread.v1" },
+            "entity_type": { "const": "thread" },
+            "title": { "type": "string", "minLength": 1 },
+            "summary": { "type": "string", "minLength": 1 },
+            "status": { "enum": ["watching", "active", "quiet", "closed"] },
+            "claims": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["claim_id", "text", "evidence_refs", "first_seen_at", "last_seen_at", "occurrence_count"],
+                "properties": {
+                  "claim_id": { "type": "string", "minLength": 1 },
+                  "text": { "type": "string", "minLength": 1 },
+                  "evidence_refs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "allOf": [
+                        { "$ref": "#/$defs/entityRef" },
+                        { "properties": { "entity_type": { "const": "evidence_item" } } }
+                      ]
+                    }
+                  },
+                  "first_seen_at": { "$ref": "#/$defs/timestamp" },
+                  "last_seen_at": { "$ref": "#/$defs/timestamp" },
+                  "occurrence_count": { "type": "integer", "minimum": 1 }
+                }
+              }
+            },
+            "context_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+            "participant_refs": { "type": "array", "items": { "$ref": "#/$defs/externalRef" } },
+            "first_seen_at": { "$ref": "#/$defs/timestamp" },
+            "last_seen_at": { "$ref": "#/$defs/timestamp" }
+          }
+        }
+      ]
+    },
+    "selectionRun": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["evaluation_kind", "question", "method", "candidates", "evaluated_count", "rejected_count", "result", "recommended_candidate_ids", "limitations", "completed_at"],
+          "properties": {
+            "schema": { "const": "afi.selection_run.v1" },
+            "entity_type": { "const": "selection_run" },
+            "evaluation_kind": { "type": "string", "minLength": 1 },
+            "question": { "type": "string", "minLength": 1 },
+            "method": { "type": "string", "minLength": 1 },
+            "candidates": { "type": "array" },
+            "evaluated_count": { "type": "integer", "minimum": 0 },
+            "rejected_count": { "type": "integer", "minimum": 0 },
+            "result": { "enum": ["recommendation", "none_worth_recommending", "inconclusive"] },
+            "recommended_candidate_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+            "limitations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "completed_at": { "$ref": "#/$defs/timestamp" }
+          }
+        }
+      ]
+    },
+    "place": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["thread_ref", "title", "source_door", "opportunity", "contribution", "people_refs", "next_move", "human_cost", "status", "expires_at"],
+          "properties": {
+            "schema": { "const": "afi.place.v1" },
+            "entity_type": { "const": "place" },
+            "thread_ref": { "$ref": "#/$defs/entityRef" },
+            "selection_run_ref": { "$ref": "#/$defs/entityRef" },
+            "title": { "type": "string", "minLength": 1 },
+            "source_door": { "$ref": "#/$defs/externalRef" },
+            "opportunity": { "type": "string", "minLength": 1 },
+            "contribution": { "type": "string", "minLength": 1 },
+            "people_refs": { "type": "array", "items": { "$ref": "#/$defs/externalRef" } },
+            "next_move": { "type": "string", "minLength": 1 },
+            "human_cost": { "enum": ["low", "medium", "high"] },
+            "status": { "enum": ["proposed", "selected", "dismissed", "expired", "completed"] },
+            "expires_at": { "$ref": "#/$defs/timestamp" }
+          }
+        }
+      ]
+    },
+    "draft": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["draft_kind", "body", "status", "source_refs", "human_seed_refs"],
+          "properties": {
+            "schema": { "const": "afi.draft.v1" },
+            "entity_type": { "const": "draft" },
+            "draft_kind": { "enum": ["post", "reply", "article", "message", "change_set", "other"] },
+            "title": { "type": "string", "minLength": 1 },
+            "body": { "type": "string", "minLength": 1 },
+            "status": { "enum": ["working", "ready", "approved", "superseded"] },
+            "target": { "type": "object" },
+            "source_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+            "human_seed_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+            "place_ref": { "$ref": "#/$defs/entityRef" }
+          },
+          "anyOf": [
+            { "properties": { "source_refs": { "minItems": 1 } } },
+            { "properties": { "human_seed_refs": { "minItems": 1 } } }
+          ]
+        }
+      ]
+    },
+    "feedbackSignal": {
+      "allOf": [
+        { "$ref": "#/$defs/entityBase" },
+        {
+          "type": "object",
+          "required": ["target_ref", "signal_kind", "value", "recorded_by", "recorded_at"],
+          "properties": {
+            "schema": { "const": "afi.feedback_signal.v1" },
+            "entity_type": { "const": "feedback_signal" },
+            "target_ref": { "$ref": "#/$defs/entityRef" },
+            "signal_kind": { "enum": ["accepted", "rejected", "corrected", "dismissed", "useful", "not_useful", "other"] },
+            "value": true,
+            "recorded_by": { "$ref": "#/$defs/actor" },
+            "recorded_at": { "$ref": "#/$defs/timestamp" }
+          }
+        }
+      ]
+    },
+    "ledgerEntity": {
+      "oneOf": [
+        { "$ref": "#/$defs/evidenceItem" },
+        { "$ref": "#/$defs/contextStatement" },
+        { "$ref": "#/$defs/conversation" },
+        { "$ref": "#/$defs/decision" },
+        { "$ref": "#/$defs/thread" },
+        { "$ref": "#/$defs/selectionRun" },
+        { "$ref": "#/$defs/place" },
+        { "$ref": "#/$defs/draft" },
+        { "$ref": "#/$defs/feedbackSignal" }
+      ]
+    },
+    "ledgerAuthority": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["user_originated", "user_confirmation", "agent_proposal", "connector_observation", "system_derived"] },
+        "granted_by": { "$ref": "#/$defs/actor" },
+        "confirmation_ref": {
+          "allOf": [
+            { "$ref": "#/$defs/entityRef" },
+            {
+              "required": ["revision", "record_hash"],
+              "properties": { "entity_type": { "const": "decision" } }
+            }
+          ]
+        }
+      }
+    },
+    "ledgerEvent": {
+      "type": "object",
+      "required": ["schema", "ledger_id", "event_id", "event_hash", "idempotency_key", "sequence", "owner_id", "occurred_at", "recorded_at", "kind", "operation", "target", "revision", "actor", "authority"],
+      "properties": {
+        "schema": { "const": "afi.ledger_event.v1" },
+        "ledger_id": { "type": "string", "minLength": 1 },
+        "event_id": { "$ref": "#/$defs/timeSortableId" },
+        "event_hash": { "$ref": "#/$defs/hash" },
+        "previous_event_hash": { "$ref": "#/$defs/hash" },
+        "idempotency_key": { "type": "string", "minLength": 1 },
+        "sequence": { "type": "integer", "minimum": 1 },
+        "owner_id": { "type": "string", "minLength": 1 },
+        "occurred_at": { "$ref": "#/$defs/timestamp" },
+        "recorded_at": { "$ref": "#/$defs/timestamp" },
+        "kind": { "type": "string", "pattern": "^(evidence_item|context_statement|conversation|decision|thread|selection_run|place|draft|feedback_signal)\\.(created|revised|corrected|tombstoned)$" },
+        "operation": { "enum": ["created", "revised", "corrected", "tombstoned"] },
+        "target": { "$ref": "#/$defs/entityRef" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "previous_revision": { "type": "integer", "minimum": 1 },
+        "previous_entity_hash": { "$ref": "#/$defs/hash" },
+        "entity_hash": { "$ref": "#/$defs/hash" },
+        "entity": { "$ref": "#/$defs/ledgerEntity" },
+        "tombstone": {
+          "type": "object",
+          "required": ["reason", "erased_object_ids"],
+          "properties": {
+            "reason": { "type": "string", "minLength": 1 },
+            "erased_object_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "actor": { "$ref": "#/$defs/actor" },
+        "producer": { "$ref": "#/$defs/eventProducer" },
+        "authority": { "$ref": "#/$defs/ledgerAuthority" },
+        "run_id": { "type": "string", "minLength": 1 },
+        "correlation_id": { "type": "string", "minLength": 1 },
+        "causation_event_id": { "$ref": "#/$defs/timeSortableId" },
+        "supersedes_event_id": { "$ref": "#/$defs/timeSortableId" },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "operation": { "const": "created" } } },
+          "then": { "required": ["entity", "entity_hash"] }
+        },
+        {
+          "if": { "properties": { "operation": { "enum": ["revised", "corrected"] } } },
+          "then": { "required": ["previous_revision", "previous_entity_hash", "entity", "entity_hash"] }
+        },
+        {
+          "if": { "properties": { "operation": { "const": "corrected" } } },
+          "then": { "required": ["reason", "supersedes_event_id"] }
+        },
+        {
+          "if": { "properties": { "operation": { "const": "tombstoned" } } },
+          "then": { "required": ["previous_revision", "previous_entity_hash", "tombstone"] }
+        }
+      ]
+    },
+    "contextPack": {
+      "type": "object",
+      "required": ["schema", "pack_id", "owner_id", "run_id", "purpose", "agent_role", "derived", "ledger_watermark", "token_budget", "requested_refs", "source_pack", "sections", "trace", "capabilities", "omissions", "assembled_at", "pack_hash"],
+      "properties": {
+        "schema": { "const": "afi.context_pack.v1" },
+        "pack_id": { "type": "string", "pattern": "^pack_[a-f0-9]{64}$" },
+        "owner_id": { "type": "string", "minLength": 1 },
+        "run_id": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "agent_role": { "type": "string", "minLength": 1 },
+        "derived": { "const": true },
+        "ledger_watermark": {
+          "type": "object",
+          "required": ["ledger_id", "sequence", "event_id", "event_hash"],
+          "properties": {
+            "ledger_id": { "type": "string", "minLength": 1 },
+            "sequence": { "type": "integer", "minimum": 1 },
+            "event_id": { "$ref": "#/$defs/timeSortableId" },
+            "event_hash": { "$ref": "#/$defs/hash" }
+          }
+        },
+        "token_budget": { "type": "integer", "minimum": 1 },
+        "requested_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+        "source_pack": {
+          "type": "object",
+          "required": ["schema", "pack_hash"],
+          "properties": {
+            "schema": { "const": "afi.context_kernel_pack.v1" },
+            "pack_hash": { "$ref": "#/$defs/hash" }
+          }
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "title", "authority", "record_refs"],
+            "properties": {
+              "key": { "type": "string", "minLength": 1 },
+              "title": { "type": "string", "minLength": 1 },
+              "authority": { "enum": ["explicit", "observed", "inferred", "derived"] },
+              "summary": { "type": "string", "minLength": 1 },
+              "record_refs": { "type": "array", "items": { "$ref": "#/$defs/entityRef" } },
+              "token_count": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "trace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["ref", "basis", "event_id", "event_hash"],
+            "properties": {
+              "ref": { "$ref": "#/$defs/entityRef" },
+              "basis": { "enum": ["explicit", "observed", "inferred", "system"] },
+              "event_id": { "type": "string", "minLength": 1 },
+              "event_hash": { "$ref": "#/$defs/hash" }
+            }
+          }
+        },
+        "capabilities": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "omissions": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "assembled_at": { "$ref": "#/$defs/timestamp" },
+        "expires_at": { "$ref": "#/$defs/timestamp" },
+        "pack_hash": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "contextPackReceipt": {
+      "type": "object",
+      "required": ["schema", "pack", "mac"],
+      "properties": {
+        "schema": { "const": "afi.context_pack_receipt.v1" },
+        "pack": { "$ref": "#/$defs/contextPack" },
+        "mac": { "type": "string", "pattern": "^hmac-sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "scratchCue": {
+      "type": "object",
+      "required": ["schema", "cue_id", "owner_id", "channel", "summary", "observed_at", "expires_at", "uncertainty", "retention"],
+      "properties": {
+        "schema": { "const": "afi.scratch_cue.v1" },
+        "cue_id": { "type": "string", "minLength": 1 },
+        "owner_id": { "type": "string", "minLength": 1 },
+        "channel": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "locator": { "type": "string", "minLength": 1 },
+        "observed_at": { "$ref": "#/$defs/timestamp" },
+        "expires_at": { "$ref": "#/$defs/timestamp" },
+        "uncertainty": { "type": "string", "minLength": 1 },
+        "retention": {
+          "type": "object",
+          "required": ["classification", "persistence", "replication"],
+          "properties": {
+            "classification": { "const": "ephemeral" },
+            "persistence": { "const": "scratch" },
+            "replication": { "const": "never" }
+          }
+        }
+      }
+    }
+  }
+}

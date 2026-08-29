@@ -1,0 +1,15 @@
+{
+  "schema": "afi.publication_receipt.v0",
+  "id": "publication_replace_me",
+  "proposal_id": "proposal_replace_me",
+  "approved_payload_sha256": "replace_me",
+  "publication_mode": "manual",
+  "public_url": "replace_me",
+  "published_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "verified_at": null,
+  "verification": {
+    "status": "unverified",
+    "observed_payload_sha256": null,
+    "notes": null
+  }
+}

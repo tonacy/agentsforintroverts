@@ -28,6 +28,16 @@ function assertRuntimeProfile(profile, role) {
   }
 }
 
+function toolsForProfile(toolCatalog, profile) {
+  const canDraft = profile.allowed_effects.includes("draft");
+  const contextTools = Array.isArray(toolCatalog.context_tools) ? toolCatalog.context_tools : [];
+
+  return [...toolCatalog.tools, ...contextTools].filter((tool) =>
+    (tool.effect !== "proposal_only" || canDraft)
+    && (tool.effect !== "context_proposal" || profile.allowed_effects.includes("distill")),
+  );
+}
+
 export async function assembleAgent(role) {
   if (!allowedRoles.has(role)) {
     throw new Error(`Unknown role ${JSON.stringify(role)}. Expected one of: ${[...allowedRoles].sort().join(", ")}`);
@@ -50,7 +60,7 @@ export async function assembleAgent(role) {
     profile,
     system_prompt: `${basePrompt.trim()}\n\n${rolePrompt.trim()}\n`,
     context_template: contextTemplate,
-    tools: toolCatalog.tools,
+    tools: toolsForProfile(toolCatalog, profile),
   };
 }
 

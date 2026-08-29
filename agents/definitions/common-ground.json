@@ -1,0 +1,13 @@
+{
+  "schema": "afi.agent_runtime_profile.v1",
+  "key": "afi.common-ground",
+  "display_name": "Common Ground",
+  "prompt": "../prompts/common-ground.md",
+  "model_tier": "balanced",
+  "allowed_effects": ["observe", "distill", "draft"],
+  "source_kinds": ["social_post", "newsletter", "group_chat", "direct_message", "email"],
+  "max_feed_items": 3,
+  "max_iterations": 24,
+  "context_budget_tokens": 80000,
+  "completion_required": true
+}

@@ -1,6 +1,52 @@
 {
   "generatedAt": "2026-08-19T15:00:00Z",
   "isSynthetic": true,
+  "personalContext": {
+    "revision": 3,
+    "updatedAt": "2026-08-19T14:58:00Z",
+    "summary": "A synthetic context profile centered on quieter participation, distribution for early ideas, and human-owned relationships.",
+    "statements": [
+      {
+        "id": "90000000-0000-0000-0000-000000000001",
+        "kind": "priority",
+        "statement": "I care about helping people participate online without becoming full-time performers for the feed.",
+        "basis": "explicit",
+        "confidence": 1.0,
+        "updatedAt": "2026-08-19T14:58:00Z",
+        "sourceFeedItemIDs": []
+      },
+      {
+        "id": "90000000-0000-0000-0000-000000000002",
+        "kind": "livedExperience",
+        "statement": "Building an early messaging agent taught me that a working idea still needs a path into the network.",
+        "basis": "explicit",
+        "confidence": 1.0,
+        "updatedAt": "2026-08-19T14:57:00Z",
+        "sourceFeedItemIDs": []
+      },
+      {
+        "id": "90000000-0000-0000-0000-000000000003",
+        "kind": "position",
+        "statement": "Useful agents should preserve human choice and keep their reasoning inspectable.",
+        "basis": "explicit",
+        "confidence": 1.0,
+        "updatedAt": "2026-08-19T14:56:00Z",
+        "sourceFeedItemIDs": []
+      },
+      {
+        "id": "90000000-0000-0000-0000-000000000004",
+        "kind": "position",
+        "statement": "Compact, decision-oriented summaries may be more useful to me than replaying complete conversations.",
+        "basis": "inferred",
+        "confidence": 0.72,
+        "updatedAt": "2026-08-19T14:55:00Z",
+        "sourceFeedItemIDs": [
+          "10000000-0000-0000-0000-000000000005",
+          "10000000-0000-0000-0000-000000000006"
+        ]
+      }
+    ]
+  },
   "agents": [
     {
       "id": "11111111-1111-1111-1111-111111111111",
@@ -56,6 +102,17 @@
       "executor": { "provider": "OpenAI", "executor": "Codex", "runtime": "Hub adapter" },
       "permissions": ["Read synthetic invitations", "Draft RSVP previews", "Never RSVP without approval"],
       "lastRunAt": "2026-08-18T18:10:00Z"
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666666",
+      "name": "Common Ground Agent",
+      "role": "Cross-surface thread finder",
+      "systemImage": "point.3.connected.trianglepath.dotted",
+      "mission": "Finds recurring discourse, preserves disagreement, and narrows shared intent toward no more than three people.",
+      "availability": "ready",
+      "executor": { "provider": "xAI", "executor": "Grok Bot", "runtime": "Hub adapter" },
+      "permissions": ["Read synthetic cross-surface summaries", "Build sourced human threads", "Propose one exact handoff", "Never post or message without approval"],
+      "lastRunAt": "2026-08-19T14:58:00Z"
     }
   ],
   "sources": [
@@ -386,6 +443,205 @@
         "requiresExplicitApproval": true
       },
       "proofLedger": ["proposed", "approved", "providerAcknowledged", "delivered", "read"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000008",
+      "timestamp": "2026-08-19T14:58:00Z",
+      "headline": "Three synthetic people could turn a recurring conversation into a working session",
+      "whyItMatters": "The agent narrowed broad discourse to a human-scale handoff and stopped at one exact introduction for review.",
+      "status": "needsYou",
+      "agentID": "66666666-6666-6666-6666-666666666666",
+      "executor": { "provider": "xAI", "executor": "Grok Bot", "runtime": "Hub adapter" },
+      "claims": [
+        {
+          "id": "81000000-0000-0000-0000-000000000001",
+          "claim": "Three synthetic people have complementary work and explicitly shared intent around quieter network participation.",
+          "kind": "derived",
+          "sourceID": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "sourceTitle": "Synthetic recurring-topic cluster",
+          "sourceURL": "https://sources.example.invalid/x/clusters/quiet-participation-12",
+          "sourceCapturedAt": "2026-08-19T14:57:00Z",
+          "excerpt": "Maya Example: community practice; Priya Example: local facilitation; Alex Example: small-tool prototyping. All three synthetic profiles state an intent to lower participation cost."
+        }
+      ],
+      "run": {
+        "id": "82000000-0000-0000-0000-000000000001",
+        "state": "waitingForApproval",
+        "summary": "Common ground and candidate fit were checked; an exact introduction was prepared and not sent.",
+        "lastUpdatedAt": "2026-08-19T14:58:00Z"
+      },
+      "action": {
+        "id": "83000000-0000-0000-0000-000000000001",
+        "revision": 1,
+        "kind": "sendMessage",
+        "account": "tony@example.invalid",
+        "channel": "Email",
+        "target": "Maya Example <maya@example.invalid>, Priya Example <priya@example.invalid>, Alex Example <alex@example.invalid>",
+        "exactPayload": "[SYNTHETIC PREVIEW — NOT SENT]\nMaya, Priya, Alex — you are each working on a different part of the same question: how can more people participate online without living inside the feed? I am exploring a small tool in this space. Would you be open to a 30-minute working session to compare what each of us is seeing?\n\nTony",
+        "requiresExplicitApproval": true
+      },
+      "proofLedger": ["proposed"]
+    }
+  ],
+  "threads": [
+    {
+      "id": "94000000-0000-0000-0000-000000000001",
+      "updatedAt": "2026-08-19T14:58:00Z",
+      "title": "Quieter people want a way into public discourse",
+      "commonGround": "Across synthetic social and group-chat sources, the same participation-cost question keeps recurring. That recurrence shows a shared subject, not consensus.",
+      "whyItFits": "This matches your explicit priority of helping people participate without becoming full-time performers.",
+      "whyNow": "Three synthetic builders are working on complementary parts of the question and explicitly opted into introductions about adjacent work.",
+      "stage": "handoffReady",
+      "narrowing": {
+        "voicesObserved": 400,
+        "sharedInterest": 100,
+        "sharedIntent": 50,
+        "peopleWithinReach": 3
+      },
+      "contextStatementIDs": [
+        "90000000-0000-0000-0000-000000000001",
+        "90000000-0000-0000-0000-000000000003"
+      ],
+      "claims": [
+        {
+          "id": "95000000-0000-0000-0000-000000000001",
+          "claim": "The same participation-cost question appeared across twelve synthetic conversation pockets.",
+          "kind": "derived",
+          "sourceID": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "sourceTitle": "Synthetic X recurring-topic cluster",
+          "sourceURL": "https://sources.example.invalid/x/clusters/quiet-participation-12",
+          "sourceCapturedAt": "2026-08-19T14:54:00Z",
+          "excerpt": "12 synthetic pockets; 400 sample voices; repeated theme: participation without constant feed presence."
+        },
+        {
+          "id": "95000000-0000-0000-0000-000000000002",
+          "claim": "Fifty synthetic profiles moved beyond appreciation and described a change they wanted to make.",
+          "kind": "direct",
+          "sourceID": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+          "sourceTitle": "Synthetic LinkedIn intent sample",
+          "sourceURL": "https://sources.example.invalid/linkedin/intent-sample-50",
+          "sourceCapturedAt": "2026-08-19T14:55:00Z",
+          "excerpt": "50 of 100 synthetic profiles named an intended change; the remaining 50 expressed interest without intent."
+        },
+        {
+          "id": "95000000-0000-0000-0000-000000000003",
+          "claim": "Three synthetic people are within practical reach and bring complementary abilities.",
+          "kind": "inferred",
+          "sourceID": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "sourceTitle": "Synthetic collaborator-fit comparison",
+          "sourceURL": "https://sources.example.invalid/chat/collaborator-fit-3",
+          "sourceCapturedAt": "2026-08-19T14:56:00Z",
+          "excerpt": "Maya Example: community practice in synthetic Chicago; Priya Example: local facilitation in synthetic Chicago; Alex Example: small-tool prototyping. Fit remains an agent inference for human review."
+        },
+        {
+          "id": "95000000-0000-0000-0000-000000000006",
+          "claim": "All three synthetic people explicitly allow introductions about adjacent participation-tool work through their listed sample routes.",
+          "kind": "direct",
+          "sourceID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceTitle": "Synthetic introduction opt-in registry",
+          "sourceURL": "https://sources.example.invalid/mail/introduction-opt-ins-3",
+          "sourceCapturedAt": "2026-08-19T14:57:00Z",
+          "excerpt": "maya@example.invalid: opt in; priya@example.invalid: opt in; alex@example.invalid: opt in. Topic scope: tools for lower-cost network participation. These are synthetic, non-deliverable routes."
+        }
+      ],
+      "people": [
+        {
+          "id": "96000000-0000-0000-0000-000000000001",
+          "name": "Maya Example",
+          "relationship": "Relationship history not established; synthetic introduction route is opted in",
+          "sharedIntent": "Lower the social cost of joining public conversations.",
+          "whyRelevant": "She is testing small community practices rather than another high-volume feed.",
+          "location": "Chicago · synthetic",
+          "targetIdentifier": "maya@example.invalid",
+          "evidenceClaimIDs": ["95000000-0000-0000-0000-000000000002", "95000000-0000-0000-0000-000000000003", "95000000-0000-0000-0000-000000000006"]
+        },
+        {
+          "id": "96000000-0000-0000-0000-000000000002",
+          "name": "Priya Example",
+          "relationship": "Relationship history not established; synthetic introduction route is opted in",
+          "sharedIntent": "Turn shared online intent into small local working groups.",
+          "whyRelevant": "She is nearby and already facilitates the kind of human handoff this thread needs.",
+          "location": "Chicago · synthetic",
+          "targetIdentifier": "priya@example.invalid",
+          "evidenceClaimIDs": ["95000000-0000-0000-0000-000000000002", "95000000-0000-0000-0000-000000000003", "95000000-0000-0000-0000-000000000006"]
+        },
+        {
+          "id": "96000000-0000-0000-0000-000000000003",
+          "name": "Alex Example",
+          "relationship": "Relationship history not established; synthetic introduction route is opted in",
+          "sharedIntent": "Prototype tools that preserve human agency while reducing network overhead.",
+          "whyRelevant": "His prototyping work complements your product framing and the others' community practice.",
+          "location": null,
+          "targetIdentifier": "alex@example.invalid",
+          "evidenceClaimIDs": ["95000000-0000-0000-0000-000000000003", "95000000-0000-0000-0000-000000000006"]
+        }
+      ],
+      "handoffFeedItemID": "10000000-0000-0000-0000-000000000008"
+    },
+    {
+      "id": "94000000-0000-0000-0000-000000000002",
+      "updatedAt": "2026-08-19T14:44:00Z",
+      "title": "Personal context should travel farther than attention",
+      "commonGround": "A smaller recurring conversation is forming around agents that carry established context into the right places without impersonating their users.",
+      "whyItFits": "It joins your experience of an early idea failing to travel with your position that agents must remain inspectable and human-owned.",
+      "whyNow": "Two synthetic builders have described adjacent context systems, but the group has not yet earned an introduction proposal.",
+      "stage": "peopleFound",
+      "narrowing": {
+        "voicesObserved": 126,
+        "sharedInterest": 34,
+        "sharedIntent": 12,
+        "peopleWithinReach": 2
+      },
+      "contextStatementIDs": [
+        "90000000-0000-0000-0000-000000000002",
+        "90000000-0000-0000-0000-000000000003",
+        "90000000-0000-0000-0000-000000000004"
+      ],
+      "claims": [
+        {
+          "id": "95000000-0000-0000-0000-000000000004",
+          "claim": "Thirty-four synthetic profiles discussed context that persists across network surfaces.",
+          "kind": "derived",
+          "sourceID": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "sourceTitle": "Synthetic persistent-context topic map",
+          "sourceURL": "https://sources.example.invalid/x/clusters/persistent-context-34",
+          "sourceCapturedAt": "2026-08-19T14:42:00Z",
+          "excerpt": "126 observed sample voices; 34 shared the subject; 12 described intent to build or test."
+        },
+        {
+          "id": "95000000-0000-0000-0000-000000000005",
+          "claim": "Two synthetic builders described complementary context representations with explicit approval boundaries.",
+          "kind": "inferred",
+          "sourceID": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+          "sourceTitle": "Synthetic builder profile comparison",
+          "sourceURL": "https://sources.example.invalid/linkedin/context-builders-2",
+          "sourceCapturedAt": "2026-08-19T14:43:00Z",
+          "excerpt": "Jordan Example: portable preference graph. Sam Example: revisioned personal context. Both mention user approval; practical fit is unconfirmed."
+        }
+      ],
+      "people": [
+        {
+          "id": "96000000-0000-0000-0000-000000000004",
+          "name": "Jordan Example",
+          "relationship": "Relationship history unavailable in this fixture",
+          "sharedIntent": "Make user context portable without making it public by default.",
+          "whyRelevant": "The preference-graph approach overlaps the same product boundary from a different technical angle.",
+          "location": null,
+          "targetIdentifier": null,
+          "evidenceClaimIDs": ["95000000-0000-0000-0000-000000000005"]
+        },
+        {
+          "id": "96000000-0000-0000-0000-000000000005",
+          "name": "Sam Example",
+          "relationship": "Relationship history unavailable in this fixture",
+          "sharedIntent": "Keep personal context revisioned, inspectable, and correctable.",
+          "whyRelevant": "The revision model closely matches your stated requirement that the representation grow with you.",
+          "location": "Remote · synthetic",
+          "targetIdentifier": null,
+          "evidenceClaimIDs": ["95000000-0000-0000-0000-000000000005"]
+        }
+      ],
+      "handoffFeedItemID": null
     }
   ]
 }

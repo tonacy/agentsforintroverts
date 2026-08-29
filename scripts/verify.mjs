@@ -5,6 +5,7 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const checks = [
   "test:agents",
   "test:protocol",
+  "test:context",
   "test:hub",
   "test:mcp",
   "test:integration",

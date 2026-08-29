@@ -1,0 +1,22 @@
+{
+  "schema": "afi.ephemeral_recall_cue.v1",
+  "cue_id": "cue_YYYYMMDD_slug",
+  "cue_kind": "computer_history_or_authenticated_feed",
+  "observed_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "local_calendar_date": "YYYY-MM-DD",
+  "surface": "computer_history_or_x_following_or_linkedin_home",
+  "minimized_cue": "A short activity-level prompt with no copied private content.",
+  "evidence_class": "ephemeral_cue",
+  "public_revalidation": {
+    "status": "not_attempted",
+    "verified_url": null
+  },
+  "human_confirmation": {
+    "status": "unconfirmed",
+    "confirmed_excerpt_id": null
+  },
+  "storage": "ephemeral_run_only",
+  "expires_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "hub_eligible": false,
+  "durable_context_eligible": false
+}

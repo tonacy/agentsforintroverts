@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   useLayoutEffect,
   useRef,
@@ -61,6 +62,35 @@ const openingBootScript = `(() => {
 
 export function HeroAnimation({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const openingTimerRef = useRef<number | null>(null);
+
+  const finishOpening = (focusLanding = false) => {
+    const root = rootRef.current;
+    if (!root) {
+      return;
+    }
+
+    const openingWindow = window as OpeningWindow;
+
+    if (openingWindow.__afiOpeningBootTimer !== undefined) {
+      window.clearTimeout(openingWindow.__afiOpeningBootTimer);
+      delete openingWindow.__afiOpeningBootTimer;
+    }
+
+    if (openingTimerRef.current !== null) {
+      window.clearTimeout(openingTimerRef.current);
+      openingTimerRef.current = null;
+    }
+
+    root.removeAttribute("data-opening");
+    delete openingWindow.__afiOpeningStartedAt;
+
+    if (focusLanding) {
+      root.querySelector<HTMLElement>("#hero-headline")?.focus({
+        preventScroll: true,
+      });
+    }
+  };
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -91,15 +121,19 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
     const elapsed = Math.max(0, performance.now() - startedAt);
     const remaining = Math.max(0, OPENING_DURATION_MS - elapsed);
 
-    const finishOpening = () => {
+    const settleOpening = () => {
       root.removeAttribute("data-opening");
       delete openingWindow.__afiOpeningStartedAt;
+      openingTimerRef.current = null;
     };
 
-    const timer = window.setTimeout(finishOpening, remaining);
+    openingTimerRef.current = window.setTimeout(settleOpening, remaining);
 
     return () => {
-      window.clearTimeout(timer);
+      if (openingTimerRef.current !== null) {
+        window.clearTimeout(openingTimerRef.current);
+        openingTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -132,7 +166,24 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
             </div>
           ))}
         </div>
+
+        <div className="hero-open__focus">
+          <Image
+            src="/brand/human-focus.png"
+            alt=""
+            width={32}
+            height={32}
+          />
+        </div>
       </div>
+
+      <button
+        className="hero-open__skip"
+        type="button"
+        onClick={() => finishOpening(true)}
+      >
+        Skip opening
+      </button>
     </div>
   );
 }

@@ -5,6 +5,16 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 
 const commands = [
   {
+    label: "Build the canonical provider-neutral protocol",
+    command: "npm",
+    args: ["--prefix", "packages/protocol", "run", "build"],
+  },
+  {
+    label: "Build the local Context Kernel",
+    command: "npm",
+    args: ["--prefix", "services/context-kernel", "run", "build"],
+  },
+  {
     label: "Build the provider-neutral MCP bridge",
     command: "npm",
     args: ["--prefix", "services/mcp", "run", "build"],

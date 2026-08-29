@@ -1,0 +1,32 @@
+{
+  "schema": "afi.pilot_change_set.v0",
+  "id": "change_set_replace_me",
+  "evaluation_id": "evaluation_replace_me",
+  "status": "pr_ready",
+  "repository": "replace_me",
+  "base_branch": "replace_me",
+  "head_branch": "replace_me",
+  "diff_sha256": "compute_from_frozen_diff",
+  "scope": "replace_me",
+  "files_changed": [],
+  "verification": {
+    "proof_boundary": "local",
+    "commands": [],
+    "results": [],
+    "limitations": []
+  },
+  "rollback": "replace_me",
+  "pull_request": {
+    "title": "replace_me",
+    "body": "include recommendation, evaluated and rejected counts, evidence, rationale, verification, limitations, and rollback",
+    "url": null,
+    "opened_at": null
+  },
+  "authority": {
+    "pr_preparation": "agent_allowed_after_evidence_threshold",
+    "review": "human",
+    "merge": "human_only",
+    "deployment": "human_only"
+  },
+  "created_at": "YYYY-MM-DDTHH:MM:SSZ"
+}

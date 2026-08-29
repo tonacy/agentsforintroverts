@@ -4,7 +4,7 @@ import { Footer, Nav } from "@/components";
 import styles from "./manifesto.module.css";
 
 export const metadata: Metadata = {
-  title: "Manifesto | Agents for Introverts",
+  title: "Manifesto",
   description:
     "A manifesto for network fluency on human terms: persistent context, quieter participation, and more people able to take part in the discourse.",
   alternates: {
@@ -404,11 +404,11 @@ export default function ManifestoPage() {
 
           <footer className={styles.postscript}>
             <div>
-              <span>Start here</span>
-              <p>See the first practical expression of the idea.</p>
+              <span>Authorship</span>
+              <p>See what it means when an idea is made with agents.</p>
             </div>
-            <Link href="/#playbook" className={styles.postscriptLink}>
-              Get the playbook <span aria-hidden="true">↗</span>
+            <Link href="/made-with/" className={styles.postscriptLink}>
+              See how authorship works <span aria-hidden="true">↗</span>
             </Link>
           </footer>
         </article>

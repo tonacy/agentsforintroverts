@@ -1,9 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as z from "zod/v4";
-import type { QuietDeskGateway } from "./types.js";
+import { registerContextKernelTools } from "./context-tools.js";
+import type { ContextKernelGateway, QuietDeskGateway } from "./types.js";
+
+export { CONTEXT_TOOL_NAMES } from "./context-tools.js";
 
 export const TOOL_NAMES = [
   "list_capabilities",
+  "observe_source",
   "list_feed_items",
   "get_feed_item",
   "list_sources",
@@ -40,15 +44,26 @@ const httpSourceUrlSchema = z.string().url().refine((value) => {
   return protocol === "http:" || protocol === "https:";
 }, "Source doors must use HTTP or HTTPS");
 
-const sourceSchema = z.object({
-  source_item_id: z.string().min(1).describe("Canonical Quiet Desk source ID"),
-  external_id: z.string().min(1).describe("Provider source ID"),
-  kind: z.string().min(1).describe("Open source kind such as email or calendar"),
+const rfc3339TimestampSchema = z.string().refine(
+  (value) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/.test(value)
+    && Number.isFinite(Date.parse(value)),
+  "Capture time must be an RFC 3339 timestamp",
+);
+
+const sourceFields = {
+  source_item_id: z.string().min(1).max(256).describe("Canonical Quiet Desk source ID"),
+  external_id: z.string().min(1).max(256).describe("Provider source ID"),
+  kind: z.string().min(1).max(64).describe("Open source kind such as web, rss, email, or calendar"),
   url: httpSourceUrlSchema.optional().describe("Optional user-openable HTTP(S) source door"),
-  captured_at: z.string().min(1).describe("RFC3339 capture timestamp"),
-  content_hash: z.string().regex(/^[a-f0-9]{64}$/).describe("Lowercase SHA-256 hex of the observed content"),
-  title: z.string().min(1).optional(),
-});
+  captured_at: rfc3339TimestampSchema.describe("RFC 3339 capture timestamp"),
+  content_hash: z.string().regex(/^sha256:[a-f0-9]{64}$/).describe("Content hash as sha256: followed by 64 lowercase hex characters"),
+  title: z.string().min(1).max(512).optional(),
+  author: z.string().min(1).max(256).optional(),
+  excerpt: z.string().min(1).max(4_000).optional().describe("Minimized verbatim or faithful source excerpt"),
+  metadata: z.record(z.string(), z.unknown()).optional().describe("Provider metadata retained without interpretation"),
+} as const;
+
+const sourceSchema = z.object(sourceFields);
 
 const claimSchema = z.object({
   claim_id: z.string().min(1),
@@ -88,7 +103,10 @@ async function resultOf(label: string, operation: () => Promise<unknown>) {
   }
 }
 
-export function createQuietDeskServer(gateway: QuietDeskGateway): McpServer {
+export function createQuietDeskServer(
+  gateway: QuietDeskGateway,
+  contextGateway?: ContextKernelGateway,
+): McpServer {
   const server = new McpServer(
     { name: "quiet-desk", version: "0.1.0" },
     {
@@ -103,24 +121,65 @@ export function createQuietDeskServer(gateway: QuietDeskGateway): McpServer {
     inputSchema: z.object({}),
     annotations: readAnnotations,
   }, async () => {
-    let hub: unknown;
+    const connection = gateway.connectionState();
+    let hubReachable = false;
+    let health: unknown;
+    let healthError: string | undefined;
     try {
-      hub = await gateway.health();
+      health = await gateway.health();
+      hubReachable = true;
     } catch (error) {
-      hub = { reachable: false, error: error instanceof Error ? error.message : String(error) };
+      healthError = error instanceof Error ? error.message : String(error);
     }
+    const internalWriteAvailable = hubReachable && connection.internalWriteConfigured;
     return resultOf("Quiet Desk capabilities", async () => ({
-      hub,
+      hub: {
+        reachable: hubReachable,
+        ...(hubReachable ? { health } : { error: healthError }),
+      },
       tools: TOOL_NAMES,
+      availability: {
+        read: {
+          available: hubReachable,
+          verified: hubReachable,
+        },
+        internal_write: {
+          available: internalWriteAvailable,
+          configured: connection.internalWriteConfigured,
+          verified: false,
+          basis: internalWriteAvailable
+            ? "Hub health is reachable and event signing is configured; ingest credentials are verified only by a write receipt."
+            : connection.internalWriteConfigured
+              ? "Event signing is configured, but Quiet Hub health is unreachable."
+              : "QUIET_HUB_SECRET is not configured.",
+        },
+        external_write: {
+          available: false,
+          reason: "This bridge can create internal proposals but cannot execute external actions.",
+        },
+      },
       authority: {
-        observe: true,
-        distill: true,
-        draft: true,
+        observe: internalWriteAvailable,
+        distill: internalWriteAvailable,
+        draft: internalWriteAvailable,
         approve: false,
         execute: false,
       },
     }));
   });
+
+  server.registerTool("observe_source", {
+    title: "Observe source",
+    description: "Capture one minimized source record in Quiet Hub exactly as observed. This stores provenance only; it does not summarize, interpret, publish, propose, or act on the source.",
+    inputSchema: z.object({
+      ...runContext,
+      ...sourceFields,
+    }),
+    annotations: internalWriteAnnotations,
+  }, async (input) => resultOf(
+    `Observed source ${input.source_item_id}; no interpretation or external action was performed`,
+    () => gateway.observeSource(input),
+  ));
 
   server.registerTool("list_feed_items", {
     title: "List feed items",
@@ -254,6 +313,8 @@ export function createQuietDeskServer(gateway: QuietDeskGateway): McpServer {
     }),
     annotations: internalWriteAnnotations,
   }, async (input) => resultOf(`Run ${input.run_id} ${input.status}`, () => gateway.completeRun(input)));
+
+  if (contextGateway) registerContextKernelTools(server, contextGateway);
 
   return server;
 }

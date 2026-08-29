@@ -12,7 +12,7 @@ struct MenuBarStatusView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(statusTitle)
                     .font(.headline)
-                Text("Sample data · \(store.readOnlyMode ? "Read-only" : "Local approvals on")")
+                Text("Sample data · \(store.pendingApprovalCount) exact proposals · \(store.readOnlyMode ? "Read-only" : "Local approvals on")")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -28,10 +28,10 @@ struct MenuBarStatusView: View {
     }
 
     private var statusTitle: String {
-        switch store.pendingApprovalCount {
-        case 0: "Your desk is quiet."
-        case 1: "One thing is ready when you are."
-        default: "\(store.pendingApprovalCount) things are ready when you are."
+        switch store.pendingHandoffCount {
+        case 0: "No human handoff needs you."
+        case 1: "One human thread is ready."
+        default: "\(store.pendingHandoffCount) human threads are ready."
         }
     }
 }

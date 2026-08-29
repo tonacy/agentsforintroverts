@@ -52,7 +52,7 @@ private struct QuietDeskCommands: Commands {
 
     var body: some Commands {
         CommandMenu("Quiet Desk") {
-            Button("Now") { router.destination = .now }
+            Button("Today") { router.destination = .conversation }
                 .keyboardShortcut("1", modifiers: .command)
             Button("Activity") { router.destination = .activity }
                 .keyboardShortcut("2", modifiers: .command)
@@ -67,11 +67,15 @@ private struct QuietDeskCommands: Commands {
             .keyboardShortcut("r", modifiers: .command)
 
             Button("Approve Selected Exact Payload") {
-                guard let itemID = router.selectedFeedID else { return }
+                guard let itemID = selectedApprovalItemID else { return }
                 _ = try? store.approveAction(for: itemID)
             }
             .keyboardShortcut(.return, modifiers: .command)
-            .disabled(!store.canApprove(itemID: router.selectedFeedID))
+            .disabled(!store.canApprove(itemID: selectedApprovalItemID))
         }
+    }
+
+    private var selectedApprovalItemID: UUID? {
+        router.selectedFeedID ?? store.handoffItem(for: router.selectedThreadID)?.id
     }
 }

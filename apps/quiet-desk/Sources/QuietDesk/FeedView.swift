@@ -2,9 +2,11 @@ import QuietDeskCore
 import SwiftUI
 
 @MainActor
-struct NowView: View {
+struct ThreadsView: View {
     @Bindable var store: QuietDeskStore
     @Bindable var router: AppRouter
+
+    @State private var contextExpanded = false
 
     var body: some View {
         Group {
@@ -16,53 +18,58 @@ struct NowView: View {
             case .failed(let message):
                 CalmLoadError(message: message, retry: reload)
             case .loaded:
-                nowList
+                threadsList
             }
         }
-        .navigationTitle("Now")
-        .accessibilityLabel("What needs you now")
+        .navigationTitle("Threads")
+        .accessibilityLabel("Recurring conversations worth your time")
     }
 
-    private var allAttentionItems: [FeedItem] {
-        store.snapshot.attentionItems()
+    private var allThreads: [CommonGroundThread] {
+        store.snapshot.conversationThreads()
     }
 
-    private var attentionItems: [FeedItem] {
-        store.snapshot.topLevelAttentionItems()
+    private var threads: [CommonGroundThread] {
+        store.snapshot.topLevelThreads()
     }
 
-    private var nowList: some View {
+    private var threadsList: some View {
         List {
             Section {
-                CalmNowHeader(attentionCount: allAttentionItems.count)
+                ThreadHomeHeader(threadCount: allThreads.count)
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                     .accessibilityAddTraits(.isHeader)
             }
 
-            if !attentionItems.isEmpty {
-                Section {
-                    ForEach(attentionItems) { item in
+            if !threads.isEmpty {
+                Section("Worth returning to") {
+                    ForEach(threads) { thread in
                         Button {
-                            router.show(.feed(item.id))
+                            router.show(.thread(thread.id))
                         } label: {
-                            FeedCardView(
-                                item: item,
-                                showsStatus: false
+                            ThreadCardView(
+                                thread: thread,
+                                handoffItem: store.handoffItem(for: thread.id)
                             )
                         }
                         .buttonStyle(.plain)
-                        .accessibilityIdentifier("quiet-desk.attention-item.\(item.id.uuidString)")
-                        .listRowInsets(.init(top: 6, leading: 20, bottom: 6, trailing: 20))
+                        .accessibilityIdentifier("quiet-desk.thread.\(thread.id.uuidString)")
+                        .listRowInsets(.init(top: 8, leading: 20, bottom: 8, trailing: 20))
                     }
                 }
             }
 
             Section {
-                Button(activityButtonTitle) {
-                    if allAttentionItems.count > attentionItems.count {
-                        router.activityScope = .needsYou
-                    }
+                LivingContextDisclosure(
+                    context: store.snapshot.personalContext,
+                    isExpanded: $contextExpanded
+                )
+                .listRowSeparator(.hidden)
+            }
+
+            Section {
+                Button("See source activity") {
                     router.openActivity()
                 }
                 .buttonStyle(.link)
@@ -76,9 +83,9 @@ struct NowView: View {
 
     private var emptySampleView: some View {
         ContentUnavailableView(
-            "No sample items",
-            systemImage: "tray",
-            description: Text("Reload the bundled sample data from the More menu.")
+            "No sample threads",
+            systemImage: "text.bubble",
+            description: Text("Reload the bundled sample data from the More menu. Source activity remains available separately.")
         )
     }
 
@@ -86,10 +93,6 @@ struct NowView: View {
         Task { await store.reload() }
     }
 
-    private var activityButtonTitle: String {
-        let remaining = allAttentionItems.count - attentionItems.count
-        return remaining > 0 ? "See \(remaining) more" : "See all activity"
-    }
 }
 
 @MainActor
@@ -175,8 +178,8 @@ struct ActivityView: View {
     }
 }
 
-private struct CalmNowHeader: View {
-    let attentionCount: Int
+private struct ThreadHomeHeader: View {
+    let threadCount: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -191,17 +194,64 @@ private struct CalmNowHeader: View {
     }
 
     private var title: String {
-        switch attentionCount {
-        case 0: "Your desk is quiet."
-        case 1: "One thing is ready when you are."
-        default: "\(attentionCount) things are ready when you are."
+        switch threadCount {
+        case 0: "No conversation has earned your time."
+        case 1: "One conversation is worth returning to."
+        default: "\(threadCount) conversations are worth returning to."
         }
     }
 
     private var subtitle: String {
-        attentionCount == 0
-            ? "Nothing needs you right now."
-            : "Everything else is staying out of the way."
+        threadCount == 0
+            ? "Agents are still listening across the synthetic network."
+            : "Recurring discourse, matched to your context and narrowed toward people."
+    }
+}
+
+private struct LivingContextDisclosure: View {
+    let context: LivingContext
+    @Binding var isExpanded: Bool
+
+    var body: some View {
+        DisclosureGroup(isExpanded: $isExpanded) {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(context.summary)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+
+                ForEach(context.statements) { statement in
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: statement.needsConfirmation ? "questionmark.circle" : "checkmark.circle")
+                            .foregroundStyle(statement.needsConfirmation ? Color.orange : Color.secondary)
+                            .frame(width: 18)
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(statement.statement)
+                                .font(.callout)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text("\(statement.kind.label) · \(statement.basis.label)")
+                                .font(.caption)
+                                .foregroundStyle(statement.needsConfirmation ? Color.orange : Color.secondary)
+                        }
+                    }
+                    .accessibilityElement(children: .combine)
+                }
+
+                Text("Context is inspectable input, not permission to speak for you. Inferences stay labeled as needing confirmation.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.top, 10)
+        } label: {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Your context")
+                    .font(.headline)
+                Text("Revision \(context.revision) · \(context.statements.count) statements · used to explain fit")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityIdentifier("quiet-desk.context")
     }
 }
 

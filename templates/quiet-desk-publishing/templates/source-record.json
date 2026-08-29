@@ -1,0 +1,32 @@
+{
+  "schema": "afi.local_source_record.v1",
+  "source_item_id": "source_YYYYMMDD_slug",
+  "external_id": "publisher_native_id_or_canonical_url",
+  "kind": "public_web",
+  "url": "https://example.com/source-door",
+  "captured_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "selected_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "content_hash": "sha256:lowercase_sha256_of_observed_content",
+  "title": "Source title",
+  "author": "Source author or publisher",
+  "excerpt": "A short, minimized excerpt or faithful description.",
+  "evidence_class": "observed_public",
+  "public_revalidation": {
+    "status": "verified",
+    "verified_at": "YYYY-MM-DDTHH:MM:SSZ",
+    "verified_url": "https://example.com/source-door",
+    "authenticated_origin_retained": false
+  },
+  "retention": {
+    "class": "selected_public_source",
+    "review_or_delete_at": "YYYY-MM-DDTHH:MM:SSZ",
+    "promotion_event_id": null
+  },
+  "hub_eligible": true,
+  "metadata": {
+    "published_at": "YYYY-MM-DDTHH:MM:SSZ",
+    "retrieval_method": "manual_url_or_public_web_or_rss_after_public_revalidation",
+    "visibility": "public",
+    "notes": "What was and was not observed. Do not retain authenticated page state or interpret importance here."
+  }
+}

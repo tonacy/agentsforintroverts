@@ -23,32 +23,30 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Agents for Introverts — The Quiet Operator's Agent Stack",
+  title: {
+    default: "Agents for Introverts — Network fluency on human terms",
+    template: "%s | Agents for Introverts",
+  },
   description:
-    "How I use AI agents to handle inbox triage, follow-ups, scheduling, group chats, and meetup logistics — so I can show up when it matters. Get the free playbook.",
-  keywords: [
-    "AI agents",
-    "automation",
-    "introverts",
-    "productivity",
-    "email automation",
-    "scheduling",
-    "deep work",
-  ],
+    "Agents that turn network-scale discourse into grounded context, common ground, and a few human conversations worth your time.",
   authors: [{ name: "Tony Llongueras" }],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Agents for Introverts",
     description:
-      "How I use five AI agents to stay in flow. Steal the stack.",
-    url: "https://agentsforintroverts.com",
+      "The world comes in. Your lived experience goes out. The human stays in focus.",
+    url: "/",
     siteName: "Agents for Introverts",
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Agents for Introverts",
     description:
-      "How I use five AI agents to stay in flow. Steal the stack.",
+      "The world comes in. Your lived experience goes out. The human stays in focus.",
   },
   metadataBase: new URL("https://agentsforintroverts.com"),
 };

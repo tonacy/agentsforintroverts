@@ -5,7 +5,7 @@ import SwiftUI
 extension QuietDeskDestination {
     var systemImage: String {
         switch self {
-        case .now: "circle"
+        case .conversation: "circle.grid.cross"
         case .activity: "clock"
         case .connections: "point.3.connected.trianglepath.dotted"
         }
@@ -13,12 +13,14 @@ extension QuietDeskDestination {
 }
 
 enum InspectorSelection: Hashable, Identifiable {
+    case thread(UUID)
     case feed(UUID)
     case agent(UUID)
     case source(UUID)
 
     var id: String {
         switch self {
+        case .thread(let id): "thread-\(id.uuidString)"
         case .feed(let id): "feed-\(id.uuidString)"
         case .agent(let id): "agent-\(id.uuidString)"
         case .source(let id): "source-\(id.uuidString)"
@@ -37,6 +39,11 @@ final class AppRouter {
 
     var selectedFeedID: UUID? {
         guard case .feed(let id) = inspectorSelection else { return nil }
+        return id
+    }
+
+    var selectedThreadID: UUID? {
+        guard case .thread(let id) = inspectorSelection else { return nil }
         return id
     }
 
@@ -69,6 +76,8 @@ final class AppRouter {
         }
 
         switch inspectorSelection {
+        case .thread(let id) where snapshot.thread(id: id) != nil:
+            break
         case .feed(let id) where snapshot.items.contains(where: { $0.id == id }):
             break
         case .agent(let id) where snapshot.agent(id: id) != nil:

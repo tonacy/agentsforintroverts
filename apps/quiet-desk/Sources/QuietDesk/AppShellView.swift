@@ -82,20 +82,23 @@ struct AppShellView: View {
     @ViewBuilder
     private var contentColumn: some View {
         switch router.destination {
-        case .now:
-            NowView(store: store, router: router)
+        case .conversation:
+            DailyConversationView(store: store, router: router)
         case .activity:
             ActivityView(store: store, router: router)
         case .connections:
             ConnectionsView(store: store, router: router)
         case nil:
-            NowView(store: store, router: router)
+            DailyConversationView(store: store, router: router)
         }
     }
 
     @ViewBuilder
     private var detailColumn: some View {
         switch router.inspectorSelection {
+        case .thread(let id):
+            ThreadInspectorView(store: store, threadID: id)
+                .id(id)
         case .feed(let id):
             FeedInspectorView(store: store, itemID: id)
                 .id(id)

@@ -7,10 +7,13 @@
     "node": ">=20"
   },
   "scripts": {
+    "prebuild": "npm --prefix ../../packages/protocol run build && npm --prefix ../context-kernel run build",
     "build": "tsc -p tsconfig.json",
     "start:stdio": "node dist/stdio.js",
     "start:http": "node dist/http.js",
-    "test": "npm run build && node --test dist/tests/*.test.js"
+    "call:context": "node scripts/call-context-tool.mjs",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "test:context": "npm run build && node --test dist/tests/context-tools.test.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.4",

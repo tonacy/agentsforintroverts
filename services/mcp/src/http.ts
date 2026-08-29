@@ -3,6 +3,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import type { NextFunction, Request, Response } from "express";
 import { assertSafeRemoteBinding, bearerMatches, loadConfig } from "./config.js";
 import { HubClient } from "./hub-client.js";
+import { LocalContextGateway } from "./local-context-gateway.js";
 import { createQuietDeskServer } from "./server.js";
 
 const MAX_REQUEST_BYTES = 512 * 1024;
@@ -17,6 +18,13 @@ interface RateWindow {
 
 const config = loadConfig();
 assertSafeRemoteBinding(config);
+const contextGateway = config.contextRoot
+  ? await LocalContextGateway.open({
+      root: config.contextRoot,
+      actorId: config.contextActorId ?? "local-agent",
+      roles: config.contextRoles ?? ["afi.daily-conversation", "afi.common-ground"],
+    })
+  : undefined;
 
 const app = createMcpExpressApp({
   host: config.host,
@@ -66,7 +74,7 @@ app.get("/health", (_req, res) => {
 app.use("/mcp", authorize);
 
 app.post("/mcp", async (req, res) => {
-  const server = createQuietDeskServer(new HubClient(config));
+  const server = createQuietDeskServer(new HubClient(config), contextGateway);
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
     enableJsonResponse: true,

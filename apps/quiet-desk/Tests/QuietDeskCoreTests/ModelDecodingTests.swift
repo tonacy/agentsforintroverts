@@ -6,11 +6,15 @@ final class ModelDecodingTests: XCTestCase {
         let snapshot = try QuietDeskFixtureLoader.load()
 
         XCTAssertTrue(snapshot.isSynthetic)
-        XCTAssertEqual(snapshot.items.count, 7)
-        XCTAssertEqual(snapshot.agents.count, 5)
+        XCTAssertEqual(snapshot.items.count, 8)
+        XCTAssertEqual(snapshot.agents.count, 6)
         XCTAssertEqual(snapshot.sources.count, 6)
+        XCTAssertEqual(snapshot.personalContext.statements.count, 4)
+        XCTAssertEqual(snapshot.threads.count, 2)
         XCTAssertTrue(snapshot.items.allSatisfy { !$0.claims.isEmpty })
         XCTAssertTrue(snapshot.approvalPolicyViolations.isEmpty)
+        XCTAssertTrue(snapshot.contextReferenceViolations.isEmpty)
+        XCTAssertTrue(snapshot.threadReferenceViolations.isEmpty)
     }
 
     func testEveryExternalActionHasAnExactStableHash() throws {

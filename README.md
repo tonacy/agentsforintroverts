@@ -3,16 +3,21 @@
 This repository now contains both the public brand site and the first private
 product: **Quiet Desk**, a provider-neutral agent feed for calm, sourced review.
 
-Codex and Grok can run the same five roles through one bounded MCP tool surface.
-Their signed events land in Quiet Hub, which owns the append-only event log and
-canonical feed, run, and source projections. The native Mac app is the review
-surface; providers are executors, never the system of record.
+Codex and Grok can run the same seven roles through one bounded MCP tool surface.
+Quiet Hub owns the append-only feed, run, and source projections. A separate
+local-first Context Kernel owns portable personal context and assembles the same
+bounded Context Pack for any harness. The native Mac app is the review surface;
+providers are executors, never the system of record.
 
 ```text
 Codex (local STDIO) ─┐
                      ├─ MCP bridge ─ signed afi.event.v1 ─ Quiet Hub ─ Slow Feed
 Grok (remote HTTPS) ─┘                                      │
                                                            └─ source doors
+
+any trusted harness ─ MCP / CLI ─ local Context Kernel ─ Markdown + JSON
+                                           │
+                                           └─ rebuildable SQLite index
 ```
 
 ## What is built
@@ -24,13 +29,16 @@ Grok (remote HTTPS) ─┘                                      │
 - `packages/protocol/` — provider-neutral TypeScript contracts, JSON Schema,
   deterministic projection helpers, canonical payload hashing, fixtures, and
   invariant tests.
+- `services/context-kernel/` — encrypted local create-only context ledger,
+  deterministic Markdown/JSON projections, bounded Context Packs, disposable
+  SQLite/FTS search, 24-hour scratch cues, and a JSON CLI.
 - `services/hub/` — Cloudflare Worker + D1 append-only hub with HMAC ingestion,
   replay/idempotency controls, read authentication, and deterministic feed/run/
   source projection.
 - `services/mcp/` — one MCP surface with local STDIO transport for Codex and
   authenticated Streamable HTTP for Grok-compatible remote connectors.
-- `agents/` — five bounded runtime profiles and prompts: Inbox, Follow-up,
-  Scheduling, Group Chat, and Meetup.
+- `agents/` — seven bounded runtime profiles and prompts, including Daily
+  Conversation and Common Ground.
 - `docs/` — architecture, threat model, provider activation, and the short list
   of product decisions to review.
 
@@ -43,6 +51,7 @@ approve or execute tool.
 ```bash
 npm run test:agents
 npm run test:protocol
+npm run test:context
 npm run test:hub
 npm run test:mcp
 npm run test:integration
@@ -74,7 +83,7 @@ configured by this change.
 ## Connect providers
 
 Start with [the provider activation guide](docs/CONNECT_PROVIDERS.md) and
-[the review checklist](docs/REVIEW_CHECKLIST.md). Use different hub connection
+[the Context Kernel guide](docs/CONTEXT_KERNEL.md). Use different hub connection
 IDs and HMAC secrets for Codex and Grok, keep the first source read-only, and do
 not authorize an executor during the first live-source test.
 

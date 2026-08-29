@@ -12,7 +12,28 @@ test("loads safe local defaults", () => {
   assert.equal(config.host, "127.0.0.1");
   assert.equal(config.userId, "local-user");
   assert.deepEqual(config.allowedHosts, []);
+  assert.equal(config.contextRoot, undefined);
+  assert.equal(config.contextActorId, "local-agent");
+  assert.deepEqual(config.contextRoles, ["afi.daily-conversation", "afi.common-ground"]);
   assert.doesNotThrow(() => assertSafeRemoteBinding(config));
+});
+
+test("loads an optional local Context Kernel without granting caller authority", () => {
+  const config = loadConfig({
+    QUIET_CONTEXT_ROOT: "/private/context",
+    QUIET_CONTEXT_AGENT_ID: "codex-local",
+    QUIET_CONTEXT_ROLES: "afi.daily-conversation, afi.common-ground, afi.daily-conversation",
+  });
+
+  assert.equal(config.contextRoot, "/private/context");
+  assert.equal(config.contextActorId, "codex-local");
+  assert.deepEqual(config.contextRoles, [
+    "afi.daily-conversation",
+    "afi.common-ground",
+    "afi.daily-conversation",
+  ]);
+  assert.equal("contextActorType" in config, false);
+  assert.equal("contextApproval" in config, false);
 });
 
 test("remote binding requires bearer auth and an allowlist", () => {

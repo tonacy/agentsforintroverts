@@ -7,6 +7,11 @@
       "description": "Discover the source kinds, operations, scopes, and current connection health available to this run."
     },
     {
+      "name": "observe_source",
+      "effect": "write_internal",
+      "description": "Record one minimized, hash-addressed source observation before using it in a briefing or sourced claim."
+    },
+    {
       "name": "list_feed_items",
       "effect": "read",
       "description": "List Quiet Desk feed items with lane, agent, time, status, and text filters."
@@ -55,6 +60,68 @@
       "name": "complete_run",
       "effect": "write_internal",
       "description": "End a run explicitly as completed, partial, or failed with completed steps, remaining steps, and a concise summary."
+    }
+  ],
+  "context_tools": [
+    {
+      "name": "context_capabilities",
+      "effect": "read",
+      "description": "Discover the local Context Kernel, its current watermark, and the exact roles and authority scopes granted to this connection."
+    },
+    {
+      "name": "open_run",
+      "effect": "write_internal",
+      "description": "Open one idempotent, bounded Context Kernel run under a server-authorized role."
+    },
+    {
+      "name": "record_scratch_cue",
+      "effect": "write_ephemeral",
+      "description": "Retain one minimized, non-citable cue for at most 24 hours outside the durable ledger."
+    },
+    {
+      "name": "record_evidence",
+      "effect": "write_internal",
+      "description": "Record minimized public or work evidence with provenance; human-confirmed evidence is unavailable to ordinary agents."
+    },
+    {
+      "name": "assemble_context",
+      "effect": "read",
+      "description": "Build a bounded Context Pack at an inspectable ledger watermark with explicit, observed, and inferred material kept separate."
+    },
+    {
+      "name": "refresh_context",
+      "effect": "read",
+      "description": "Refresh a prior Context Pack from its cursor using the full workspace-authenticated receipt returned by assemble_context; the pack remains a derived view, not memory."
+    },
+    {
+      "name": "search_entities",
+      "effect": "read",
+      "description": "Search current context entities through the rebuildable local index."
+    },
+    {
+      "name": "get_entity",
+      "effect": "read",
+      "description": "Read one current context entity with its revision, evidence basis, and lifecycle state."
+    },
+    {
+      "name": "append_context_event",
+      "effect": "context_proposal",
+      "description": "Append an observed or inferred proposal with optimistic revision control; it cannot confirm a belief or exercise human authority."
+    },
+    {
+      "name": "get_changes",
+      "effect": "read",
+      "description": "Read context changes after a ledger cursor for refresh and cross-harness handoff."
+    },
+    {
+      "name": "checkpoint_run",
+      "effect": "write_internal",
+      "description": "Persist bounded, resumable progress without claiming completion or an external side effect."
+    },
+    {
+      "name": "complete_context_run",
+      "effect": "write_internal",
+      "description": "Close a Context Kernel run explicitly as completed, partial, or failed without implying approval, delivery, merge, or deployment."
     }
   ],
   "intentionally_absent": [
