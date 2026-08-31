@@ -1,4 +1,11 @@
-import type { AppendResult, EventStore, StoredEvent } from "./types.js";
+import type {
+  AppendResult,
+  EventStore,
+  StoredEvent,
+  SubscribeOutcome,
+  SubscriberInput,
+  SubscriberStore,
+} from "./types.js";
 import { sameStoredEvent } from "./store-utils.js";
 
 type D1Bindable = string | number | null;
@@ -33,7 +40,7 @@ function parseStoredEvent(payload: string): StoredEvent {
   return JSON.parse(payload) as StoredEvent;
 }
 
-export class D1EventStore implements EventStore {
+export class D1EventStore implements EventStore, SubscriberStore {
   readonly kind = "d1";
 
   constructor(
@@ -155,5 +162,52 @@ export class D1EventStore implements EventStore {
       .bind(runId, this.maxEventsPerRead)
       .all<{ payload_json: string }>();
     return result.results.map((row) => parseStoredEvent(row.payload_json));
+  }
+
+  async addSubscriber(input: SubscriberInput): Promise<SubscribeOutcome> {
+    // Idempotent by email. An existing row is only touched, never overwritten:
+    // a prior unsubscribe stays honoured, and the caller learns nothing about
+    // whether the address was already on the list.
+    const inserted = await this.database
+      .prepare(
+        `INSERT OR IGNORE INTO subscribers (
+           id, email, source, ip_hash, created_at, updated_at, unsubscribed_at
+         ) VALUES (?1, ?2, ?3, ?4, ?5, ?5, NULL)`,
+      )
+      .bind(input.id, input.email, input.source, input.ipHash, input.nowIso)
+      .run();
+    if ((inserted.meta.changes ?? 0) > 0) return "inserted";
+
+    await this.database
+      .prepare("UPDATE subscribers SET updated_at = ?2 WHERE email = ?1")
+      .bind(input.email, input.nowIso)
+      .run();
+    return "duplicate";
+  }
+
+  async claimSubscribeSlot(
+    ipHash: string,
+    nowMs: number,
+    windowMs: number,
+    maxRequests: number,
+  ): Promise<boolean> {
+    const windowFloor = nowMs - windowMs;
+    const cleanup = this.database
+      .prepare("DELETE FROM subscribe_rate_limits WHERE window_start_ms <= ?1")
+      .bind(windowFloor);
+    const claim = this.database
+      .prepare(
+        `INSERT INTO subscribe_rate_limits (ip_hash, window_start_ms, attempts)
+         VALUES (?1, ?2, 1)
+         ON CONFLICT (ip_hash) DO UPDATE SET attempts = subscribe_rate_limits.attempts + 1`,
+      )
+      .bind(ipHash, nowMs);
+    await this.database.batch([cleanup, claim]);
+
+    const row = await this.database
+      .prepare("SELECT attempts FROM subscribe_rate_limits WHERE ip_hash = ?1")
+      .bind(ipHash)
+      .first<{ attempts: number }>();
+    return (row?.attempts ?? 1) <= maxRequests;
   }
 }
