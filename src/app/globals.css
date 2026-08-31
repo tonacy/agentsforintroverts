@@ -17,7 +17,7 @@
   /* Ink hierarchy */
   --color-ink: #111111;
   --color-ink-muted: #444444;
-  --color-ink-faint: #888888;
+  --color-ink-faint: #737373;
 
   /* Single accent: deep forest green */
   --color-leaf: #0f4a38;
@@ -33,7 +33,7 @@
   --color-torrent-label: rgba(17, 17, 17, 0.35);
 
   /* Arrived label - warm olive/sage tone */
-  --color-arrived-label: #8B7355;
+  --color-arrived-label: #836D51;
 
 }
 
@@ -51,8 +51,26 @@ body {
 }
 
 :focus-visible {
-  outline: 1px solid var(--color-leaf);
+  outline: 2px solid var(--color-leaf);
   outline-offset: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 50;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  transform: translateY(calc(-100% - 1rem));
+}
+
+.skip-link:focus-visible {
+  outline-color: var(--color-paper);
+  transform: translateY(0);
 }
 
 .nav-link,
@@ -281,7 +299,7 @@ body {
 }
 
 .hero-translate span {
-  color: rgba(17, 17, 17, 0.45);
+  color: var(--color-ink-faint);
 }
 
 .hero-open__sequence {

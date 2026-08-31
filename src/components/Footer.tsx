@@ -1,15 +1,16 @@
 import Link from "next/link";
+import { fieldNotesNavigationHref } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="border-t border-rule bg-paper">
+    <footer aria-label="Site footer" className="border-t border-rule bg-paper">
       <div className="mx-auto max-w-[1000px] px-6 py-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
           <p className="font-serif italic text-ink-muted text-sm">
             A practice, becoming a product.
           </p>
           <nav
-            aria-label="Footer"
+            aria-label="Site footer navigation"
             className="flex flex-wrap items-center gap-x-5 gap-y-1 sm:ml-auto"
           >
             <Link
@@ -31,7 +32,7 @@ export function Footer() {
               Made with
             </Link>
             <Link
-              href="/#field-notes"
+              href={fieldNotesNavigationHref}
               className="nav-link inline-flex min-h-11 items-center font-mono text-xs text-ink-muted"
             >
               Field Notes

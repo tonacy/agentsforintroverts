@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { fieldNotesNavigationHref } from "@/lib/site";
 
 type NavProps = {
   current?: "manifesto" | "made-with";
@@ -46,7 +47,7 @@ export function Nav({ current }: NavProps) {
             Made with
           </Link>
           <Link
-            href="/#field-notes"
+            href={fieldNotesNavigationHref}
             className="nav-link nav-link--playbook hidden min-h-11 items-center border-b border-ink font-mono text-xs text-ink min-[480px]:inline-flex sm:text-sm"
           >
             Field Notes

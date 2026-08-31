@@ -92,15 +92,107 @@ not authorize an executor during the first live-source test.
 The existing Next.js 16 static site remains the public
 [agentsforintroverts.com](https://agentsforintroverts.com) brand surface.
 
+Use the repository-pinned Node 22.23.2 for all website install, build,
+verification, and deploy commands. The enforced range is `>=22.23.2 <23`;
+Wrangler 4 no longer supports the default Node 20 runtime on this machine. With
+`nvm`, activate the checked-in `.nvmrc`, then confirm the active executables
+before installing from the lockfiles:
+
 ```bash
-npm install
+nvm use
+node --version
+npm --version
+npm ci
+npm ci --prefix services/mcp
 npm run dev
 ```
 
-Deployment remains an explicit, separate action:
+### Field Notes URL
+
+`FIELD_NOTES_URL` is an optional build-time setting. When it is unset, empty,
+or whitespace-only, the site stays in its honest pre-publication state:
+
+- header and footer links point to `/#field-notes`;
+- the status reads “The first field note is being written.”; and
+- its call to action points to `/manifesto/` and reads “Read the manifesto →”.
+
+When it is set, it must be an absolute `https:` URL with no embedded username
+or password. Invalid, credential-bearing, or non-HTTPS values fail the build.
+The value is trimmed, parsed, and normalized with the standard URL parser; the
+header, footer, and status call to action then use that same URL. The live
+status reads “Slow Feed is now publishing.” and its call to action reads “Read
+the field notes →”. Do not set it until the real publication URL exists.
+
+### Build and verify
+
+`npm run build` creates the website-only production export. The release gate is
+broader:
 
 ```bash
+npm run build
+npm run verify
+npm --prefix services/hub run typecheck
+git diff --check
+npm run verify:site
+```
+
+`npm run verify` covers the agent, protocol, Context Kernel, Hub, MCP,
+integration, Swift, lint, and website build suites. `npm run verify:site`
+additionally verifies the exported routes, social assets, security-header file,
+and public version marker.
+
+Every production build emits `out/version.json`. The public marker is available
+at `/version.json` with this contract:
+
+```json
+{
+  "schemaVersion": 1,
+  "service": "agentsforintroverts.com",
+  "commitSha": "<40-character Git SHA>",
+  "branch": "main",
+  "sourceTree": "clean",
+  "buildMode": "static-export"
+}
+```
+
+Field order and whitespace are not significant. A release is eligible only
+when the marker says `main` and `clean`, its SHA equals both local `HEAD` and
+fresh `origin/main`, and `npm run verify:site` passes.
+
+### Deploy and verify the exact release
+
+Deployment remains an explicit, separate action. `npm run deploy` rebuilds the
+site, so use the same `FIELD_NOTES_URL` value that was present during the
+verified build.
+
+```bash
+git fetch origin
+test "$(git branch --show-current)" = "main"
+test -z "$(git status --porcelain)"
+test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
 npm run deploy
 ```
+
+Save the 40-character SHA and Wrangler deployment URL, then verify the public
+site against that exact commit:
+
+```bash
+npm run verify:site:public -- --expected-commit "$(git rev-parse HEAD)"
+```
+
+The public check must confirm the HTML routes and launch assets, the canonical
+production URLs, and the `/version.json` receipt. It must also confirm the
+Cloudflare Pages headers declared in `public/_headers`:
+
+- the global Content Security Policy includes `base-uri 'self'`,
+  `form-action 'self'`, and `frame-ancestors 'none'`;
+- `Permissions-Policy` disables camera, geolocation, and microphone;
+- `Referrer-Policy` is `strict-origin-when-cross-origin`;
+- `X-Content-Type-Options` is `nosniff` and `X-Frame-Options` is `DENY`;
+- `/_next/static/*` is cached immutably; and
+- `/version.json` uses `Cache-Control: no-store`.
+
+A successful local build, a successful Pages upload, and a matching public
+marker are three separate proof gates.
 
 Private project — Tony Llongueras.

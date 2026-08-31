@@ -32,7 +32,14 @@ export const metadata: Metadata = {
     title: "Made with Agents for Introverts",
     description:
       "The point of view is mine, and the agents helped it travel.",
-    images: ["/twitter-image.png"],
+    images: [
+      {
+        url: "/twitter-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Agents for Introverts — many signals narrowing toward a person, then opening back into the world",
+      },
+    ],
   },
 };
 
@@ -103,7 +110,7 @@ export default function MadeWithPage() {
               <div>
                 <p className={styles.eyebrow}>Authorship note · 001</p>
                 <h1 className={styles.title}>
-                  Made with
+                  Made with{" "}
                   <span>Agents for Introverts</span>
                 </h1>
                 <p className={styles.intro}>
@@ -321,7 +328,10 @@ export default function MadeWithPage() {
             </section>
           </div>
 
-          <footer className={styles.nextSteps}>
+          <footer
+            aria-label="Made with next steps"
+            className={styles.nextSteps}
+          >
             <div>
               <span>Continue</span>
               <p>The longer argument for network fluency on human terms.</p>

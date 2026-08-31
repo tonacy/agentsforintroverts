@@ -5,8 +5,12 @@ function prefersReducedMotion(win: Window): boolean {
   return win.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function hasExplicitDestination(win: Window): boolean {
+  return win.location.hash.length > 0;
+}
+
 export function shouldPlayOpening(win: Window): boolean {
-  if (prefersReducedMotion(win)) {
+  if (prefersReducedMotion(win) || hasExplicitDestination(win)) {
     return false;
   }
 
@@ -18,7 +22,7 @@ export function shouldPlayOpening(win: Window): boolean {
 }
 
 export function claimOpening(win: Window): boolean {
-  if (prefersReducedMotion(win)) {
+  if (prefersReducedMotion(win) || hasExplicitDestination(win)) {
     return false;
   }
 

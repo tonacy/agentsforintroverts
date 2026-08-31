@@ -1,5 +1,8 @@
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { assertReleaseNode } from "./site-release-utils.mjs";
+
+assertReleaseNode();
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const checks = [
@@ -12,11 +15,17 @@ const checks = [
   "test:mac",
   "lint",
   "build",
+  "verify:site",
 ];
+
+const npmExecPath = process.env.npm_execpath;
+if (!npmExecPath) {
+  throw new Error("npm_execpath is unavailable. Run this verifier with `npm run verify`.");
+}
 
 for (const check of checks) {
   process.stdout.write(`\n=== npm run ${check} ===\n`);
-  const result = spawnSync("npm", ["run", check], {
+  const result = spawnSync(process.execPath, [npmExecPath, "run", check], {
     cwd: root,
     stdio: "inherit",
     env: process.env,

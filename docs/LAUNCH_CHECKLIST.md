@@ -28,50 +28,104 @@ not prove the Mac app, context sources, approval system, or publishers are live.
 Baseline commands:
 
 ```bash
+nvm use
+node --version
+npm --version
 npm ci
 npm ci --prefix services/mcp
+npm run build
 npm run verify
 npm --prefix services/hub run typecheck
 git diff --check
+npm run verify:site
 ```
 
 `npm run verify` covers the agent, protocol, Context Kernel, Hub, MCP,
 integration, Swift, lint, and production website build suites. It does not
 prove deployment, native UI behavior, notarization, or a live provider.
+`npm run build` is the website-only production export. Run every command above
+with the checked-in `.nvmrc` value, Node 22.23.2; release tooling enforces
+`>=22.23.2 <23`. Recording `node --version` and `npm --version` makes the
+release environment explicit.
 
 ## 1. Public-practice launch — do this first
 
 ### Website release
 
-- [ ] Use Node 22 or newer for deployment; the current Wrangler dependency no
-  longer supports the default Node 20 runtime.
+- [ ] Run `nvm use` and confirm Node 22.23.2 from `.nvmrc`; release tooling
+  rejects versions outside `>=22.23.2 <23`, and Wrangler no longer supports the
+  default Node 20 runtime.
+- [ ] Run `npm ci` and `npm ci --prefix services/mcp` from the exact clean
+  launch commit. Do not substitute `npm install` during release preparation.
+- [ ] Decide the build-time `FIELD_NOTES_URL` state:
+  - [ ] Until Slow Feed has a real public URL, leave it unset or blank and
+    confirm the header/footer stay on `/#field-notes`, the status says “The
+    first field note is being written.”, and its CTA remains `/manifesto/`.
+  - [ ] After the publication exists, set its absolute HTTPS URL and confirm
+    the header, footer, and “Read the field notes →” status CTA all use the
+    normalized URL and the copy says “Slow Feed is now publishing.”
+  - [ ] Confirm a malformed, relative, credential-bearing, or non-HTTPS value
+    fails the build.
+- [ ] Run `npm run build`, then the complete baseline verification commands
+  above using the same `FIELD_NOTES_URL` state intended for deployment.
 - [ ] Confirm the static build contains:
   - [ ] `/index.html`
   - [ ] `/manifesto/index.html`
   - [ ] `/made-with/index.html`
   - [ ] `/robots.txt`
   - [ ] `/sitemap.xml`
+  - [ ] `/version.json`
+  - [ ] `/_headers`
   - [ ] root and manifesto Open Graph images
   - [ ] favicon and Apple icon
+- [ ] Inspect `out/version.json` and confirm its contract is
+  `schemaVersion: 1`, `service: "agentsforintroverts.com"`, the full 40-character
+  `commitSha`, `branch: "main"`, `sourceTree: "clean"`, and
+  `buildMode: "static-export"`.
+- [ ] Run `npm run verify:site`; do not infer route, marker, asset, or header
+  readiness from `npm run build` alone.
 - [ ] Review the built site locally on desktop and at 390 px.
 - [ ] Exercise keyboard focus, the Skip opening control, and reduced motion.
+- [ ] Immediately before deployment, fetch `origin/main` and confirm all three
+  SHAs are identical: `out/version.json` `commitSha`, local `HEAD`, and fresh
+  `origin/main`. Confirm the branch is `main` and the source tree is clean.
 - [ ] Deploy from the checked-out, verified `main` commit.
-- [ ] Save the Wrangler deployment output and deployed commit SHA. The site
-  currently has no public build marker.
+- [ ] Run `npm run deploy` with the pinned Node 22.23.2 and the same
+  `FIELD_NOTES_URL` value used by the verified build. Remember that this
+  command rebuilds before the Pages upload.
+- [ ] Save the Wrangler deployment output, Pages deployment URL, and deployed
+  commit SHA.
 - [ ] Verify the production URLs independently after deployment:
   - [ ] `/`
   - [ ] `/manifesto/`
   - [ ] `/made-with/`
   - [ ] `/robots.txt`
   - [ ] `/sitemap.xml`
+  - [ ] `/version.json`
   - [ ] both Open Graph images
   - [ ] favicon
+- [ ] Run `npm run verify:site:public -- --expected-commit <40-character SHA>`
+  against the recorded release SHA. The public marker must match; a successful
+  Wrangler upload is not production proof by itself.
+- [ ] Verify production response headers:
+  - [ ] global CSP contains `base-uri 'self'`, `form-action 'self'`, and
+    `frame-ancestors 'none'`
+  - [ ] `Permissions-Policy` disables camera, geolocation, and microphone
+  - [ ] `Referrer-Policy: strict-origin-when-cross-origin`
+  - [ ] `X-Content-Type-Options: nosniff`
+  - [ ] `X-Frame-Options: DENY`
+  - [ ] one emitted `/_next/static/*` asset has immutable caching
+  - [ ] `/version.json` has `Cache-Control: no-store`
 - [ ] Confirm canonical URLs and social-card previews use the production
   domain.
+- [ ] Confirm `http://agentsforintroverts.com/` and the `www` host redirect to
+  the canonical HTTPS apex instead of serving a second copy.
 
 Current evidence: the live root and manifesto respond, but production still
-matches an older commit. `/made-with/`, the sitemap, and the new Open Graph
-assets were not live as of this checklist.
+matches an older commit. `/made-with/`, the sitemap, the new Open Graph assets,
+the Apple icon, and the public version marker were not live as of this
+checklist. The `www` host also served a second copy instead of redirecting. Keep
+these items unchecked until the post-deploy public verification passes.
 
 ### Substack foundation
 

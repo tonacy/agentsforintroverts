@@ -2,8 +2,12 @@
   "name": "agentsforintroverts",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.23.2 <23"
+  },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/write-site-version.mjs",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint .",
@@ -14,8 +18,10 @@
     "test:mcp": "npm --prefix services/mcp test",
     "test:integration": "node scripts/run-integration-tests.mjs",
     "test:mac": "swift test --package-path apps/quiet-desk",
+    "verify:site": "node scripts/verify-site.mjs",
+    "verify:site:public": "node scripts/verify-site.mjs --base-url https://agentsforintroverts.com",
     "verify": "node scripts/verify.mjs",
-    "deploy": "npm run build && wrangler pages deploy out --project-name agentsforintroverts"
+    "deploy": "node scripts/deploy-site.mjs"
   },
   "dependencies": {
     "next": "16.3.0",

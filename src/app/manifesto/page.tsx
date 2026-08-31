@@ -46,7 +46,7 @@ export default function ManifestoPage() {
             <div className={styles.introInner}>
               <p className={styles.eyebrow}>A manifesto · August 2026</p>
               <h1 className={styles.title}>
-                Agents
+                Agents{" "}
                 <span>for Introverts</span>
               </h1>
               <p className={styles.dek}>
@@ -402,7 +402,10 @@ export default function ManifestoPage() {
             </section>
           </div>
 
-          <footer className={styles.postscript}>
+          <footer
+            aria-label="Manifesto authorship note"
+            className={styles.postscript}
+          >
             <div>
               <span>Authorship</span>
               <p>See what it means when an idea is made with agents.</p>

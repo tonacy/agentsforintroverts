@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import {
+  useCallback,
   useLayoutEffect,
   useRef,
   type CSSProperties,
@@ -38,7 +39,10 @@ const openingBootScript = `(() => {
   const openingWindow = window;
   let shouldPlay = false;
 
-  if (!openingWindow.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (
+    !openingWindow.location.hash &&
+    !openingWindow.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
     try {
       shouldPlay = openingWindow.sessionStorage.getItem(${JSON.stringify(OPENING_SESSION_KEY)}) === null;
       if (shouldPlay) {
@@ -64,7 +68,7 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const openingTimerRef = useRef<number | null>(null);
 
-  const finishOpening = (focusLanding = false) => {
+  const finishOpening = useCallback((focusLanding = false) => {
     const root = rootRef.current;
     if (!root) {
       return;
@@ -90,7 +94,7 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
         preventScroll: true,
       });
     }
-  };
+  }, []);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -111,6 +115,14 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
       return;
     }
 
+    const finishForExplicitDestination = () => {
+      if (window.location.hash) {
+        finishOpening();
+      }
+    };
+
+    window.addEventListener("hashchange", finishForExplicitDestination);
+
     if (openingWindow.__afiOpeningBootTimer !== undefined) {
       window.clearTimeout(openingWindow.__afiOpeningBootTimer);
       delete openingWindow.__afiOpeningBootTimer;
@@ -130,12 +142,14 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
     openingTimerRef.current = window.setTimeout(settleOpening, remaining);
 
     return () => {
+      window.removeEventListener("hashchange", finishForExplicitDestination);
+
       if (openingTimerRef.current !== null) {
         window.clearTimeout(openingTimerRef.current);
         openingTimerRef.current = null;
       }
     };
-  }, []);
+  }, [finishOpening]);
 
   return (
     <div ref={rootRef} className="hero-open" suppressHydrationWarning>
