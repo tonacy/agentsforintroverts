@@ -108,6 +108,43 @@ export interface EventStore {
   listRunEvents(runId: string): Promise<StoredEvent[]>;
 }
 
+export interface SubscriberInput {
+  id: string;
+  /** Already trimmed and lowercased by the route. */
+  email: string;
+  source: string;
+  ipHash: string | null;
+  nowIso: string;
+}
+
+export interface SubscriberRecord {
+  id: string;
+  email: string;
+  source: string;
+  ip_hash: string | null;
+  created_at: string;
+  updated_at: string;
+  unsubscribed_at: string | null;
+}
+
+export type SubscribeOutcome = "inserted" | "duplicate";
+
+/**
+ * The mailing list is intentionally separate from the append-only event log:
+ * subscribers must be updatable and deletable.
+ */
+export interface SubscriberStore {
+  addSubscriber(input: SubscriberInput): Promise<SubscribeOutcome>;
+  claimSubscribeSlot(
+    ipHash: string,
+    nowMs: number,
+    windowMs: number,
+    maxRequests: number,
+  ): Promise<boolean>;
+}
+
+export type HubStore = EventStore & SubscriberStore;
+
 export type RunStatus =
   | "pending"
   | "running"

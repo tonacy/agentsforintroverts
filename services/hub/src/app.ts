@@ -6,10 +6,16 @@ import {
   verifyBearerToken,
   verifyHmacSignature,
 } from "./security.js";
+import {
+  clientIp,
+  hashClientIp,
+  parseSubscribeBody,
+  resolveRequestOrigin,
+} from "./subscribe.js";
 import type {
   AcceptedEventResponse,
-  EventStore,
   FeedItem,
+  HubStore,
   SourceItem,
   StoredEvent,
 } from "./types.js";
@@ -18,12 +24,26 @@ import { parseAfiEvent, parseJsonBody } from "./validation.js";
 
 export type SecretResolver = (keyId: string) => Promise<string | null>;
 
+export interface SubscribeRateLimit {
+  maxRequests: number;
+  windowSeconds: number;
+}
+
+export interface SubscribeOptions {
+  /** Exact origins permitted to call the public subscribe endpoint. */
+  allowedOrigins: string[];
+  maxBodyBytes?: number;
+  rateLimit?: SubscribeRateLimit;
+  ipHashSalt?: string;
+}
+
 export interface HubAppOptions {
-  store: EventStore;
+  store: HubStore;
   resolveSecret: SecretResolver;
   readToken: string;
   replayWindowSeconds?: number;
   maxBodyBytes?: number;
+  subscribe?: SubscribeOptions;
   now?: () => number;
 }
 
@@ -33,6 +53,8 @@ export interface HubApp {
 
 const DEFAULT_REPLAY_WINDOW_SECONDS = 300;
 const DEFAULT_MAX_BODY_BYTES = 256 * 1_024;
+const DEFAULT_SUBSCRIBE_MAX_BODY_BYTES = 4 * 1_024;
+const DEFAULT_SUBSCRIBE_RATE_LIMIT: SubscribeRateLimit = { maxRequests: 5, windowSeconds: 3_600 };
 const DEFAULT_PAGE_SIZE = 50;
 const MAX_PAGE_SIZE = 100;
 
@@ -184,10 +206,20 @@ async function requireReadAccess(request: Request, token: string): Promise<void>
   await verifyBearerToken(request, token);
 }
 
+function corsHeaders(origin: string | null): Headers {
+  const headers = new Headers({ vary: "origin" });
+  if (origin) headers.set("access-control-allow-origin", origin);
+  return headers;
+}
+
 export function createHubApp(options: HubAppOptions): HubApp {
   const replayWindowSeconds = options.replayWindowSeconds ?? DEFAULT_REPLAY_WINDOW_SECONDS;
   const maxBodyBytes = options.maxBodyBytes ?? DEFAULT_MAX_BODY_BYTES;
   const now = options.now ?? Date.now;
+  const subscribeAllowedOrigins = options.subscribe?.allowedOrigins ?? [];
+  const subscribeMaxBodyBytes = options.subscribe?.maxBodyBytes ?? DEFAULT_SUBSCRIBE_MAX_BODY_BYTES;
+  const subscribeRateLimit = options.subscribe?.rateLimit ?? DEFAULT_SUBSCRIBE_RATE_LIMIT;
+  const subscribeIpHashSalt = options.subscribe?.ipHashSalt ?? "";
 
   async function ingest(request: Request): Promise<Response> {
     const contentType = request.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
@@ -250,6 +282,76 @@ export function createHubApp(options: HubAppOptions): HubApp {
     return jsonResponse(response, 202);
   }
 
+  /**
+   * Public, unauthenticated, and deliberately separate from signed ingest: a
+   * browser cannot hold an HMAC secret. Subscribers land in their own table,
+   * never in the append-only event log.
+   */
+  async function subscribe(request: Request): Promise<Response> {
+    const { origin, allowed } = resolveRequestOrigin(request, subscribeAllowedOrigins);
+    const headers = corsHeaders(allowed ? origin : null);
+    try {
+      if (!allowed) {
+        throw new HttpError(403, "origin_not_allowed", "This origin may not subscribe.");
+      }
+
+      const contentType = request.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
+      if (contentType !== "application/json") {
+        throw new HttpError(415, "unsupported_media_type", "Content-Type must be application/json.");
+      }
+
+      const nowMs = now();
+      const ipHash = await hashClientIp(clientIp(request), subscribeIpHashSalt);
+      const withinRateLimit = await options.store.claimSubscribeSlot(
+        ipHash,
+        nowMs,
+        subscribeRateLimit.windowSeconds * 1_000,
+        subscribeRateLimit.maxRequests,
+      );
+      if (!withinRateLimit) {
+        throw new HttpError(429, "rate_limited", "Too many subscribe attempts. Try again later.");
+      }
+
+      const rawBody = await readBoundedBody(request, subscribeMaxBodyBytes);
+      const { email, source } = parseSubscribeBody(parseJsonBody(rawBody));
+
+      // The outcome is intentionally discarded: the response must not reveal
+      // whether this address was already on the list.
+      await options.store.addSubscriber({
+        id: crypto.randomUUID(),
+        email,
+        source,
+        ipHash,
+        nowIso: new Date(nowMs).toISOString(),
+      });
+      return jsonResponse({ subscribed: true }, 202, headers);
+    } catch (error) {
+      if (!(error instanceof HttpError)) throw error;
+      const errorHeaders = new Headers(headers);
+      if (error.code === "rate_limited") {
+        errorHeaders.set("retry-after", String(subscribeRateLimit.windowSeconds));
+      }
+      return jsonResponse(errorBody(error), error.status, errorHeaders);
+    }
+  }
+
+  function subscribePreflight(request: Request): Response {
+    const { origin, allowed } = resolveRequestOrigin(request, subscribeAllowedOrigins);
+    if (!allowed || !origin) {
+      return jsonResponse(
+        { error: { code: "origin_not_allowed", message: "This origin may not subscribe." } },
+        403,
+        corsHeaders(null),
+      );
+    }
+    const headers = corsHeaders(origin);
+    headers.set("access-control-allow-methods", "POST, OPTIONS");
+    headers.set("access-control-allow-headers", "content-type");
+    headers.set("access-control-max-age", "86400");
+    headers.set("cache-control", "no-store");
+    return new Response(null, { status: 204, headers });
+  }
+
   async function listFeed(request: Request, url: URL): Promise<Response> {
     await requireReadAccess(request, options.readToken);
     const allItems = projectFeedItems(await options.store.listEvents());
@@ -302,6 +404,12 @@ export function createHubApp(options: HubAppOptions): HubApp {
         if (url.pathname === "/v1/events") {
           if (request.method !== "POST") return methodNotAllowed(["POST"]);
           return await ingest(request);
+        }
+
+        if (url.pathname === "/v1/subscribe") {
+          if (request.method === "OPTIONS") return subscribePreflight(request);
+          if (request.method !== "POST") return methodNotAllowed(["POST", "OPTIONS"]);
+          return await subscribe(request);
         }
 
         if (url.pathname === "/v1/feed") {
