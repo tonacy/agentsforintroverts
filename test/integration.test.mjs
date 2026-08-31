@@ -544,7 +544,10 @@ test("two provider harnesses share one corrected Context Pack without gaining us
       next_move: "Prepare one exact reply for user review; do not publish it.",
       human_cost: "low",
       status: "proposed",
-      expires_at: new Date(NOW.getTime() + 7 * 24 * 60 * 60 * 1_000).toISOString(),
+      // Keep this cross-process determinism fixture valid regardless of the
+      // wall-clock date on which the suite runs. Expiry behavior has dedicated
+      // clock-aware coverage in the Context Kernel tests.
+      expires_at: "2099-08-26T12:00:00.000Z",
     },
     provenance: [
       { ref: threadRef, relation: "belongs_to" },

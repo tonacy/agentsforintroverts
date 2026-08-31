@@ -1,10 +1,15 @@
 # Editorial brief: Why I've handed over all my social network keys to my agents
 
-Status: **concept recorded — not yet drafted or approved**  
+Status: **first draft preserved — not yet approved or published**
 Publication: Substack  
 Sequence: opening essay  
 Bridge: the lived decision opens into the Agents for Introverts manifesto  
 External action: none
+
+Current draft: [`2026-08-31-why-ive-handed-over-my-social-network-keys-draft.md`](./2026-08-31-why-ive-handed-over-my-social-network-keys-draft.md)
+
+Publication remains blocked on documenting the first real, bounded handoff and
+completing Tony's final truth-and-voice review.
 
 ## Working title
 
