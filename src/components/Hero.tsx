@@ -23,6 +23,8 @@ type FieldStyle = CSSProperties & {
   "--d"?: string;
   "--fd"?: string;
   "--sy"?: string;
+  "--ink"?: string;
+  "--lh"?: string;
 };
 
 function makeColumnText(columnIndex: number): string {
@@ -42,9 +44,16 @@ const columns = Array.from({ length: COLUMN_COUNT }, (_, columnIndex) => {
   const fadeDelay = 2.3 + distance * 0.55;
   const scrollTravel = -(420 + (1 - distance) * 700);
 
+  // A uniform field reads mechanical. Varying weight and leading per column
+  // gives it grain, deterministically so server and client agree.
+  const ink = 0.17 + ((columnIndex * 3) % 5) * 0.021;
+  const leading = 1.82 + ((columnIndex * 2) % 4) * 0.05;
+
   return {
     fadeDelay: `${fadeDelay.toFixed(2)}s`,
     scrollTravel: `${Math.round(scrollTravel)}px`,
+    ink: `rgba(17, 17, 17, ${ink.toFixed(3)})`,
+    leading: leading.toFixed(2),
     text: makeColumnText(columnIndex),
   };
 });
@@ -64,7 +73,13 @@ export function Hero() {
               >
                 <div
                   className="hero-field__stream"
-                  style={{ "--sy": column.scrollTravel } as FieldStyle}
+                  style={
+                    {
+                      "--sy": column.scrollTravel,
+                      "--ink": column.ink,
+                      "--lh": column.leading,
+                    } as FieldStyle
+                  }
                 >
                   {column.text}
                 </div>
