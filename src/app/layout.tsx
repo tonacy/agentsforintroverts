@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Newsreader, IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { authorName, siteName, siteUrl } from "./site";
 
 const newsreader = Newsreader({
   subsets: ["latin"],
@@ -35,22 +36,57 @@ export const metadata: Metadata = {
     "scheduling",
     "deep work",
   ],
-  authors: [{ name: "Tony Llongueras" }],
+  authors: [{ name: authorName }],
+  creator: authorName,
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Agents for Introverts",
+    title: siteName,
     description:
       "How I use five AI agents to stay in flow. Steal the stack.",
-    url: "https://agentsforintroverts.com",
-    siteName: "Agents for Introverts",
+    url: siteUrl,
+    siteName,
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Agents for Introverts",
+    title: siteName,
     description:
       "How I use five AI agents to stay in flow. Steal the stack.",
   },
-  metadataBase: new URL("https://agentsforintroverts.com"),
+  metadataBase: new URL(siteUrl),
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${siteUrl}/#person`,
+      name: authorName,
+      url: siteUrl,
+      description:
+        "Builds and runs a small stack of AI agents for inbox triage, follow-ups, scheduling, group chats, and meetup logistics.",
+      knowsAbout: [
+        "AI agents",
+        "workflow automation",
+        "personal knowledge work",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: siteName,
+      description:
+        "How I use five AI agents to handle inbox triage, follow-ups, scheduling, group chats, and meetup logistics — so I can show up when it matters.",
+      inLanguage: "en-US",
+      author: { "@id": `${siteUrl}/#person` },
+      publisher: { "@id": `${siteUrl}/#person` },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -62,6 +98,10 @@ export default function RootLayout({
     <html lang="en" className={`${newsreader.variable} ${ibmPlexMono.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         {children}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </body>
     </html>
   );

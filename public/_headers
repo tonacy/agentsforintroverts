@@ -1,0 +1,14 @@
+# Cloudflare Pages header rules. Applied to the static export in out/.
+#
+# Next's metadata routes export as extensionless files (out/opengraph-image,
+# out/twitter-image), so Pages cannot infer a MIME type from the filename and
+# would serve them as application/octet-stream. Social scrapers reject that,
+# which would silently break every link preview. Declare the type explicitly.
+
+/opengraph-image
+  Content-Type: image/png
+  Cache-Control: public, max-age=3600
+
+/twitter-image
+  Content-Type: image/png
+  Cache-Control: public, max-age=3600
