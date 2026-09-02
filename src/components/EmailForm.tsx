@@ -1,36 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+import {
+  looksLikeEmail,
+  submitSubscription,
+  subscribeMessages,
+} from "@/lib/subscribe";
+
+type Status = "idle" | "submitting" | "success" | "error";
 
 export function EmailForm() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
+  // `status` cannot guard against a double submit on its own: two submit events
+  // in the same task both read the pre-render value and both fire a request.
+  // This latch is set synchronously, so only the first one gets through.
+  const inFlight = useRef(false);
+
+  const pending = status === "submitting";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (inFlight.current) return;
+
+    const address = email.trim();
+
+    if (!address) {
+      setErrorMessage(subscribeMessages.empty);
+      setStatus("error");
+      return;
+    }
+
+    if (!looksLikeEmail(address)) {
+      setErrorMessage(subscribeMessages.invalid);
+      setStatus("error");
+      return;
+    }
+
+    inFlight.current = true;
     setErrorMessage("");
+    setStatus("submitting");
 
-    if (!email.trim()) {
-      setErrorMessage("Email is required");
+    try {
+      const result = await submitSubscription(address);
+      if (result.ok) {
+        // Reached only on a 2xx from the hub. A duplicate address lands here
+        // too, which is the point: the second signup looks exactly like the
+        // first.
+        setStatus("success");
+        setEmail("");
+        return;
+      }
+
+      setErrorMessage(result.message);
       setStatus("error");
-      return;
+    } finally {
+      inFlight.current = false;
     }
-
-    if (!validateEmail(email)) {
-      setErrorMessage("Please enter a valid email");
-      setStatus("error");
-      return;
-    }
-
-    // TODO: Integrate with email service (Resend/Supabase)
-    setStatus("success");
-    setEmail("");
   };
 
   if (status === "success") {
@@ -55,7 +84,7 @@ export function EmailForm() {
           />
         </svg>
         <p className="font-serif text-sm text-ink-muted">
-          Check your inbox for the playbook.
+          {subscribeMessages.success}
         </p>
       </div>
     );
@@ -91,9 +120,21 @@ export function EmailForm() {
         </div>
         <button
           type="submit"
+          disabled={pending}
+          aria-busy={pending}
           className="playbook-submit inline-flex min-h-[44px] items-center whitespace-nowrap font-mono text-sm text-leaf"
         >
-          Send it →
+          {/* Both labels stay in the layout so the button cannot change width
+              mid-submit; the inactive one is `visibility: hidden`, which also
+              keeps it out of the accessibility tree. */}
+          <span className="playbook-submit__label">
+            <span className={pending ? "playbook-submit__label-inactive" : undefined}>
+              Add me →
+            </span>
+            <span className={pending ? undefined : "playbook-submit__label-inactive"}>
+              Adding…
+            </span>
+          </span>
         </button>
       </div>
 

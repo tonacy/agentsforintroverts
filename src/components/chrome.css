@@ -36,6 +36,35 @@
   }
 }
 
+/*
+ * The idle and pending submit labels are stacked in one grid cell, so the
+ * button keeps the width of the longer of the two and nothing shifts when the
+ * request goes out. The inactive label is `visibility: hidden` rather than
+ * `display: none`: it holds its space, and it leaves the accessibility tree.
+ */
+.playbook-submit__label {
+  display: grid;
+  grid-template-areas: "label";
+  align-items: center;
+}
+
+.playbook-submit__label > span {
+  grid-area: label;
+}
+
+.playbook-submit__label-inactive {
+  visibility: hidden;
+}
+
+.playbook-submit:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.playbook-submit:disabled:active {
+  transform: none;
+}
+
 .email-form-frame {
   min-height: 68px;
 }

@@ -88,6 +88,20 @@ npm install
 npm run dev
 ```
 
+The capture form posts to Quiet Hub's `POST /v1/subscribe`. Point it at a hub
+with one build-time variable:
+
+```bash
+# .env.local — inlined by `next build`, so it is set per deployment
+NEXT_PUBLIC_HUB_ORIGIN=http://127.0.0.1:8787
+```
+
+Left unset, the form posts to `/v1/subscribe` on its own origin, which is what a
+hub proxied under the site's domain needs. When the hub is on another origin,
+the *site's* origin must appear in the hub's `SUBSCRIBE_ALLOWED_ORIGINS`
+allowlist, or the browser's request is refused with `403`. Nothing is emailed on
+submit this round: the address is stored.
+
 Deployment remains an explicit, separate action:
 
 ```bash
