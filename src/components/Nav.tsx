@@ -12,14 +12,14 @@ export function Nav({ current }: NavProps) {
       <div className="mx-auto flex max-w-[1000px] items-center justify-between gap-5 px-4 py-1.5 sm:px-6">
         <Link
           href="/"
-          className="nav-link flex min-h-11 min-w-0 items-center gap-2 font-mono text-sm tracking-tight text-ink"
+          className="nav-link flex min-h-11 min-w-0 items-center gap-2.5 font-serif text-[15px] text-ink"
         >
           <Image
-            src="/brand/network-focus-mark.png"
+            src="/brand/navigational-shelter-mark.png"
             alt=""
-            width={24}
-            height={24}
-            className="h-6 w-6"
+            width={28}
+            height={28}
+            className="h-7 w-7"
           />
           <span className="truncate">Agents for Introverts</span>
         </Link>

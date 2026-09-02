@@ -6,6 +6,7 @@
     "node": ">=22.23.2 <23"
   },
   "scripts": {
+    "brand:build": "node scripts/build-brand-assets.mjs",
     "dev": "next dev",
     "prebuild": "node scripts/write-site-version.mjs",
     "build": "next build --webpack",
