@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "test:agents": "node --test agents/agents.test.mjs",
+    "test:web": "node --test test/scene-progress.test.mjs",
     "test:protocol": "npm --prefix packages/protocol test",
     "test:hub": "npm --prefix services/hub test",
     "test:mcp": "npm --prefix services/mcp test",

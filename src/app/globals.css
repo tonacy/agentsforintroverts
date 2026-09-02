@@ -13,9 +13,6 @@
 /* Chrome shared by every act: nav, footer, email capture. */
 @import "../components/chrome.css";
 
-/* Act I. Temporarily imported here; see the header of hero.css. */
-@import "../components/hero.css";
-
 :root {
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);

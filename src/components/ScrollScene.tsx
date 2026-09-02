@@ -7,21 +7,15 @@ import {
   type ReactNode,
 } from "react";
 
+import { sceneProgress, type ScrollSceneRange } from "@/lib/scene-progress";
+
 import "./scroll-scene.css";
 
-/**
- * Where in the scene's pass across the viewport progress runs 0 -> 1.
- * These mirror the CSS `animation-range` keywords exactly, so the native tier
- * and the observed tier agree to the pixel.
- *
- *   cover   — from the moment the scene's top edge reaches the bottom of the
- *             viewport until its bottom edge leaves the top. The default.
- *   contain — only while the scene is wholly inside the viewport (or, for a
- *             scene taller than the viewport, wholly covering it).
- *   entry   — the arrival half: cover start -> contain start.
- *   exit    — the departure half: contain end -> cover end.
- */
-export type ScrollSceneRange = "cover" | "contain" | "entry" | "exit";
+// The range keywords and the progress maths live in `@/lib/scene-progress` so
+// they can be exercised by `node --test` (see `test/scene-progress.test.mjs`).
+// They are re-exported here because this component is the public entry point.
+export { sceneProgress };
+export type { ScrollSceneRange };
 
 /**
  * `auto` picks the best tier available. The other two exist so a scene can be
@@ -50,53 +44,6 @@ function supportsViewTimeline(): boolean {
     typeof CSS.supports === "function" &&
     CSS.supports("animation-timeline", "view()")
   );
-}
-
-function clamp01(value: number): number {
-  if (value < 0) return 0;
-  if (value > 1) return 1;
-  return value;
-}
-
-/**
- * Pure maths — no DOM reads — so the rAF tick never touches layout.
- *
- * `top` is the scene's offset in document space, `height` its measured height.
- * `offset` is the element top expressed relative to the viewport top, which is
- * the same quantity the CSS view-progress timeline is defined against.
- */
-export function sceneProgress(
-  top: number,
-  height: number,
-  scrollY: number,
-  viewport: number,
-  range: ScrollSceneRange,
-): number {
-  const offset = top - scrollY;
-
-  const coverStart = viewport;
-  const coverEnd = -height;
-  const containStart = Math.max(viewport - height, 0);
-  const containEnd = Math.min(viewport - height, 0);
-
-  let start = coverStart;
-  let end = coverEnd;
-
-  if (range === "contain") {
-    start = containStart;
-    end = containEnd;
-  } else if (range === "entry") {
-    start = coverStart;
-    end = containStart;
-  } else if (range === "exit") {
-    start = containEnd;
-    end = coverEnd;
-  }
-
-  const span = start - end;
-  if (span <= 0) return 1;
-
-  return clamp01((start - offset) / span);
 }
 
 export function ScrollScene({

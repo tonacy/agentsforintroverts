@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const checks = [
   "test:agents",
+  "test:web",
   "test:protocol",
   "test:hub",
   "test:mcp",
