@@ -1,0 +1,109 @@
+/*
+ * Page chrome — the parts that live outside any single act: the nav, the
+ * footer and the email capture form (which appears in more than one act).
+ *
+ * Imported from `src/app/globals.css`. Act stylesheets must not restyle these.
+ */
+
+.nav-link,
+.playbook-submit {
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 100ms var(--ease-out);
+}
+
+.nav-link:active,
+.playbook-submit:active {
+  transform: scale(0.97);
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 140ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover {
+    color: var(--color-leaf);
+  }
+
+  .nav-link--playbook:hover {
+    border-color: var(--color-leaf);
+  }
+
+  .playbook-submit:hover {
+    color: var(--color-leaf-light);
+  }
+}
+
+.email-form-frame {
+  min-height: 68px;
+}
+
+.email-form__controls {
+  min-height: 44px;
+}
+
+.email-form__status {
+  min-height: 23px;
+  margin: 0;
+  padding-top: 4px;
+  opacity: 0;
+  transform: translateY(2px);
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out);
+}
+
+.email-form__status--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.email-form-success {
+  padding: 0 0 23px;
+  opacity: 1;
+  transform: translateY(0);
+  animation: email-success-in 220ms var(--ease-out) both;
+}
+
+@keyframes email-success-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer-tagline {
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .email-form__status {
+    transform: none;
+    transition: opacity 180ms var(--ease-out);
+  }
+
+  .email-form-success {
+    animation: none;
+  }
+
+  .nav-link,
+  .playbook-submit {
+    transition:
+      color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .nav-link:active,
+  .playbook-submit:active {
+    transform: none;
+    transition:
+      color 160ms ease,
+      border-color 160ms ease;
+  }
+}

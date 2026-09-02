@@ -1,0 +1,75 @@
+/*
+ * Scroll-scene primitive — the shared mechanism behind every act.
+ *
+ * One idea: a scene publishes its own scroll progress as an inherited custom
+ * property, `--scene-progress`, that runs 0 -> 1 as the scene crosses the
+ * viewport. Acts are then authored purely in CSS against that number; no act
+ * needs a scroll handler of its own.
+ *
+ * Three tiers, in order of preference:
+ *
+ *   1. native   — `animation-timeline: view()` animates the registered
+ *                 property. Pure CSS, works with JavaScript disabled.
+ *                 Chrome/Edge 115+, Safari 26+ (verified 2026-08-31 against
+ *                 mdn/browser-compat-data; Firefox is still preview-only).
+ *   2. observed — ScrollScene.tsx sets `data-scene-tier="observed"`, which
+ *                 switches the native animation off, and writes the same
+ *                 number as an inline style from an IntersectionObserver +
+ *                 rAF loop. This is the Firefox path.
+ *   3. static   — reduced motion, or no JavaScript in a browser without
+ *                 scroll timelines. `--scene-progress` keeps its registered
+ *                 initial value of 1, i.e. every scene renders settled and
+ *                 fully readable.
+ *
+ * The initial value is 1, not 0, on purpose: anything that never animates must
+ * land on the end state, never on the hidden state.
+ */
+
+@property --scene-progress {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@keyframes scroll-scene-progress {
+  from {
+    --scene-progress: 0;
+  }
+
+  to {
+    --scene-progress: 1;
+  }
+}
+
+.scroll-scene {
+  --scene-range: cover;
+}
+
+@supports (animation-timeline: view()) {
+  .scroll-scene {
+    animation-name: scroll-scene-progress;
+    /* `auto` is the scroll-timeline duration; the 1s above it is the fallback
+       any engine that rejects `auto` keeps, so the declaration is never lost. */
+    animation-duration: 1s;
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: var(--scene-range, cover);
+  }
+
+  /* Either the JS tier is driving, or the scene has opted out of motion
+     entirely. Both leave `--scene-progress` alone: the observed tier writes it
+     as an inline style, the static tier keeps the registered initial value. */
+  .scroll-scene[data-scene-tier="observed"],
+  .scroll-scene[data-scene-tier="static"] {
+    animation-name: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-scene {
+    --scene-progress: 1;
+    animation-name: none;
+  }
+}
