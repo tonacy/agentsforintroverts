@@ -10,7 +10,7 @@ function hasExplicitDestination(win: Window): boolean {
 }
 
 export function shouldPlayOpening(win: Window): boolean {
-  if (prefersReducedMotion(win) || hasExplicitDestination(win)) {
+  if (prefersReducedMotion(win) || hasExplicitDestination(win) || !win.matchMedia("(min-width: 900px)").matches) {
     return false;
   }
 
@@ -22,7 +22,7 @@ export function shouldPlayOpening(win: Window): boolean {
 }
 
 export function claimOpening(win: Window): boolean {
-  if (prefersReducedMotion(win) || hasExplicitDestination(win)) {
+  if (prefersReducedMotion(win) || hasExplicitDestination(win) || !win.matchMedia("(min-width: 900px)").matches) {
     return false;
   }
 

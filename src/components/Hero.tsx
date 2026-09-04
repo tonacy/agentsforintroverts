@@ -1,121 +1,49 @@
+import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
-import { FieldNotesStatus } from "./FieldNotesStatus";
+import { oceanAmbient, oceanFragments } from "@/lib/ocean-scene";
 import { HeroAnimation } from "./HeroAnimation";
-
-const fieldLinePool = [
-  "email · a reply",
-  "calendar · an ask",
-  "X · a mention",
-  "email · a follow-up",
-  "LinkedIn · an intro",
-  "newsletter · a request",
-  "X · a thread",
-  "email · an invite",
-  "calendar · a conflict",
-  "LinkedIn · a message",
-  "email · a nudge",
-  "X · a quote",
-] as const;
-
-const COLUMN_COUNT = 9;
-
-type FieldStyle = CSSProperties & {
-  "--d"?: string;
-  "--fd"?: string;
-  "--sy"?: string;
-};
-
-function makeColumnText(columnIndex: number): string {
-  const offset = (columnIndex * 5) % fieldLinePool.length;
-  const block = Array.from(
-    { length: 80 },
-    (_, lineIndex) => fieldLinePool[(lineIndex + offset) % fieldLinePool.length],
-  );
-
-  return [...block, ...block].join("\n");
-}
-
-const columns = Array.from({ length: COLUMN_COUNT }, (_, columnIndex) => {
-  const normalizedDistance =
-    (columnIndex - (COLUMN_COUNT - 1) / 2) / ((COLUMN_COUNT - 1) / 2 || 1);
-  const distance = Math.abs(normalizedDistance);
-  const fadeDelay = 2.3 + distance * 0.55;
-  const scrollTravel = -(420 + (1 - distance) * 700);
-
-  return {
-    fadeDelay: `${fadeDelay.toFixed(2)}s`,
-    scrollTravel: `${Math.round(scrollTravel)}px`,
-    text: makeColumnText(columnIndex),
-  };
-});
-
-const landingDelay = (delay: string): FieldStyle => ({ "--d": delay });
+import "./ocean-motion.css";
 
 export function Hero() {
   return (
     <HeroAnimation>
-      <section className="hero-section">
-        <div className="hero-field" aria-hidden="true">
-          {columns.map((column, columnIndex) => (
-            <div
-              className="hero-field__col"
-              key={columnIndex}
-              style={
-                {
-                  "--fd": column.fadeDelay,
-                  "--sy": column.scrollTravel,
-                } as FieldStyle
-              }
-            >
-              <div className="hero-field__rush">
-                <div className="hero-field__stream">{column.text}</div>
-              </div>
+      <section className="landing-hero page-width" aria-labelledby="hero-headline">
+        <p className="eyebrow landing-hero__eyebrow">Network fluency / On human terms</p>
+        <h1 id="hero-headline" className="landing-hero__headline" tabIndex={-1}>
+          Participate in<br />the network.<br />Without living<br />in the feed.
+        </h1>
+        <p className="landing-hero__intro">
+          For people with ideas, projects, and lived experience who want to take part without becoming full-time performers for the feed.
+        </p>
+        <div className="landing-hero__actions action-row">
+          <Link className="action action--primary" href="/manifesto/">Read the manifesto →</Link>
+          <a className="action" href="#practice">Explore the practice ↓</a>
+        </div>
+        <div className="ocean-scene" aria-hidden="true">
+          <div className="ocean-scene__canvas">
+            <div className="ocean-water" data-motion-node="64:7">
+              <Image src="/brand/ocean-ink.png" alt="" width={540} height={360} preload />
             </div>
-          ))}
-        </div>
-
-        <div className="hero-focus-matte" aria-hidden="true" />
-
-        <div className="hero-aperture">
-          <p className="hero-land hero-arrived" style={landingDelay("5.65s")}>
-            Arrived
-          </p>
-
-          <h1
-            id="hero-headline"
-            className="hero-land hero-headline"
-            style={landingDelay("5.78s")}
-            tabIndex={-1}
-          >
-            Out there the feeds never stop. In here I get a slow one.
-          </h1>
-
-          <p className="hero-land hero-subhead" style={landingDelay("5.95s")}>
-            Lived experience goes out. The world comes in. Agents translate both. This is the pace.
-          </p>
-
-          <div className="hero-land hero-rule" style={landingDelay("6.08s")} />
-
-          <p className="hero-land hero-thursday" style={landingDelay("6.16s")}>
-            Thursday morning is still yours.
-          </p>
-
-          <div
-            id="field-notes"
-            className="hero-land hero-capture"
-            style={landingDelay("6.3s")}
-          >
-            <FieldNotesStatus />
-            <p className="hero-capture__note">
-              A weekly practice for participating without living in the feed.
-            </p>
+            {oceanFragments.map((line) => (
+              <span key={line.id} className="ocean-fragment" data-motion-node={line.id}
+                style={{ left: `${line.x / 540 * 100}%`, top: `${line.y / 468 * 100}%`, width: `${line.width / 540 * 100}%`, height: `${line.height / 468 * 100}%`, fontSize: `calc(var(--ocean-unit) * ${line.fontSize})` } as CSSProperties}>
+                {line.text}
+              </span>
+            ))}
+            <div className="ocean-vessel" data-motion-node="42:138">
+              <Image src="/brand/ocean-vessel.png" alt="" width={210} height={210} preload />
+            </div>
+            <p className="ocean-caption" data-motion-node="42:139">A way through.<br />At a human pace.</p>
+            {oceanAmbient.map((line) => (
+              <span key={line.id} className="ocean-fragment ocean-fragment--ambient" data-motion-node={line.id}
+                style={{ left: `${line.x / 540 * 100}%`, top: `${line.y / 468 * 100}%`, width: `${line.width / 540 * 100}%`, height: `${line.height / 468 * 100}%`, fontSize: `calc(var(--ocean-unit) * ${line.fontSize})` } as CSSProperties}>
+                {line.text}
+              </span>
+            ))}
           </div>
-
-          <p className="hero-land hero-translate" style={landingDelay("6.42s")}>
-            agents translate{" "}
-            <span>calendar · X · LinkedIn · email · newsletter</span>
-          </p>
         </div>
+        <p className="label landing-hero__stage">A public practice, becoming a product.</p>
       </section>
     </HeroAnimation>
   );

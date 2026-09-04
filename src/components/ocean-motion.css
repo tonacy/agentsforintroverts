@@ -1,0 +1,611 @@
+/* Figma 42:92: exported keyframe values, deduplicated. One session only.
+   The water PNG includes its 0.68 alpha, so its opacity track is normalized. */
+[data-opening="playing"] [data-motion-node] { animation-duration: 8.4s; animation-timing-function: linear; animation-iteration-count: 1; animation-fill-mode: both; }
+[data-opening="playing"] [data-motion-node="64:7"] { animation-name: ocean-opacity-1, ocean-translate-2, ocean-scale-3; }
+[data-opening="playing"] [data-motion-node="42:123"] { animation-name: ocean-opacity-4, ocean-translate-5, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 174); --to-y: calc(var(--ocean-unit) * 135); }
+[data-opening="playing"] [data-motion-node="42:124"] { animation-name: ocean-opacity-7, ocean-translate-8, ocean-scale-6; --to-x: calc(var(--ocean-unit) * -61.5); --to-y: calc(var(--ocean-unit) * 123); }
+[data-opening="playing"] [data-motion-node="42:125"] { animation-name: ocean-opacity-9, ocean-translate-10, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 93); --to-y: calc(var(--ocean-unit) * 111); }
+[data-opening="playing"] [data-motion-node="42:126"] { animation-name: ocean-opacity-11, ocean-translate-12, ocean-scale-6; --to-x: calc(var(--ocean-unit) * -114.5); --to-y: calc(var(--ocean-unit) * 99); }
+[data-opening="playing"] [data-motion-node="42:127"] { animation-name: ocean-opacity-13, ocean-translate-14, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 146.5); --to-y: calc(var(--ocean-unit) * 87); }
+[data-opening="playing"] [data-motion-node="42:128"] { animation-name: ocean-opacity-15, ocean-translate-16, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 148.5); --to-y: calc(var(--ocean-unit) * 75); }
+[data-opening="playing"] [data-motion-node="42:129"] { animation-name: ocean-opacity-17, ocean-translate-18, ocean-scale-6; --to-x: calc(var(--ocean-unit) * -43.5); --to-y: calc(var(--ocean-unit) * 63); }
+[data-opening="playing"] [data-motion-node="42:130"] { animation-name: ocean-opacity-19, ocean-translate-20, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 78.5); --to-y: calc(var(--ocean-unit) * 51); }
+[data-opening="playing"] [data-motion-node="42:131"] { animation-name: ocean-opacity-21, ocean-translate-22, ocean-scale-6; --to-x: calc(var(--ocean-unit) * -122); --to-y: calc(var(--ocean-unit) * 39); }
+[data-opening="playing"] [data-motion-node="42:132"] { animation-name: ocean-opacity-23, ocean-translate-24, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 143); --to-y: calc(var(--ocean-unit) * 27); }
+[data-opening="playing"] [data-motion-node="42:133"] { animation-name: ocean-opacity-25, ocean-translate-26, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 174); --to-y: calc(var(--ocean-unit) * 15); }
+[data-opening="playing"] [data-motion-node="42:134"] { animation-name: ocean-opacity-27, ocean-translate-28, ocean-scale-6; --to-x: calc(var(--ocean-unit) * -40); --to-y: calc(var(--ocean-unit) * 3); }
+[data-opening="playing"] [data-motion-node="42:135"] { animation-name: ocean-opacity-29, ocean-translate-30, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 89.5); --to-y: calc(var(--ocean-unit) * -9); }
+[data-opening="playing"] [data-motion-node="42:136"] { animation-name: ocean-opacity-31, ocean-translate-32, ocean-scale-6; --to-x: calc(var(--ocean-unit) * -93); --to-y: calc(var(--ocean-unit) * -21); }
+[data-opening="playing"] [data-motion-node="42:137"] { animation-name: ocean-opacity-33, ocean-translate-34, ocean-scale-6; --to-x: calc(var(--ocean-unit) * 157); --to-y: calc(var(--ocean-unit) * -33); }
+[data-opening="playing"] [data-motion-node="42:138"] { animation-name: ocean-opacity-35, ocean-rotate-36, ocean-translate-37; }
+[data-opening="playing"] [data-motion-node="42:139"] { animation-name: ocean-opacity-38; }
+[data-opening="playing"] [data-motion-node="42:140"] { animation-name: ocean-opacity-39, ocean-translate-40, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 212); }
+[data-opening="playing"] [data-motion-node="42:141"] { animation-name: ocean-opacity-42, ocean-translate-43, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 212); }
+[data-opening="playing"] [data-motion-node="42:142"] { animation-name: ocean-opacity-44, ocean-translate-45, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 212); }
+[data-opening="playing"] [data-motion-node="42:143"] { animation-name: ocean-opacity-46, ocean-translate-47, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 180); }
+[data-opening="playing"] [data-motion-node="42:144"] { animation-name: ocean-opacity-48, ocean-translate-49, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 180); }
+[data-opening="playing"] [data-motion-node="42:145"] { animation-name: ocean-opacity-50, ocean-translate-51, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 180); }
+[data-opening="playing"] [data-motion-node="42:146"] { animation-name: ocean-opacity-52, ocean-translate-53, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 148); }
+[data-opening="playing"] [data-motion-node="42:147"] { animation-name: ocean-opacity-54, ocean-translate-55, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 148); }
+[data-opening="playing"] [data-motion-node="42:148"] { animation-name: ocean-opacity-56, ocean-translate-57, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 148); }
+[data-opening="playing"] [data-motion-node="42:149"] { animation-name: ocean-opacity-58, ocean-translate-59, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 116); }
+[data-opening="playing"] [data-motion-node="42:150"] { animation-name: ocean-opacity-39, ocean-translate-40, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 116); }
+[data-opening="playing"] [data-motion-node="42:151"] { animation-name: ocean-opacity-42, ocean-translate-43, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 116); }
+[data-opening="playing"] [data-motion-node="42:152"] { animation-name: ocean-opacity-44, ocean-translate-45, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 84); }
+[data-opening="playing"] [data-motion-node="42:153"] { animation-name: ocean-opacity-46, ocean-translate-47, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 84); }
+[data-opening="playing"] [data-motion-node="42:154"] { animation-name: ocean-opacity-48, ocean-translate-49, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 84); }
+[data-opening="playing"] [data-motion-node="42:155"] { animation-name: ocean-opacity-50, ocean-translate-51, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 52); }
+[data-opening="playing"] [data-motion-node="42:156"] { animation-name: ocean-opacity-52, ocean-translate-53, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 52); }
+[data-opening="playing"] [data-motion-node="42:157"] { animation-name: ocean-opacity-54, ocean-translate-55, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 52); }
+[data-opening="playing"] [data-motion-node="42:158"] { animation-name: ocean-opacity-56, ocean-translate-60, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 20); }
+[data-opening="playing"] [data-motion-node="42:159"] { animation-name: ocean-opacity-58, ocean-translate-61, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 20); }
+[data-opening="playing"] [data-motion-node="42:160"] { animation-name: ocean-opacity-39, ocean-translate-62, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * 20); }
+[data-opening="playing"] [data-motion-node="42:161"] { animation-name: ocean-opacity-42, ocean-translate-43, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -12); }
+[data-opening="playing"] [data-motion-node="42:162"] { animation-name: ocean-opacity-44, ocean-translate-45, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -12); }
+[data-opening="playing"] [data-motion-node="42:163"] { animation-name: ocean-opacity-46, ocean-translate-47, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -12); }
+[data-opening="playing"] [data-motion-node="42:164"] { animation-name: ocean-opacity-48, ocean-translate-49, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -44); }
+[data-opening="playing"] [data-motion-node="42:165"] { animation-name: ocean-opacity-50, ocean-translate-51, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -44); }
+[data-opening="playing"] [data-motion-node="42:166"] { animation-name: ocean-opacity-52, ocean-translate-53, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -44); }
+[data-opening="playing"] [data-motion-node="42:167"] { animation-name: ocean-opacity-54, ocean-translate-55, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -76); }
+[data-opening="playing"] [data-motion-node="42:168"] { animation-name: ocean-opacity-56, ocean-translate-57, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -76); }
+[data-opening="playing"] [data-motion-node="42:169"] { animation-name: ocean-opacity-58, ocean-translate-59, ocean-scale-41; --to-x: calc(var(--ocean-unit) * 0); --to-y: calc(var(--ocean-unit) * -76); }
+
+@keyframes ocean-opacity-1 {
+  0% { opacity: 0.0; }
+  52.976% { animation-timing-function: ease-in-out; opacity: 0.0; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.411765; }
+  69.048% { animation-timing-function: ease-in-out; opacity: 0.808824; }
+  78.571% { opacity: 1.0; }
+  100% { opacity: 1.0; }
+
+}
+@keyframes ocean-translate-2 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  52.976% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  85.714% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  100% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+
+}
+@keyframes ocean-scale-3 {
+  0% { scale: 0.93 0.82; }
+  52.976% { animation-timing-function: ease-in-out; scale: 0.93 0.82; }
+  85.714% { scale: 1 1; }
+  100% { scale: 1 1; }
+
+}
+@keyframes ocean-opacity-4 {
+  0% { opacity: 0; }
+  1.786% { animation-timing-function: ease-out; opacity: 0; }
+  7.143% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-5 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  1.786% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  7.143% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-scale-6 {
+  0% { scale: 1 1; }
+  51.786% { animation-timing-function: ease-in-out; scale: 1 1; }
+  67.857% { scale: 2.6 0.035; }
+  100% { scale: 2.6 0.035; }
+
+}
+@keyframes ocean-opacity-7 {
+  0% { opacity: 0; }
+  11.31% { animation-timing-function: ease-out; opacity: 0; }
+  16.667% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-8 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  11.31% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  16.667% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-9 {
+  0% { opacity: 0; }
+  19.048% { animation-timing-function: ease-out; opacity: 0; }
+  24.405% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-10 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  19.048% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  24.405% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-11 {
+  0% { opacity: 0; }
+  21.429% { animation-timing-function: ease-out; opacity: 0; }
+  26.786% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-12 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  21.429% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  26.786% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-13 {
+  0% { opacity: 0; }
+  23.81% { animation-timing-function: ease-out; opacity: 0; }
+  29.167% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-14 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  23.81% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  29.167% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-15 {
+  0% { opacity: 0; }
+  25.952% { animation-timing-function: ease-out; opacity: 0; }
+  31.31% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-16 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  25.952% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  31.31% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-17 {
+  0% { opacity: 0; }
+  27.619% { animation-timing-function: ease-out; opacity: 0; }
+  32.976% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-18 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  27.619% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  32.976% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-19 {
+  0% { opacity: 0; }
+  29.048% { animation-timing-function: ease-out; opacity: 0; }
+  34.405% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-20 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  29.048% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  34.405% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-21 {
+  0% { opacity: 0; }
+  31.19% { animation-timing-function: ease-out; opacity: 0; }
+  36.548% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-22 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  31.19% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  36.548% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-23 {
+  0% { opacity: 0; }
+  33.095% { animation-timing-function: ease-out; opacity: 0; }
+  38.452% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-24 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  33.095% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  38.452% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-25 {
+  0% { opacity: 0; }
+  35.238% { animation-timing-function: ease-out; opacity: 0; }
+  40.595% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-26 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  35.238% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  40.595% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-27 {
+  0% { opacity: 0; }
+  36.905% { animation-timing-function: ease-out; opacity: 0; }
+  42.262% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-28 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  36.905% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  42.262% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-29 {
+  0% { opacity: 0; }
+  38.69% { animation-timing-function: ease-out; opacity: 0; }
+  44.048% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-30 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  38.69% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  44.048% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-31 {
+  0% { opacity: 0; }
+  40.476% { animation-timing-function: ease-out; opacity: 0; }
+  45.833% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-32 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  40.476% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  45.833% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-33 {
+  0% { opacity: 0; }
+  42.262% { animation-timing-function: ease-out; opacity: 0; }
+  47.619% { opacity: 0.72; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.72; }
+  61.31% { animation-timing-function: ease-in-out; opacity: 0.32; }
+  68.452% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-34 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  42.262% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 12); }
+  47.619% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  67.857% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-35 {
+  0% { opacity: 0; }
+  61.31% { animation-timing-function: ease-out; opacity: 0; }
+  69.643% { opacity: 1; }
+  100% { opacity: 1; }
+
+}
+@keyframes ocean-rotate-36 {
+  0% { rotate: 0.035rad; }
+  61.31% { animation-timing-function: ease-in-out; rotate: 0.035rad; }
+  72.619% { animation-timing-function: ease-in-out; rotate: -0.017rad; }
+  85.714% { rotate: 0rad; }
+  100% { rotate: 0rad; }
+
+}
+@keyframes ocean-translate-37 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 24); }
+  61.31% { animation-timing-function: ease-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 24); }
+  72.619% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * -5); }
+  85.714% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  100% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+
+}
+@keyframes ocean-opacity-38 {
+  0% { opacity: 0; }
+  72.024% { animation-timing-function: ease-out; opacity: 0; }
+  85.714% { opacity: 1; }
+  100% { opacity: 1; }
+
+}
+@keyframes ocean-opacity-39 {
+  0% { opacity: 0; }
+  20.238% { animation-timing-function: ease-in-out; opacity: 0; }
+  27.381% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-40 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  20.238% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-scale-41 {
+  0% { scale: 1 1; }
+  51.786% { animation-timing-function: ease-in-out; scale: 1 1; }
+  64.286% { scale: 1 0.035; }
+  100% { scale: 1 0.035; }
+
+}
+@keyframes ocean-opacity-42 {
+  0% { opacity: 0; }
+  22.262% { animation-timing-function: ease-in-out; opacity: 0; }
+  29.405% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-43 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  22.262% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-44 {
+  0% { opacity: 0; }
+  24.286% { animation-timing-function: ease-in-out; opacity: 0; }
+  31.429% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-45 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  24.286% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-46 {
+  0% { opacity: 0; }
+  26.31% { animation-timing-function: ease-in-out; opacity: 0; }
+  33.452% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-47 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  26.31% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-48 {
+  0% { opacity: 0; }
+  28.333% { animation-timing-function: ease-in-out; opacity: 0; }
+  35.476% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-49 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  28.333% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-50 {
+  0% { opacity: 0; }
+  30.357% { animation-timing-function: ease-in-out; opacity: 0; }
+  37.5% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-51 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  30.357% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-52 {
+  0% { opacity: 0; }
+  32.381% { animation-timing-function: ease-in-out; opacity: 0; }
+  39.524% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-53 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  32.381% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-54 {
+  0% { opacity: 0; }
+  34.405% { animation-timing-function: ease-in-out; opacity: 0; }
+  41.548% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-55 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  34.405% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-56 {
+  0% { opacity: 0; }
+  36.429% { animation-timing-function: ease-in-out; opacity: 0; }
+  43.571% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-57 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  36.429% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-opacity-58 {
+  0% { opacity: 0; }
+  38.452% { animation-timing-function: ease-in-out; opacity: 0; }
+  45.595% { opacity: 0.16; }
+  51.786% { animation-timing-function: ease-in-out; opacity: 0.16; }
+  63.095% { opacity: 0; }
+  100% { opacity: 0; }
+
+}
+@keyframes ocean-translate-59 {
+  0% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  38.452% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 20); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-translate-60 {
+  0% { translate: var(--to-x) var(--to-y); }
+  36.429% { translate: var(--to-x) var(--to-y); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-translate-61 {
+  0% { translate: var(--to-x) var(--to-y); }
+  38.452% { translate: var(--to-x) var(--to-y); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}
+@keyframes ocean-translate-62 {
+  0% { translate: var(--to-x) var(--to-y); }
+  20.238% { translate: var(--to-x) var(--to-y); }
+  48.214% { translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  51.786% { animation-timing-function: ease-in-out; translate: calc(var(--ocean-unit) * 0) calc(var(--ocean-unit) * 0); }
+  64.286% { translate: var(--to-x) var(--to-y); }
+  100% { translate: var(--to-x) var(--to-y); }
+
+}

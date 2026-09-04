@@ -1,0 +1,173 @@
+{
+  "base": "http://127.0.0.1:8769",
+  "checks": [
+    {
+      "name": "desktop opening starts",
+      "pass": true
+    },
+    {
+      "name": "headline and primary action available during motion",
+      "pass": true
+    },
+    {
+      "name": "opening settles",
+      "pass": true
+    },
+    {
+      "name": "calm state contains water and vessel with no fragments",
+      "pass": true,
+      "detail": {
+        "water": "1",
+        "vessel": "1",
+        "fragments": true
+      }
+    },
+    {
+      "name": "desktop no overflow",
+      "pass": true,
+      "detail": {
+        "scroll": 1440,
+        "width": 1440,
+        "bad": []
+      }
+    },
+    {
+      "name": "repeat visit stays calm",
+      "pass": true
+    },
+    {
+      "name": "practice action reaches section",
+      "pass": true
+    },
+    {
+      "name": "/manifesto/ has one heading",
+      "pass": true
+    },
+    {
+      "name": "/manifesto/ desktop no overflow",
+      "pass": true,
+      "detail": {
+        "scroll": 1440,
+        "width": 1440,
+        "bad": []
+      }
+    },
+    {
+      "name": "/made-with/ has one heading",
+      "pass": true
+    },
+    {
+      "name": "/made-with/ desktop no overflow",
+      "pass": true,
+      "detail": {
+        "scroll": 1440,
+        "width": 1440,
+        "bad": []
+      }
+    },
+    {
+      "name": "skip settles and focuses headline",
+      "pass": true
+    },
+    {
+      "name": "changing motion preference settles immediately",
+      "pass": true
+    },
+    {
+      "name": "reduced motion starts calm",
+      "pass": true
+    },
+    {
+      "name": "direct anchor starts calm",
+      "pass": true
+    },
+    {
+      "name": "/ at 390",
+      "pass": true,
+      "detail": {
+        "scroll": 390,
+        "width": 390,
+        "bad": []
+      }
+    },
+    {
+      "name": "mobile 390 starts calm",
+      "pass": true
+    },
+    {
+      "name": "mobile 390 shows all nav destinations",
+      "pass": true
+    },
+    {
+      "name": "/manifesto/ at 390",
+      "pass": true,
+      "detail": {
+        "scroll": 390,
+        "width": 390,
+        "bad": []
+      }
+    },
+    {
+      "name": "/made-with/ at 390",
+      "pass": true,
+      "detail": {
+        "scroll": 390,
+        "width": 390,
+        "bad": []
+      }
+    },
+    {
+      "name": "/ at 320",
+      "pass": true,
+      "detail": {
+        "scroll": 320,
+        "width": 320,
+        "bad": []
+      }
+    },
+    {
+      "name": "mobile 320 starts calm",
+      "pass": true
+    },
+    {
+      "name": "mobile 320 shows all nav destinations",
+      "pass": true
+    },
+    {
+      "name": "/manifesto/ at 320",
+      "pass": true,
+      "detail": {
+        "scroll": 320,
+        "width": 320,
+        "bad": []
+      }
+    },
+    {
+      "name": "/made-with/ at 320",
+      "pass": true,
+      "detail": {
+        "scroll": 320,
+        "width": 320,
+        "bad": []
+      }
+    },
+    {
+      "name": "no JavaScript retains headline",
+      "pass": true
+    },
+    {
+      "name": "no JavaScript retains calm illustration",
+      "pass": true
+    },
+    {
+      "name": "no JavaScript has no skip control",
+      "pass": true
+    },
+    {
+      "name": "no browser runtime errors",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

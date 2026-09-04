@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import {
   useCallback,
   useLayoutEffect,
   useRef,
-  type CSSProperties,
   type ReactNode,
 } from "react";
 import {
@@ -13,19 +11,6 @@ import {
   OPENING_DURATION_MS,
   OPENING_SESSION_KEY,
 } from "@/lib/opening";
-
-const arrivalLines = [
-  { delay: "0.15s", left: "50%", top: "52%", size: "19px", text: "email · a reply" },
-  { delay: "0.95s", left: "50%", top: "45%", size: "18px", text: "calendar · an ask" },
-  { delay: "1.60s", left: "33%", top: "56%", size: "16px", text: "X · a mention" },
-  { delay: "1.80s", left: "66%", top: "40%", size: "16px", text: "email · a follow-up" },
-  { delay: "2.00s", left: "39%", top: "34%", size: "15px", text: "LinkedIn · an intro" },
-  { delay: "2.18s", left: "61%", top: "62%", size: "15px", text: "newsletter · a request" },
-  { delay: "2.32s", left: "24%", top: "44%", size: "14px", text: "X · a thread" },
-  { delay: "2.44s", left: "76%", top: "55%", size: "14px", text: "email · an invite" },
-] as const;
-
-type MotionStyle = CSSProperties & { "--d"?: string };
 
 type OpeningWindow = Window & {
   __afiOpeningBootTimer?: number;
@@ -41,6 +26,7 @@ const openingBootScript = `(() => {
 
   if (
     !openingWindow.location.hash &&
+    openingWindow.matchMedia("(min-width: 900px)").matches &&
     !openingWindow.matchMedia("(prefers-reduced-motion: reduce)").matches
   ) {
     try {
@@ -122,6 +108,13 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
     };
 
     window.addEventListener("hashchange", finishForExplicitDestination);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktop = window.matchMedia("(min-width: 900px)");
+    const finishForPreference = () => {
+      if (reducedMotion.matches || !desktop.matches) finishOpening();
+    };
+    reducedMotion.addEventListener("change", finishForPreference);
+    desktop.addEventListener("change", finishForPreference);
 
     if (openingWindow.__afiOpeningBootTimer !== undefined) {
       window.clearTimeout(openingWindow.__afiOpeningBootTimer);
@@ -143,6 +136,8 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
 
     return () => {
       window.removeEventListener("hashchange", finishForExplicitDestination);
+      reducedMotion.removeEventListener("change", finishForPreference);
+      desktop.removeEventListener("change", finishForPreference);
 
       if (openingTimerRef.current !== null) {
         window.clearTimeout(openingTimerRef.current);
@@ -160,36 +155,6 @@ export function HeroAnimation({ children }: { children: ReactNode }) {
       />
 
       {children}
-
-      <div className="hero-open__sequence" aria-hidden="true">
-        <div className="hero-open__vignette" />
-
-        <div className="hero-open__arrivals">
-          {arrivalLines.map((line) => (
-            <div
-              className="hero-open__arrival-seat"
-              key={`${line.delay}-${line.text}`}
-              style={{ left: line.left, top: line.top }}
-            >
-              <div
-                className="hero-open__arrival"
-                style={{ "--d": line.delay, fontSize: line.size } as MotionStyle}
-              >
-                {line.text}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="hero-open__focus">
-          <Image
-            src="/brand/human-focus.png"
-            alt=""
-            width={32}
-            height={32}
-          />
-        </div>
-      </div>
 
       <button
         className="hero-open__skip"

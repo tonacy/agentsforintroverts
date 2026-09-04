@@ -1,47 +1,24 @@
 import Link from "next/link";
+import Image from "next/image";
 import { fieldNotesNavigationHref } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer aria-label="Site footer" className="border-t border-rule bg-paper">
-      <div className="mx-auto max-w-[1000px] px-6 py-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <p className="font-serif italic text-ink-muted text-sm">
-            A practice, becoming a product.
-          </p>
-          <nav
-            aria-label="Site footer navigation"
-            className="flex flex-wrap items-center gap-x-5 gap-y-1 sm:ml-auto"
-          >
-            <Link
-              href="/"
-              className="nav-link inline-flex min-h-11 items-center font-mono text-xs text-ink-muted"
-            >
-              Home
-            </Link>
-            <Link
-              href="/manifesto/"
-              className="nav-link inline-flex min-h-11 items-center font-mono text-xs text-ink-muted"
-            >
-              Manifesto
-            </Link>
-            <Link
-              href="/made-with/"
-              className="nav-link inline-flex min-h-11 items-center font-mono text-xs text-ink-muted"
-            >
-              Made with
-            </Link>
-            <Link
-              href={fieldNotesNavigationHref}
-              className="nav-link inline-flex min-h-11 items-center font-mono text-xs text-ink-muted"
-            >
-              Field Notes
-            </Link>
+    <footer aria-label="Site footer" className="site-footer">
+      <div className="page-width section-stack">
+        <div className="site-footer__main">
+          <div className="section-stack">
+            <Link href="/" className="site-brand"><Image src="/brand/navigational-shelter-mark.png" alt="" width={48} height={48} /><span>Agents for Introverts</span></Link>
+            <p className="reading-line">A practice, becoming a product.</p>
+          </div>
+          <nav aria-label="Site footer navigation" className="site-nav__links">
+            <Link href="/manifesto/">Manifesto</Link>
+            <Link href="/made-with/">Made with</Link>
+            <Link href={fieldNotesNavigationHref}>Field notes</Link>
           </nav>
-          <p className="font-mono text-xs text-ink-faint">
-            © 2026 Tony Llongueras
-          </p>
         </div>
+        <div className="home-rule" />
+        <p className="label">© 2026 Tony Llongueras</p>
       </div>
     </footer>
   );

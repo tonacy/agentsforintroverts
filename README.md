@@ -114,14 +114,25 @@ or whitespace-only, the site stays in its honest pre-publication state:
 
 - header and footer links point to `/#field-notes`;
 - the status reads “The first field note is being written.”; and
-- its call to action points to `/manifesto/` and reads “Read the manifesto →”.
+- its call to action points to the existing Substack publication and reads
+  “Follow on Substack ↗”, with subscriptions handled there. The manifesto
+  remains the landing page's primary action.
 
 When it is set, it must be an absolute `https:` URL with no embedded username
 or password. Invalid, credential-bearing, or non-HTTPS values fail the build.
 The value is trimmed, parsed, and normalized with the standard URL parser; the
 header, footer, and status call to action then use that same URL. The live
-status reads “Slow Feed is now publishing.” and its call to action reads “Read
-the field notes →”. Do not set it until the real publication URL exists.
+status reads “Notes from the practice.” and its call to action reads “Read
+the field notes ↗”. Do not set it until substantive field notes are publishing.
+
+### Landing-page opening
+
+The reviewed ink-ocean opening keeps the title and links visible throughout.
+Its 7.2-second sequence runs once per session on desktop. Mobile, reduced
+motion, direct anchor visits, and no-JavaScript rendering use the calm state.
+The skip control settles the scene and focuses the headline. Geometry and
+deduplicated keyframes come from Figma scene `42:92`; the water PNG contains
+the approved image adjustments and opacity, and is composited with Multiply.
 
 ### Build and verify
 

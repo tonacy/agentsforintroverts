@@ -1,4 +1,5 @@
 import { Nav, Hero, Footer } from "@/components";
+import { HomeSections } from "@/components/HomeSections";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <Nav />
       <main id="main-content" tabIndex={-1}>
         <Hero />
+        <HomeSections />
       </main>
       <Footer />
     </>
