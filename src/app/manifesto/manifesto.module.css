@@ -24,7 +24,6 @@
 
 .intro {
   position: relative;
-  min-height: min(760px, calc(100svh - 57px));
   overflow: hidden;
   border-bottom: 1px solid var(--color-rule);
   isolation: isolate;
@@ -60,9 +59,8 @@
 .introInner {
   display: flex;
   width: min(100% - 3rem, 680px);
-  min-height: min(760px, calc(100svh - 57px));
   margin: 0 auto;
-  padding: clamp(5.5rem, 13vh, 8rem) 0 4.5rem;
+  padding: clamp(4rem, 8vw, 6rem) 0 3rem;
   align-items: center;
   flex-direction: column;
   text-align: center;
@@ -125,8 +123,7 @@
 
 .introMeta {
   display: flex;
-  margin-top: auto;
-  padding-top: 4rem;
+  margin-top: 2.75rem;
   align-items: center;
   gap: 0.75rem;
   color: var(--color-ink-muted);
@@ -134,8 +131,15 @@
 }
 
 .manifesto {
-  width: min(100% - 3rem, 1000px);
+  width: min(100% - 3rem, 680px);
   margin: 0 auto;
+  padding: clamp(3rem, 6vw, 4.5rem) 0;
+}
+
+.divider {
+  margin: 2.75rem 0;
+  border: 0;
+  border-top: 1px solid var(--color-rule);
 }
 
 .section {
@@ -372,10 +376,6 @@
 }
 
 @media (max-width: 760px) {
-  .intro {
-    min-height: calc(100svh - 57px);
-  }
-
   .intro::before,
   .intro::after {
     display: none;
@@ -383,8 +383,6 @@
 
   .introInner {
     width: min(100% - 2rem, 570px);
-    min-height: calc(100svh - 57px);
-    padding-top: 5.5rem;
   }
 
   .manifesto,
