@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Example net</title>
+  <entry>
+    <title>Custom feeds, revisited</title>
+    <link rel="alternate" href="https://example.net/2026/custom-feeds"/>
+    <id>tag:example.net,2026:custom-feeds</id>
+    <updated>2026-09-01T00:00:00Z</updated>
+    <summary type="html">&lt;p&gt;Two years on, algorithmic choice is still mostly a default.&lt;/p&gt;</summary>
+  </entry>
+</feed>

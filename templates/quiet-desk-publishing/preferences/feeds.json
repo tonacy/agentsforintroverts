@@ -1,0 +1,12 @@
+{
+  "$comment": "Read-only public sources for services/runner/collect.mjs. Feeds are RSS 2.0 or Atom. Pages are single public URLs re-read on each run. Nothing here may require a login; authenticated surfaces are governed by docs/SOURCE_AND_RETENTION_POLICY.md and are never collected by this tool.",
+  "feeds": [],
+  "pages": [
+    { "url": "https://www.microsoft.com/en-us/research/publication/dittos-mimetic-reciprocal-agents-in-ai-mediated-communication/", "label": "Microsoft Research — Dittos" },
+    { "url": "https://knightcolumbia.org/content/into-the-drivers-seat-with-social-media-content-feeds", "label": "Knight First Amendment Institute — feed legibility" },
+    { "url": "https://bsky.social/about/blog/7-27-2023-custom-feeds", "label": "Bluesky — custom feeds" },
+    { "url": "https://indieweb.org/POSSE", "label": "IndieWeb — POSSE" },
+    { "url": "https://www.nist.gov/artificial-intelligence/ai-agent-standards-initiative", "label": "NIST — AI Agent Standards Initiative" },
+    { "url": "https://www.indiehackers.com/post/i-can-build-anything-distribution-is-the-wall-i-keep-hitting-694cd7f9bc", "label": "Indie Hackers — distribution is the wall" }
+  ]
+}

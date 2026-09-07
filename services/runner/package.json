@@ -1,0 +1,19 @@
+{
+  "name": "@agents-for-introverts/runner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "One daily conversation, locally: collect public sources, run the daily-conversation role, hold zero to three Places.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "collect": "node collect.mjs",
+    "run-day": "node run-day.mjs",
+    "export-public": "node export-public.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

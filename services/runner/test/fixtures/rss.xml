@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Example blog</title>
+    <link>https://example.org/</link>
+    <item>
+      <title>Shipping without a launch day</title>
+      <link>https://example.org/posts/no-launch-day</link>
+      <pubDate>Wed, 02 Sep 2026 10:00:00 GMT</pubDate>
+      <description><![CDATA[<p>One reply argues the opposite: silence is a luxury only the already-known can afford.</p><p>More text follows.</p>]]></description>
+    </item>
+    <item>
+      <title>Agents that post for you</title>
+      <link>https://example.org/posts/agents-that-post</link>
+      <pubDate>Tue, 01 Sep 2026 09:00:00 GMT</pubDate>
+      <description>Most agree an agent should draft. They split on whether it should ever press send.</description>
+    </item>
+  </channel>
+</rss>
