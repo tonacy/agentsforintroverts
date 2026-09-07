@@ -39,6 +39,9 @@ any trusted harness ─ MCP / CLI ─ local Context Kernel ─ Markdown + JSON
   authenticated Streamable HTTP for Grok-compatible remote connectors.
 - `agents/` — seven bounded runtime profiles and prompts, including Daily
   Conversation and Common Ground.
+- `services/runner/` — the local daily loop: a read-only public collector, a
+  one-day runner for the Daily Conversation role with fail-closed gates, and
+  an explicit `--approve` export of a minimized public day for the website.
 - `docs/` — architecture, threat model, provider activation, and the short list
   of product decisions to review.
 
