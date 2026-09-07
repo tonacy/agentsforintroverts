@@ -4,16 +4,19 @@ import SwiftUI
 @MainActor
 struct DailyConversationView: View {
     @Bindable var store: QuietDeskStore
+    @Bindable var providerStore: ProviderStore
     @Bindable var router: AppRouter
 
     @State private var mode: DailyConversationMode = .notChecked
 
     init(
         store: QuietDeskStore,
+        providerStore: ProviderStore,
         router: AppRouter,
         initialMode: DailyConversationMode = .notChecked
     ) {
         self.store = store
+        self.providerStore = providerStore
         self.router = router
         _mode = State(initialValue: initialMode)
     }
@@ -40,7 +43,10 @@ struct DailyConversationView: View {
 
         return ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                connectionBanner
+                RunTodayPanel(providerStore: providerStore, router: router, mode: mode)
+                if !providerStore.hasWorkspace {
+                    connectionBanner
+                }
                 introduction
                 modeChooser
 

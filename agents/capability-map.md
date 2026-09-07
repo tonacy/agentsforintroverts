@@ -36,6 +36,7 @@
 | Propose one exact human handoff | Thread detail | `propose_action` | Done |
 | Record a context correction or preference | Thread or activity detail | `record_feedback` | Done |
 | Finish or checkpoint a run | Run detail | `complete_run` | Done |
+| Run the daily conversation through a signed-in harness | Today | runner (`services/runner`) via the app | Done (local) |
 | Approve or reject an exact handoff | Thread detail | User-only authority | N/A |
 | Change local appearance/settings | Settings | Device preference | N/A |
 | Open an external source deep link | Source door | User navigation | N/A |

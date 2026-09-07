@@ -4,11 +4,12 @@ import SwiftUI
 @MainActor
 struct AppShellView: View {
     @Bindable var store: QuietDeskStore
+    @Bindable var providerStore: ProviderStore
     @Bindable var router: AppRouter
 
     var body: some View {
         NavigationSplitView(columnVisibility: $router.columnVisibility) {
-            SidebarView(store: store, router: router)
+            SidebarView(store: store, providerStore: providerStore, router: router)
                 .navigationSplitViewColumnWidth(min: 180, ideal: 210, max: 250)
         } detail: {
             contentColumn
@@ -53,7 +54,7 @@ struct AppShellView: View {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Section {
-                        Label("Sample data", systemImage: "testtube.2")
+                        Label(providerStore.workspaceName.map { "Workspace: \($0)" } ?? "Sample data", systemImage: providerStore.hasWorkspace ? "folder" : "testtube.2")
                         Label(
                             store.readOnlyMode ? "Read-only" : "Local approvals on",
                             systemImage: store.readOnlyMode ? "lock" : "checkmark.shield"
@@ -83,13 +84,13 @@ struct AppShellView: View {
     private var contentColumn: some View {
         switch router.destination {
         case .conversation:
-            DailyConversationView(store: store, router: router)
+            DailyConversationView(store: store, providerStore: providerStore, router: router)
         case .activity:
             ActivityView(store: store, router: router)
         case .connections:
-            ConnectionsView(store: store, router: router)
+            ConnectionsView(store: store, providerStore: providerStore, router: router)
         case nil:
-            DailyConversationView(store: store, router: router)
+            DailyConversationView(store: store, providerStore: providerStore, router: router)
         }
     }
 
@@ -107,6 +108,9 @@ struct AppShellView: View {
                 .id(id)
         case .source(let id):
             SourceDetailView(source: store.source(id: id))
+                .id(id)
+        case .provider(let id):
+            ProviderDetailView(providerStore: providerStore, providerID: id)
                 .id(id)
         case nil:
             EmptyView()

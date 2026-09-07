@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 struct SidebarView: View {
     let store: QuietDeskStore
+    let providerStore: ProviderStore
     @Bindable var router: AppRouter
 
     var body: some View {
@@ -20,7 +21,10 @@ struct SidebarView: View {
         .navigationTitle("Quiet Desk")
         .safeAreaInset(edge: .bottom) {
             VStack(alignment: .leading, spacing: 5) {
-                Label("Sample data", systemImage: "testtube.2")
+                Label(
+                    providerStore.workspaceName.map { "Workspace: \($0)" } ?? "Sample data",
+                    systemImage: providerStore.hasWorkspace ? "folder" : "testtube.2"
+                )
                 Label(
                     store.readOnlyMode ? "Read-only" : "Local approvals on",
                     systemImage: store.readOnlyMode ? "lock" : "checkmark.shield"

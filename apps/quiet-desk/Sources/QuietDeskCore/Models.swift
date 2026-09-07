@@ -114,6 +114,7 @@ public enum QuietDeskPresentationPolicy {
 }
 
 public enum ConnectionKind: String, CaseIterable, Identifiable, Sendable {
+    case providers
     case sources
     case agents
 
@@ -121,6 +122,7 @@ public enum ConnectionKind: String, CaseIterable, Identifiable, Sendable {
 
     public var title: String {
         switch self {
+        case .providers: "Providers"
         case .sources: "Sources"
         case .agents: "Agents"
         }
