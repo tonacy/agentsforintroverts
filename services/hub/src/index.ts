@@ -6,9 +6,16 @@ function stringBinding(env: Env, name: string): string {
   return typeof value === "string" ? value : "";
 }
 
-function integerBinding(env: Env, name: keyof Env, fallback: number): number {
-  const parsed = Number(env[name]);
+function integerBinding(env: Env, name: string, fallback: number): number {
+  const parsed = Number(stringBinding(env, name));
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function allowedOrigins(env: Env): string[] {
+  return stringBinding(env, "SUBSCRIBE_ALLOWED_ORIGINS")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
 }
 
 function ingestSecrets(env: Env): Record<string, string> {
@@ -42,6 +49,15 @@ const worker = {
       readToken: stringBinding(env, "READ_TOKEN"),
       maxBodyBytes: integerBinding(env, "MAX_BODY_BYTES", 256 * 1_024),
       replayWindowSeconds: integerBinding(env, "REPLAY_WINDOW_SECONDS", 300),
+      subscribe: {
+        allowedOrigins: allowedOrigins(env),
+        maxBodyBytes: integerBinding(env, "SUBSCRIBE_MAX_BODY_BYTES", 4 * 1_024),
+        rateLimit: {
+          maxRequests: integerBinding(env, "SUBSCRIBE_RATE_LIMIT_MAX", 5),
+          windowSeconds: integerBinding(env, "SUBSCRIBE_RATE_LIMIT_WINDOW_SECONDS", 3_600),
+        },
+        ipHashSalt: stringBinding(env, "SUBSCRIBE_IP_SALT"),
+      },
     });
     return app.fetch(request);
   },

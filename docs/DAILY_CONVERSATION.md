@@ -29,6 +29,20 @@ trigger are still required. The Mac app remains a synthetic projection.
 The current research packet and its honest readiness verdict live in
 [`research/OUTSIDE_CONTEXT_BOOTSTRAP.md`](./research/OUTSIDE_CONTEXT_BOOTSTRAP.md).
 
+**Update, 2026-09-06.** The loop can now run for real, locally.
+[`services/runner/`](../services/runner/README.md) holds a read-only public
+collector (`collect.mjs`: RSS, Atom, and single public pages, minimized into
+`afi.local_source_record.v1` records with a 30-day retention ceiling), a
+one-day runner (`run-day.mjs`: assembles the `afi.daily-conversation` bundle,
+enforces the capture and outside-context gates, calls one provider with a
+strict JSON schema, drops any claim that does not cite a loaded source, and
+writes the daily conversation, Places, and a run record), and an explicit
+public-approval export (`export-public.mjs --approve`, producing
+`afi.public_day.v1` for the website). Still missing: a scheduled trigger, hub
+`source.observed` receipts (local runs record `observation_event_id:
+local-only`), the Mac app's read-only live adapter, and any authenticated
+source.
+
 The primary interface for Agents for Introverts is not a feed or a dashboard. It is one continuing conversation between a person's lived day and the outside world.
 
 Each day, the agents bring a bounded, source-backed view of what is happening outside. The person brings what they made, learned, noticed, changed their mind about, struggled with, or now wants to make happen. Together they look for the few places where those two realities genuinely meet.

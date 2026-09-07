@@ -1,0 +1,102 @@
+import { HttpError } from "./errors.js";
+
+const encoder = new TextEncoder();
+
+const MAX_EMAIL_LENGTH = 254;
+const MAX_LOCAL_PART_LENGTH = 64;
+const EMAIL_PATTERN =
+  /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$/;
+const SOURCE_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/;
+
+export const DEFAULT_SUBSCRIBE_SOURCE = "site";
+
+export interface SubscribeRequestBody {
+  email: string;
+  source: string;
+}
+
+/**
+ * Server-side validation. The browser is never trusted to normalise an address,
+ * and nothing here reveals whether the address is already stored.
+ */
+export function parseSubscribeBody(payload: unknown): SubscribeRequestBody {
+  if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
+    throw new HttpError(422, "invalid_subscribe_body", "The request body must be a JSON object.");
+  }
+  const body = payload as Record<string, unknown>;
+
+  const rawEmail = body.email;
+  if (typeof rawEmail !== "string") {
+    throw new HttpError(422, "invalid_email", "An email address is required.");
+  }
+  const email = normalizeEmail(rawEmail);
+  if (
+    email.length === 0 ||
+    email.length > MAX_EMAIL_LENGTH ||
+    (email.split("@", 1)[0]?.length ?? 0) > MAX_LOCAL_PART_LENGTH ||
+    !EMAIL_PATTERN.test(email)
+  ) {
+    throw new HttpError(422, "invalid_email", "That email address does not look valid.");
+  }
+
+  const rawSource = body.source;
+  if (rawSource === undefined || rawSource === null) {
+    return { email, source: DEFAULT_SUBSCRIBE_SOURCE };
+  }
+  if (typeof rawSource !== "string") {
+    throw new HttpError(422, "invalid_source", "source must be a short label.");
+  }
+  const source = rawSource.trim().toLowerCase();
+  if (!SOURCE_PATTERN.test(source)) {
+    throw new HttpError(422, "invalid_source", "source must be a short label.");
+  }
+  return { email, source };
+}
+
+export function normalizeEmail(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+export function normalizeOrigin(value: string): string {
+  const trimmed = value.trim().toLowerCase();
+  return trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed;
+}
+
+export interface OriginDecision {
+  /** The echoable Origin, or null when the request carried none. */
+  origin: string | null;
+  allowed: boolean;
+}
+
+/**
+ * A request without an Origin header is not a cross-origin browser request, so
+ * it is allowed but receives no CORS headers. A request that does declare an
+ * Origin must match the configured allowlist exactly.
+ */
+export function resolveRequestOrigin(
+  request: Request,
+  allowedOrigins: readonly string[],
+): OriginDecision {
+  const origin = request.headers.get("origin");
+  if (origin === null) return { origin: null, allowed: true };
+  const normalized = normalizeOrigin(origin);
+  const allowed = allowedOrigins.some((candidate) => normalizeOrigin(candidate) === normalized);
+  return { origin, allowed };
+}
+
+export function clientIp(request: Request): string {
+  const direct = request.headers.get("cf-connecting-ip");
+  if (direct) return direct.trim();
+  const forwarded = request.headers.get("x-forwarded-for");
+  const first = forwarded?.split(",", 1)[0]?.trim();
+  return first && first.length > 0 ? first : "unknown";
+}
+
+/**
+ * The raw IP never reaches storage: rate-limit rows and subscriber rows keep a
+ * salted digest only.
+ */
+export async function hashClientIp(ip: string, salt: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", encoder.encode(`${salt}\0${ip}`));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
