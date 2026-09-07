@@ -1,0 +1,340 @@
+.practice {
+  position: relative;
+  z-index: 1;
+  padding-block: 88px;
+  scroll-margin-top: 24px;
+}
+
+.practice--warm {
+  background: rgba(250, 246, 240, 0.92);
+}
+
+.practice--forest {
+  background: var(--color-leaf);
+  color: var(--color-paper);
+}
+
+.practice--manifesto {
+  background: rgba(253, 251, 247, 0.94);
+}
+
+.practice--sage {
+  background: var(--color-sage);
+}
+
+.practice__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.practice__stack--narrow {
+  max-width: 900px;
+}
+
+.practice__head {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.practice__note {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 18px;
+  color: var(--color-ink-faint);
+}
+
+.practice__steps {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 24px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.practice__step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--color-ink);
+  padding-top: 16px;
+}
+
+.practice__step p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--color-ink-muted);
+}
+
+.practice__step-number {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  line-height: 32px;
+  color: var(--color-leaf);
+}
+
+.practice__step-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 26px;
+  color: var(--color-ink);
+}
+
+.practice__line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 80px;
+  align-items: start;
+}
+
+.practice__line-lead {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.practice--forest .eyebrow {
+  color: rgba(253, 251, 247, 0.72);
+}
+
+.practice--forest h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(44px, 5vw, 64px);
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--color-paper);
+}
+
+.practice__line-quote {
+  margin: 8px 0 0;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  line-height: 34px;
+  font-style: italic;
+  color: var(--color-paper);
+}
+
+.practice__line-sides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  padding-top: 44px;
+}
+
+.practice__side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid rgba(253, 251, 247, 0.4);
+  padding-top: 16px;
+}
+
+.practice__side h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--color-paper);
+}
+
+.practice__side p,
+.practice__line-foot {
+  margin: 0;
+  font-size: 15px;
+  line-height: 24px;
+  color: rgba(253, 251, 247, 0.82);
+}
+
+.practice__line-foot {
+  grid-column: 1 / -1;
+  max-width: 560px;
+}
+
+.practice__line-foot a {
+  color: var(--color-paper);
+  border-bottom: 1px solid rgba(253, 251, 247, 0.5);
+}
+
+.practice__quote {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1.12;
+  font-style: italic;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+.practice__intro {
+  margin: 0;
+  max-width: 600px;
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--color-ink-muted);
+}
+
+.practice__follow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+  gap: 80px;
+  align-items: start;
+}
+
+.practice__follow h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(38px, 4vw, 52px);
+  line-height: 1.02;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+.practice__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  background: var(--color-paper);
+  border: 1px solid var(--color-rule);
+}
+
+.practice__card-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  line-height: 30px;
+  color: var(--color-ink);
+}
+
+.practice__card-body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--color-ink-muted);
+}
+
+/* Email capture */
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.email-form__row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.email-form__field {
+  flex: 1;
+  min-width: 0;
+}
+
+.email-form__input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  color: var(--color-ink);
+}
+
+.email-form__input::placeholder {
+  color: var(--color-ink-faint);
+}
+
+.email-form__input--error {
+  color: #8b3a2f;
+}
+
+.email-form__submit {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-leaf);
+  cursor: pointer;
+}
+
+.email-form__submit:disabled {
+  color: var(--color-ink-faint);
+  cursor: progress;
+}
+
+.email-form__status {
+  min-height: 18px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 18px;
+  color: #8b3a2f;
+  visibility: hidden;
+}
+
+.email-form__status--visible {
+  visibility: visible;
+}
+
+.email-form--done {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-leaf);
+}
+
+.email-form__check {
+  width: 16px;
+  height: 16px;
+  color: var(--color-leaf);
+  flex: none;
+}
+
+.email-form__done {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-ink-muted);
+}
+
+@media (max-width: 899px) {
+  .practice {
+    padding-block: 64px;
+  }
+  .practice__steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .practice__line,
+  .practice__follow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  .practice__line-sides {
+    padding-top: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .practice__card {
+    padding: 22px;
+  }
+}

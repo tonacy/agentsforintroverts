@@ -1,0 +1,78 @@
+{
+  "schema": "afi.public_day.v1",
+  "date": "2026-09-03",
+  "weekday": "Thursday",
+  "example": true,
+  "mode": "short",
+  "outside": [
+    {
+      "surface": "research · two papers, one position",
+      "distillation": "Agents that act for you. Most agree an agent should draft and report back. They split on whether it should ever press send.",
+      "sources": [
+        {
+          "label": "Dittos: reciprocal agents in AI-mediated communication",
+          "url": "https://www.microsoft.com/en-us/research/publication/dittos-mimetic-reciprocal-agents-in-ai-mediated-communication/"
+        },
+        { "label": "What do AI agents talk about?", "url": "https://arxiv.org/abs/2603.07880" }
+      ],
+      "disagreement": "Proxy activity can become ritual noise. Relational continuity is not the same as more posts."
+    },
+    {
+      "surface": "founders · resurfaced twice this month",
+      "distillation": "Distribution is the wall. One thread argues useful replies in the right room beat broad posting. The reply argues public founder discourse is the wrong room for most buyers.",
+      "sources": [
+        {
+          "label": "I can build anything. Distribution is the wall I keep hitting.",
+          "url": "https://www.indiehackers.com/post/i-can-build-anything-distribution-is-the-wall-i-keep-hitting-694cd7f9bc"
+        },
+        {
+          "label": "Build in public is a distribution strategy for founders selling to founders",
+          "url": "https://www.indiehackers.com/post/build-in-public-is-a-distribution-strategy-for-founders-selling-to-founders-11f31744e4"
+        }
+      ],
+      "disagreement": "Presence in a community and demand from it are different things."
+    },
+    {
+      "surface": "feeds · a design vocabulary",
+      "distillation": "Feeds are legible if you look. One piece names how selection and ranking work; another argues choosing your own feed restores agency.",
+      "sources": [
+        {
+          "label": "Into the driver's seat with social media content feeds",
+          "url": "https://knightcolumbia.org/content/into-the-drivers-seat-with-social-media-content-feeds"
+        },
+        { "label": "Algorithmic choice with custom feeds", "url": "https://bsky.social/about/blog/7-27-2023-custom-feeds" }
+      ],
+      "disagreement": null
+    }
+  ],
+  "inside": {
+    "text": "Wired the subscribe endpoint. Deleted the seven-second opening; the page starts settled now. Avoided the Woon essay again. Noticed I keep explaining the human line to people who did not ask.",
+    "authored_by": "human",
+    "mode_label": "short version"
+  },
+  "context_used": [
+    { "basis": "explicit", "label": "building Agents for Introverts" },
+    { "basis": "explicit", "label": "Woon, an iMessage agent, 2023" },
+    { "basis": "inferred", "label": "avoids launch days" }
+  ],
+  "places": [
+    {
+      "index": 1,
+      "kind": "respond",
+      "title": "Reply to the send-button thread.",
+      "fit": "You built the line they are arguing about, and you have a position on it.",
+      "status": "draft ready"
+    },
+    {
+      "index": 2,
+      "kind": "learn",
+      "title": "Read the distribution thread before adding anything.",
+      "fit": "Two people you have replied to before are describing the practice you use. Neither mentioned agents.",
+      "status": "held"
+    }
+  ],
+  "held_note": "No third place today. The launch-day thread is loud, not yours. Left it.",
+  "nothing_sent": true,
+  "generated_at": "2026-09-03T12:00:00Z",
+  "run_id": "example"
+}

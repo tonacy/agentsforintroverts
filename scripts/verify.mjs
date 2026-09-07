@@ -7,6 +7,7 @@ assertReleaseNode();
 const root = fileURLToPath(new URL("../", import.meta.url));
 const checks = [
   "test:agents",
+  "test:web",
   "test:protocol",
   "test:context",
   "test:hub",
