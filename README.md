@@ -110,6 +110,37 @@ npm ci --prefix services/mcp
 npm run dev
 ```
 
+### Today's page
+
+The home page opens on a scroll-driven crossing and then renders one day of
+the practice from `src/content/day.json` (schema `afi.public_day.v1`, checked
+at build time by `src/lib/day.ts`). The committed file is a clearly labelled
+example day. Replace it with a real, approved day from the runner:
+
+```bash
+node services/runner/export-public.mjs --workspace "$QD" --date 2026-09-07 --approve \
+  --out src/content/day.json
+```
+
+The web suite (`npm run test:web`, vitest) covers the stage maths, the sea,
+the day parser, the ledger, and the capture form.
+
+### Email capture
+
+The capture form posts to Quiet Hub's `POST /v1/subscribe`. Point it at a hub
+with one build-time variable:
+
+```bash
+# .env.local — inlined by `next build`, so it is set per deployment
+NEXT_PUBLIC_HUB_ORIGIN=https://hub.example.com
+```
+
+Left unset, the form posts to `/v1/subscribe` on its own origin, which is what
+a hub proxied under the site's domain needs. When the hub is on another
+origin, the site's origin must appear in the hub's `SUBSCRIBE_ALLOWED_ORIGINS`
+allowlist, or the browser's request is refused with `403`. Nothing is emailed
+on submit: the address is stored.
+
 ### Field Notes URL
 
 `FIELD_NOTES_URL` is an optional build-time setting. When it is unset, empty,
@@ -117,9 +148,8 @@ or whitespace-only, the site stays in its honest pre-publication state:
 
 - header and footer links point to `/#field-notes`;
 - the status reads “The first field note is being written.”; and
-- its call to action points to the existing Substack publication and reads
-  “Follow on Substack ↗”, with subscriptions handled there. The manifesto
-  remains the landing page's primary action.
+- the "Follow the practice" card shows the email capture form instead of a
+  link. The manifesto remains the landing page's primary action.
 
 When it is set, it must be an absolute `https:` URL with no embedded username
 or password. Invalid, credential-bearing, or non-HTTPS values fail the build.
@@ -130,12 +160,11 @@ the field notes ↗”. Do not set it until substantive field notes are publishi
 
 ### Landing-page opening
 
-The reviewed ink-ocean opening keeps the title and links visible throughout.
-Its 7.2-second sequence runs once per session on desktop. Mobile, reduced
-motion, direct anchor visits, and no-JavaScript rendering use the calm state.
-The skip control settles the scene and focuses the headline. Geometry and
-deduplicated keyframes come from Figma scene `42:92`; the water PNG contains
-the approved image adjustments and opacity, and is composited with Multiply.
+The opening is scrubbed by scroll, never timed. A sea of feed fragments runs
+behind the whole page (`src/components/Crossing.tsx`); scrolling parts it,
+slows it, and hands over to the day's ledger. The maths lives in
+`src/lib/stage-progress.ts` and `src/lib/sea.ts` so it is tested without a
+browser. Reduced motion and no-JavaScript rendering show everything at rest.
 
 ### Build and verify
 
