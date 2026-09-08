@@ -84,6 +84,34 @@ sources/source_<date>_<slug>.json        afi.local_source_record.v1
 runs/run_<date>_<time>_<id>.json         status, blockers, usage, what was dropped
 ```
 
+## Providers: the sign-in your terminal already has
+
+Quiet Desk holds no credential. The runner can use a harness that is already
+signed in on this Mac, and the app shows which ones are:
+
+```bash
+node services/runner/providers.mjs list --json [--workspace "$QD"]
+node services/runner/providers.mjs use --workspace "$QD" --provider claude [--model opus] --json
+```
+
+| Provider | How it runs | Signed in when |
+|---|---|---|
+| `claude` | Claude Code in print mode: no tools, our system prompt, a JSON schema, an empty temp directory | the keychain holds Claude Code's login (checked by name; the secret is never read) |
+| `codex` | `codex exec`, read-only sandbox, ephemeral, user config ignored | `~/.codex/auth.json` exists (never read) |
+| `anthropic` | the SDK directly | `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, or an `ant auth login` profile exists |
+| `fixture` | canned, offline | always |
+
+The chosen provider is written to `preferences/provider.json` (a name, never a
+key). `run-day` without `--provider` uses it, and `--model` picks a model the
+harness understands (`opus`, `sonnet`, `haiku` for Claude Code).
+
+Two more commands exist for the app:
+
+```bash
+node services/runner/status.mjs --workspace "$QD" --date 2026-09-07     # afi.day_status.v1
+node services/runner/capture.mjs new --workspace "$QD" --date 2026-09-07 # creates capture.md from the template, never overwrites
+```
+
 ## What it deliberately does not do
 
 - It does not send, post, reply, follow, like, schedule, or publish anything.

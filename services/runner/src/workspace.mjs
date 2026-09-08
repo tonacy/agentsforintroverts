@@ -167,7 +167,10 @@ export async function loadAllSources(workspace) {
 export async function loadSources(workspace, { date, windowDays = 7 }) {
   const dayStart = Date.parse(`${date}T00:00:00Z`);
   const windowStart = dayStart - windowDays * 86_400_000;
-  const dayEnd = dayStart + 86_400_000;
+  // The date is Tony's local day; captured_at is UTC. A collect run late in
+  // the local evening lands on the next UTC date, so the window closes a day
+  // after the date ends rather than at UTC midnight.
+  const dayEnd = dayStart + 2 * 86_400_000;
   const all = await loadAllSources(workspace);
   return all
     .map(({ record }) => record)

@@ -121,3 +121,13 @@ test("run-day: a harness that is not signed in is a named blocker, not a crash",
   assert.equal(result.status, "failed");
   assert.deepEqual(result.blockers, ["provider_stop_not_signed_in"]);
 });
+
+test("sources collected after UTC midnight still count for the local date they were collected on", async () => {
+  const { loadSources } = await import("../src/workspace.mjs");
+  const { writeSource, sourceRecord } = await import("./helpers.mjs");
+  const workspace = await makeWorkspace();
+  await writeSource(workspace, sourceRecord({ source_item_id: "source_20260905_late", captured_at: "2026-09-05T03:00:00Z" }));
+  await writeSource(workspace, sourceRecord({ source_item_id: "source_20260907_toolate", captured_at: "2026-09-07T03:00:00Z" }));
+  const sources = await loadSources(workspace, { date: DATE, windowDays: 7 });
+  assert.deepEqual(sources.map((s) => s.source_item_id), ["source_20260905_late"]);
+});
