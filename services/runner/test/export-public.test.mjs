@@ -78,3 +78,37 @@ test("--out copies the file to the site's content path", async () => {
   const copied = JSON.parse(await readFile(out, "utf8"));
   assert.equal(copied.schema, "afi.public_day.v1");
 });
+
+test("a context_ref of explicit-N is the Nth explicit position, not a new inference", async () => {
+  const { toPublicDay } = await import("../src/export-public.mjs");
+  const day = toPublicDay(
+    {
+      date: "2026-09-07",
+      mode: "deep",
+      capture: { positions: ["Agents may draft. They never send.", "Show the practice."], authored_by: "human", human_seed: "x" },
+      developments: [],
+      sources: [],
+      places: [
+        {
+          title: "t",
+          kind: "learn",
+          why_it_fits: "f",
+          what_to_add: "a",
+          human_time: "0",
+          source_item_ids: [],
+          context_refs: ["explicit-2", "explicit-9", "avoids launch days"],
+          fit_requires_confirmation: true,
+        },
+      ],
+      return_tomorrow: { watch: [], open_question: null },
+      honest_note: "",
+    },
+    { now: () => new Date("2026-09-07T00:00:00Z") },
+  );
+  assert.deepEqual(day.context_used, [
+    { basis: "explicit", label: "Agents may draft. They never send." },
+    { basis: "explicit", label: "Show the practice." },
+    { basis: "inferred", label: "explicit-9" },
+    { basis: "inferred", label: "avoids launch days" },
+  ]);
+});

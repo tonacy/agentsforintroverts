@@ -38,8 +38,14 @@ export function toPublicDay(conversation, { includeInside = false, now = () => n
   const explicit = (conversation.capture?.positions ?? []).map((label) => ({ basis: "explicit", label }));
   const seen = new Set(explicit.map((c) => c.label));
   const inferred = [];
+  const positions = conversation.capture?.positions ?? [];
   for (const place of conversation.places ?? []) {
-    for (const ref of place.context_refs ?? []) {
+    for (const rawRef of place.context_refs ?? []) {
+      // The model is handed positions as `explicit-N`; a reference to one is the
+      // explicit statement itself, not a new inference.
+      const numbered = rawRef.match(/^explicit-(\d+)$/);
+      const ref = numbered ? positions[Number(numbered[1]) - 1] ?? rawRef : rawRef;
+      if (numbered && positions[Number(numbered[1]) - 1]) continue;
       if (!seen.has(ref)) {
         seen.add(ref);
         inferred.push({ basis: "inferred", label: ref });
