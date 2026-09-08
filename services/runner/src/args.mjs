@@ -8,7 +8,9 @@ export function readArgs(argv, extraOptions = {}) {
     options: {
       workspace: { type: "string" },
       date: { type: "string" },
-      provider: { type: "string", default: "fixture" },
+      provider: { type: "string" },
+      model: { type: "string" },
+      json: { type: "boolean", default: false },
       mode: { type: "string", default: "short" },
       "window-days": { type: "string", default: "7" },
       approve: { type: "boolean", default: false },

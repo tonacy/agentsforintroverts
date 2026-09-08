@@ -14,6 +14,7 @@ import { assembleAgent } from "../../../agents/assemble.mjs";
 import { renderTemplate } from "./context-render.mjs";
 import { conversationSchema, validateConversation } from "./schema.mjs";
 import { fixtureProvider } from "./providers/fixture.mjs";
+import { readPreference } from "./preferences.mjs";
 import {
   loadCapture,
   loadSources,
@@ -37,15 +38,29 @@ const EXIT = { completed: 0, failed: 2, partial: 3 };
 
 export const runnerRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 
-async function resolveProvider(provider) {
+async function resolveProvider({ provider, model, workspace }) {
   if (provider && typeof provider === "object") return provider;
+  if (!provider) {
+    // No flag: the workspace preference the app wrote decides; failing that, the sample.
+    const preference = await readPreference(workspace);
+    provider = preference?.provider ?? "fixture";
+    model = model ?? preference?.model ?? null;
+  }
   if (provider === "fixture") return fixtureProvider();
   if (provider === "anthropic") {
     // Loaded lazily so the tests never need the SDK or a credential.
     const { anthropicProvider } = await import("./providers/anthropic.mjs");
-    return anthropicProvider();
+    return model ? anthropicProvider({ model }) : anthropicProvider();
   }
-  throw new Error(`Unknown provider ${JSON.stringify(provider)}. Expected anthropic or fixture.`);
+  if (provider === "claude" || provider === "codex") {
+    const { claudeProvider, codexProvider } = await import("./providers/harness.mjs");
+    const { detectProviders } = await import("./providers/detect.mjs");
+    const catalog = await detectProviders();
+    const entry = catalog.providers.find((p) => p.id === provider);
+    const bin = entry?.path ?? provider;
+    return provider === "claude" ? claudeProvider({ bin, model }) : codexProvider({ bin, model });
+  }
+  throw new Error(`Unknown provider ${JSON.stringify(provider)}. Expected claude, codex, anthropic, or fixture.`);
 }
 
 function contextVariables({ workspace, date, runId, mode, sources, capture, provider, now, windowDays }) {
@@ -331,7 +346,8 @@ async function writeRun(workspace, run) {
 export async function runDay({
   workspace,
   date,
-  provider = "fixture",
+  provider = undefined,
+  model = undefined,
   mode = "short",
   windowDays = 7,
   now = () => new Date(),
@@ -339,7 +355,7 @@ export async function runDay({
   if (!MODES.includes(mode)) throw new Error(`Unknown mode ${JSON.stringify(mode)}. Expected one of ${MODES.join(", ")}.`);
   const startedAt = now();
   const runId = makeRunId(date, startedAt);
-  const providerImpl = await resolveProvider(provider);
+  const providerImpl = await resolveProvider({ provider, model, workspace });
   const notes = [];
   const blockers = [];
   const dayDir = join(workspace, "daily", date);

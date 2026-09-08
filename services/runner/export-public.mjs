@@ -14,7 +14,7 @@ try {
   if (result.exitCode !== 0) {
     process.stderr.write(`${result.error}\n`);
   } else {
-    process.stdout.write(`${JSON.stringify({ paths: result.paths, places: result.day.places.length, outside: result.day.outside.length }, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ path: result.paths.public, out: result.paths.out ?? null, paths: result.paths, places: result.day.places.length, outside: result.day.outside.length }, null, 2)}\n`);
   }
   process.exitCode = result.exitCode;
 } catch (error) {
