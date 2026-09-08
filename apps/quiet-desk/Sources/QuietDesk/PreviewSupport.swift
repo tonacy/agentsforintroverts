@@ -30,20 +30,30 @@ private enum PreviewStoreFactory {
             defaults: nil
         )
     }
+
+    static func providers() -> ProviderStore {
+        ProviderStore(
+            bridge: StubRunnerBridge(responses: [:]),
+            defaults: nil,
+            environmentProvider: {
+                RunnerEnvironment(repoRoot: URL(fileURLWithPath: "/repo"), node: URL(fileURLWithPath: "/node"), path: "/bin")
+            }
+        )
+    }
 }
 
 struct QuietDeskPreviewProvider: PreviewProvider {
     static var previews: some View {
         Group {
-            AppShellView(store: PreviewStoreFactory.loaded(), router: AppRouter())
+            AppShellView(store: PreviewStoreFactory.loaded(), providerStore: PreviewStoreFactory.providers(), router: AppRouter())
                 .frame(width: 1_120, height: 760)
                 .previewDisplayName("Calm default · sample data")
 
-            AppShellView(store: PreviewStoreFactory.empty(), router: AppRouter())
+            AppShellView(store: PreviewStoreFactory.empty(), providerStore: PreviewStoreFactory.providers(), router: AppRouter())
                 .frame(width: 980, height: 680)
                 .previewDisplayName("Empty")
 
-            AppShellView(store: PreviewStoreFactory.failed(), router: AppRouter())
+            AppShellView(store: PreviewStoreFactory.failed(), providerStore: PreviewStoreFactory.providers(), router: AppRouter())
                 .frame(width: 980, height: 680)
                 .previewDisplayName("Error")
         }

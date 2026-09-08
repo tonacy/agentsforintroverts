@@ -29,6 +29,35 @@ The bundled context, people, counts, sources, and handoffs are synthetic product
 fixtures. They demonstrate the interaction and invariants, not a live network or
 real-world common ground.
 
+## Providers
+
+Quiet Desk runs the daily conversation through a provider you already use on
+this Mac. Under Agents & Sources › Providers it detects Claude Code, Codex
+CLI, an Anthropic `ant` profile or API key in your shell, and an offline
+sample provider, and shows whether each is installed and signed in. You pick
+one; the choice is written to `preferences/provider.json` in your workspace.
+
+The app stores no credentials and has no field for one. It uses the sign-in
+your terminal already has: a run is a local `node services/runner/run-day.mjs`
+process, launched with an augmented PATH so it can find the harness CLI, and
+the harness brings its own login. If a provider is not signed in, the detail
+view shows the exact terminal command, with Copy and Open Terminal.
+
+The flow on Today, once a workspace folder is chosen in Settings › Workspace:
+
+1. Write today's capture (created from the template and opened in your
+   editor; the app never rewrites it).
+2. Collect verified public sources.
+3. Choose how much should come in, then run today's conversation with the
+   chosen provider. The run can take a few minutes and can be stopped.
+4. Read the result: completed, partial, or failed, with the reason in plain
+   words, and open the conversation file.
+5. Approve for the website, separately, after a confirmation that says
+   exactly what will be exported and where. Nothing is published by that
+   step; the site is deployed by you.
+
+Everything a run produces is held in the workspace. Nothing is sent.
+
 ## Run from source
 
 ```bash

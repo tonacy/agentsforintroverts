@@ -6,6 +6,7 @@ import SwiftUI
 @MainActor
 struct QuietDeskApp: App {
     @State private var store: QuietDeskStore
+    @State private var providerStore: ProviderStore
     @State private var router: AppRouter
 
     init() {
@@ -13,22 +14,26 @@ struct QuietDeskApp: App {
             client: .bundledSyntheticFixtures,
             defaults: .standard
         ))
+        _providerStore = State(initialValue: ProviderStore(
+            bridge: ProcessRunnerBridge(),
+            defaults: .standard
+        ))
         _router = State(initialValue: AppRouter())
     }
 
     var body: some Scene {
         WindowGroup("Quiet Desk", id: "main") {
-            AppShellView(store: store, router: router)
+            AppShellView(store: store, providerStore: providerStore, router: router)
                 .frame(minWidth: 880, minHeight: 600)
         }
         .defaultSize(width: 1_120, height: 760)
         .commands {
             SidebarCommands()
-            QuietDeskCommands(store: store, router: router)
+            QuietDeskCommands(store: store, providerStore: providerStore, router: router)
         }
 
         Settings {
-            QuietDeskSettingsView(store: store)
+            QuietDeskSettingsView(store: store, providerStore: providerStore)
         }
 
         MenuBarExtra(
@@ -48,6 +53,7 @@ struct QuietDeskApp: App {
 @MainActor
 private struct QuietDeskCommands: Commands {
     let store: QuietDeskStore
+    let providerStore: ProviderStore
     let router: AppRouter
 
     var body: some Commands {
@@ -58,6 +64,21 @@ private struct QuietDeskCommands: Commands {
                 .keyboardShortcut("2", modifiers: .command)
             Button("Agents & Sources") { router.destination = .connections }
                 .keyboardShortcut("3", modifiers: .command)
+
+            Divider()
+
+            Button("Run Today's Conversation") {
+                router.destination = .conversation
+                Task { await providerStore.runToday(mode: .short) }
+            }
+            .keyboardShortcut("r", modifiers: [.command, .shift])
+            .disabled(!providerStore.hasWorkspace || providerStore.preferredProvider == nil || providerStore.isBusy)
+
+            Button("Check Providers") {
+                router.connectionKind = .providers
+                router.destination = .connections
+                Task { await providerStore.refreshProviders() }
+            }
 
             Divider()
 

@@ -63,6 +63,15 @@ provider business logic. The initial build uses bundled, clearly synthetic
 fixtures; a read-only live hub adapter and secure token storage are the next
 explicit activation gate.
 
+The client may launch one bounded, read-only run of the daily conversation
+through a harness the person already uses on that Mac (Claude Code, Codex
+CLI, or an Anthropic profile), by invoking `services/runner` as a local
+process. It detects which harnesses are installed and signed in, records one
+provider preference in the workspace, and reads the files the run writes. It
+stores no credential and never sees one: the sign-in belongs to the terminal
+harness, and the app only passes PATH through. Approving a day for the
+website is a separate, explicit action with its own confirmation.
+
 ### Product projection: human threads
 
 Quiet Desk is not meant to expose the append-only network stream as another feed.

@@ -17,6 +17,7 @@ enum InspectorSelection: Hashable, Identifiable {
     case feed(UUID)
     case agent(UUID)
     case source(UUID)
+    case provider(String)
 
     var id: String {
         switch self {
@@ -24,6 +25,7 @@ enum InspectorSelection: Hashable, Identifiable {
         case .feed(let id): "feed-\(id.uuidString)"
         case .agent(let id): "agent-\(id.uuidString)"
         case .source(let id): "source-\(id.uuidString)"
+        case .provider(let id): "provider-\(id)"
         }
     }
 }
@@ -33,7 +35,7 @@ enum InspectorSelection: Hashable, Identifiable {
 final class AppRouter {
     var destination: QuietDeskDestination? = .initial
     var activityScope: ActivityScope = .open
-    var connectionKind: ConnectionKind = .sources
+    var connectionKind: ConnectionKind = .providers
     var inspectorSelection: InspectorSelection?
     var columnVisibility: NavigationSplitViewVisibility = .all
 
@@ -54,6 +56,11 @@ final class AppRouter {
 
     var selectedSourceID: UUID? {
         guard case .source(let id) = inspectorSelection else { return nil }
+        return id
+    }
+
+    var selectedProviderID: String? {
+        guard case .provider(let id) = inspectorSelection else { return nil }
         return id
     }
 
@@ -83,6 +90,8 @@ final class AppRouter {
         case .agent(let id) where snapshot.agent(id: id) != nil:
             break
         case .source(let id) where snapshot.source(id: id) != nil:
+            break
+        case .provider:
             break
         case .none:
             break
