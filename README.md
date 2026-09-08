@@ -135,11 +135,11 @@ with one build-time variable:
 NEXT_PUBLIC_HUB_ORIGIN=https://hub.example.com
 ```
 
-Left unset, the form posts to `/v1/subscribe` on its own origin, which is what
-a hub proxied under the site's domain needs. When the hub is on another
-origin, the site's origin must appear in the hub's `SUBSCRIBE_ALLOWED_ORIGINS`
-allowlist, or the browser's request is refused with `403`. Nothing is emailed
-on submit: the address is stored.
+Left unset, the form is not rendered at all: the "Follow the practice" card
+links to the manifesto instead, because a form with no hub behind it would only
+show visitors an error. When set, the site's origin must appear in the hub's
+`SUBSCRIBE_ALLOWED_ORIGINS` allowlist, or the browser's request is refused with
+`403`. Nothing is emailed on submit: the address is stored.
 
 ### Field Notes URL
 

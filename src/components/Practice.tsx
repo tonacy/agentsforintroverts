@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { fieldNotesPublicationUrl } from "@/lib/site";
+import { hubOrigin } from "@/lib/subscribe";
 import { EmailForm } from "./EmailForm";
 
 import "./practice.css";
@@ -31,6 +32,9 @@ const steps = [
 /** Everything after the day: how it works, the line, the manifesto, the list. */
 export function Practice() {
   const isPublished = fieldNotesPublicationUrl !== null;
+  // The form posts to Quiet Hub. Until a hub origin is configured for this
+  // build, offering the form would only show visitors an error.
+  const canCapture = hubOrigin.length > 0;
 
   return (
     <>
@@ -121,12 +125,19 @@ export function Practice() {
               <Link className="action action--primary" href={fieldNotesPublicationUrl as string}>
                 Read the field notes →
               </Link>
-            ) : (
+            ) : canCapture ? (
               <>
                 <EmailForm />
                 <span className="practice__note">
                   one email when it is written · no sequence · the list lives in my own database
                 </span>
+              </>
+            ) : (
+              <>
+                <Link className="action action--primary" href="/manifesto/">
+                  Read the manifesto →
+                </Link>
+                <span className="practice__note">the list opens with the first field note · no sequence · no third party</span>
               </>
             )}
           </div>
