@@ -1,35 +1,29 @@
 import Link from "next/link";
 
-import { fieldNotesPublicationUrl } from "@/lib/site";
-import { hubOrigin } from "@/lib/subscribe";
-import { EmailForm } from "./EmailForm";
+import { publishingChannels, updatesPublicationUrl } from "@/lib/site";
 
 import "./practice.css";
 
 /** The decision stays human; the next invitation is to follow the practice. */
 export function Practice() {
-  const isPublished = fieldNotesPublicationUrl !== null;
-  // The form posts to Quiet Hub. Until a hub origin is configured for this
-  // build, offering the form would only show visitors an error.
-  const canCapture = hubOrigin.length > 0;
-
   return (
     <>
       <section className="practice practice--forest" aria-labelledby="line-title">
         <div className="page-width practice__line">
           <div className="practice__line-lead">
             <span className="eyebrow">The human line</span>
-            <h2 id="line-title">You decide what crosses.</h2>
-            <p className="practice__line-quote">There is no obligation to post.</p>
+            <h2 id="line-title">It still sounds like you.</h2>
+            <p className="practice__line-quote">Your voice. Your say.</p>
           </div>
           <div className="practice__decision">
             <p>
-              The agents can gather context and prepare a draft. You choose whether to
-              respond, keep learning, or leave it there. Nothing gets sent for you.
+              The team works from what you’re actually making, thinking, and learning.
+              You shape the point of view and choose what goes out, where it goes, and
+              how much the agents handle.
             </p>
             <p>
-              Your work, experiences, and relationships help you find common ground.
-              You decide which parts become public.
+              A thought can stay private. A draft can wait. The work you share should
+              feel like something you mean.
             </p>
             <Link className="practice__belief" href="/manifesto/">Read the manifesto →</Link>
             <Link className="practice__authorship" href="/made-with/">How authorship works ↗</Link>
@@ -40,40 +34,33 @@ export function Practice() {
       <section className="practice practice--sage" id="field-notes" aria-labelledby="follow-title">
         <div className="page-width practice__follow">
           <div className="practice__stack">
-            <span className="eyebrow">Follow the practice</span>
-            <h2 id="follow-title">A practice, becoming a product.</h2>
+            <span className="eyebrow">Follow along</span>
+            <h2 id="follow-title">See what takes shape.</h2>
             <p className="practice__intro">
-              I’m building Quiet Desk to put this practice into a tool. It’s a local prototype today.
-              The field notes share what I learn along the way.
+              Updates on what we’re building, what we’re sharing, and where it leads.
+              Get them by email, or follow the work out in the world.
             </p>
+            <nav className="practice__channels" aria-label="Follow Tony’s work">
+              {publishingChannels.map(({ label, href }) => (
+                <a key={label} href={href} target="_blank" rel="noopener noreferrer">
+                  {label} <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </nav>
+            <p className="practice__note">Quiet Desk is a local prototype. These are the field notes as it grows.</p>
           </div>
-          <div className="practice__card">
-            <span className="eyebrow">{isPublished ? "Slow Feed · publishing" : "Slow Feed · in preparation"}</span>
-            <p className="practice__card-title">
-              {isPublished ? "Slow Feed is now publishing." : "The first field note is being written."}
-            </p>
-            <p className="practice__card-body">
-              One conversation worth understanding, my own perspective, and what happened when I followed it.
-            </p>
-            {isPublished ? (
-              <Link className="action action--primary" href={fieldNotesPublicationUrl as string}>
-                Read the field notes →
-              </Link>
-            ) : canCapture ? (
-              <>
-                <EmailForm />
-                <span className="practice__note">
-                  one email when it is written · no sequence · the list lives in my own database
-                </span>
-              </>
-            ) : (
-              <>
-                <Link className="action action--primary" href="/manifesto/">
-                  Read the manifesto →
-                </Link>
-                <span className="practice__note">the list opens with the first field note · no sequence · no third party</span>
-              </>
-            )}
+          <div className="practice__signup">
+            <iframe
+              className="practice__subscribe"
+              src={`${updatesPublicationUrl}/embed`}
+              title="Subscribe to Agents for Introverts updates"
+              width="480"
+              height="360"
+              loading="lazy"
+            />
+            <a className="practice__subscribe-fallback" href={`${updatesPublicationUrl}/subscribe`}>
+              Open signup on Substack ↗
+            </a>
           </div>
         </div>
       </section>

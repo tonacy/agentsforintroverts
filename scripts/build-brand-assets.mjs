@@ -5,44 +5,14 @@ import sharp from "sharp";
 const root = process.cwd();
 const sourcePath = path.join(
   root,
-  "design/brand/navigational-shelter-mark-master.png",
+  "design/brand/drifting-page-master.png",
 );
 
 const PAPER = { r: 253, g: 251, b: 247 };
-const FOREST = { r: 15, g: 74, b: 56 };
-
-const source = await sharp(sourcePath)
+// The approved generated mark already has transparency. Preserve its green
+// ink, cream paper interior, and texture when sizing the website assets.
+const trimmed = await sharp(sourcePath)
   .ensureAlpha()
-  .raw()
-  .toBuffer({ resolveWithObject: true });
-
-const { width, height, channels } = source.info;
-const isolated = Buffer.alloc(width * height * 4);
-
-for (let pixel = 0; pixel < width * height; pixel += 1) {
-  const sourceOffset = pixel * channels;
-  const outputOffset = pixel * 4;
-  const red = source.data[sourceOffset];
-  const green = source.data[sourceOffset + 1];
-  const blue = source.data[sourceOffset + 2];
-  const distance = Math.sqrt(
-    (red - PAPER.r) ** 2 +
-      (green - PAPER.g) ** 2 +
-      (blue - PAPER.b) ** 2,
-  );
-  const alpha = Math.round(
-    Math.max(0, Math.min(1, (distance - 34) / 76)) * 255,
-  );
-
-  isolated[outputOffset] = FOREST.r;
-  isolated[outputOffset + 1] = FOREST.g;
-  isolated[outputOffset + 2] = FOREST.b;
-  isolated[outputOffset + 3] = alpha;
-}
-
-const trimmed = await sharp(isolated, {
-  raw: { width, height, channels: 4 },
-})
   .trim({
     background: { r: 0, g: 0, b: 0, alpha: 0 },
     threshold: 3,
@@ -85,13 +55,13 @@ async function renderMark({
 await renderMark({
   output: path.join(
     root,
-    "design/brand/navigational-shelter-mark-transparent.png",
+    "design/brand/drifting-page-transparent.png",
   ),
   size: 1024,
   inset: 0.07,
 });
 await renderMark({
-  output: path.join(root, "public/brand/navigational-shelter-mark.png"),
+  output: path.join(root, "public/brand/drifting-page-mark.png"),
   size: 512,
   inset: 0.06,
 });
@@ -110,7 +80,7 @@ await renderMark({
 await renderMark({
   output: path.join(
     root,
-    "design/brand/navigational-shelter-favicon-source.png",
+    "design/brand/drifting-page-favicon-source.png",
   ),
   size: 256,
   paper: true,
@@ -118,7 +88,7 @@ await renderMark({
 });
 const faviconPngPath = path.join(
   root,
-  "design/brand/navigational-shelter-favicon-32.png",
+  "design/brand/drifting-page-favicon-32.png",
 );
 
 await renderMark({
@@ -173,4 +143,4 @@ await renderSocialCard(
   ],
 );
 
-console.log("Built navigational-shelter brand assets.");
+console.log("Built drifting-page brand assets.");

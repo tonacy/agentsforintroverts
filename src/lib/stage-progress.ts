@@ -44,7 +44,7 @@ function window01(p: number, inStart: number, inEnd: number, outStart: number, o
 export type StageLayers = {
   /** "Out there, the feeds never stop." */
   lineA: number;
-  /** "In here, I get a slow one." */
+  /** "In here, we get a slow one." */
   lineB: number;
   /** The cue that hands over to today's ledger. */
   ledger: number;

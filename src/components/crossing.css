@@ -84,10 +84,10 @@
 }
 
 .sea__text {
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font-family: var(--font-detail);
+  font-size: 13px;
   line-height: 22px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.005em;
   color: rgba(17, 17, 17, 0.5);
   text-align: center;
   white-space: pre;
@@ -202,7 +202,7 @@
 .crossing__cue,
 .crossing__counter,
 .crossing__scroll {
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 12px;
   line-height: 18px;
   letter-spacing: 0.08em;

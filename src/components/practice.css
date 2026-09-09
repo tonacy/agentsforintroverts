@@ -22,7 +22,7 @@
 }
 
 .practice__note {
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 11.5px;
   line-height: 18px;
   color: var(--color-ink-faint);
@@ -87,7 +87,7 @@
 }
 .practice__authorship {
   padding-block: 8px;
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 12px;
   color: rgba(253, 251, 247, 0.8);
 }
@@ -185,7 +185,7 @@
   padding: 0;
   background: none;
   border: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 13px;
   font-weight: 500;
   color: var(--color-leaf);
@@ -200,7 +200,7 @@
 .email-form__status {
   min-height: 18px;
   margin: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 11.5px;
   line-height: 18px;
   color: #8b3a2f;
@@ -247,4 +247,36 @@
   .practice__card {
     padding: 22px;
   }
+}
+
+.practice__channels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
+.practice__channels a,
+.practice__subscribe-fallback {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-family: var(--font-detail);
+  font-size: 13px;
+  color: var(--color-leaf);
+  text-underline-offset: 5px;
+}
+.practice__channels a { border-bottom: 1px solid var(--color-leaf); }
+.practice__channels a:hover,
+.practice__subscribe-fallback:hover { text-decoration: underline; }
+.practice__signup { min-width: 0; }
+.practice__subscribe {
+  display: block;
+  width: 100%;
+  height: 360px;
+  border: 1px solid var(--color-rule);
+  background: #fff;
+}
+.practice__subscribe-fallback { margin-top: 10px; }
+@media (max-width: 540px) {
+  .practice__subscribe { height: 410px; }
 }

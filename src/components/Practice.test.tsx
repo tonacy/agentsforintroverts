@@ -1,24 +1,22 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
-
-afterEach(() => {
-  vi.unstubAllEnvs();
-  vi.resetModules();
-});
+import { describe, it, expect } from "vitest";
+import { render } from "@testing-library/react";
+import { Practice } from "./Practice";
 
 describe("Practice", () => {
-  it("offers the email capture only when a hub origin is configured", async () => {
-    vi.stubEnv("NEXT_PUBLIC_HUB_ORIGIN", "https://hub.example.com");
-    const { Practice } = await import("./Practice");
-    render(<Practice />);
-    expect(screen.getByLabelText("Email address")).toBeInTheDocument();
+  it("offers the publication signup without needing a configured Hub", () => {
+    // A detached container checks our markup without fetching Substack in unit tests.
+    const screen = render(<Practice />, { container: document.createElement("div") });
+    expect(screen.getByTitle("Subscribe to Agents for Introverts updates"))
+      .toHaveAttribute("src", "https://agentsforintroverts.substack.com/embed");
+    expect(screen.getByRole("link", { name: /open signup on substack/i }))
+      .toHaveAttribute("href", "https://agentsforintroverts.substack.com/subscribe");
   });
 
-  it("falls back to the manifesto when no hub is configured, instead of a form that cannot work", async () => {
-    vi.stubEnv("NEXT_PUBLIC_HUB_ORIGIN", "");
-    const { Practice } = await import("./Practice");
-    render(<Practice />);
-    expect(screen.queryByLabelText("Email address")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: /read the manifesto/i }).length).toBeGreaterThanOrEqual(2);
+  it("links directly to Tony's publishing channels", () => {
+    // A detached container checks our markup without fetching Substack in unit tests.
+    const screen = render(<Practice />, { container: document.createElement("div") });
+    expect(screen.getByRole("link", { name: "X" })).toHaveAttribute("href", "https://x.com/tonylongname");
+    expect(screen.getByRole("link", { name: "Substack" })).toHaveAttribute("href", "https://agentsforintroverts.substack.com");
+    expect(screen.getByRole("link", { name: "LinkedIn" })).toHaveAttribute("href", "https://www.linkedin.com/in/tonyll/");
   });
 });

@@ -12,7 +12,7 @@
   padding: 0.75rem 1rem;
   background: var(--color-ink);
   color: var(--color-paper);
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 0.75rem;
   transform: translateY(calc(-100% - 1rem));
 }
@@ -37,7 +37,7 @@
   bottom: 2.5rem;
   width: min(16vw, 180px);
   color: var(--color-torrent-dim);
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 8px;
   line-height: 2.2;
   letter-spacing: 0.04em;
@@ -72,7 +72,7 @@
 .definition > span,
 .translation > div > span,
 .postscript span {
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -290,7 +290,7 @@
 
 .funnel span {
   color: var(--color-ink-muted);
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 0.78rem;
   line-height: 1.35;
   text-transform: uppercase;
@@ -362,7 +362,7 @@
   padding-bottom: 0.2rem;
   border-bottom: 1px solid currentColor;
   color: var(--color-leaf);
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;

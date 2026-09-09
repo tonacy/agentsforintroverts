@@ -11,7 +11,7 @@ import { ContourSea } from "./ContourSea";
 import "./crossing.css";
 
 export const LINE_A = "Out there, the feeds never stop.";
-export const LINE_B = "In here, I get a slow one.";
+export const LINE_B = "In here, we get a slow one.";
 
 const COLUMNS = 10;
 const LINES = 90;
@@ -190,7 +190,7 @@ export function Crossing() {
         <div className="crossing__copy">
           <Image
             className="crossing__vessel"
-            src="/brand/ocean-vessel.png"
+            src="/brand/drifting-page-mark.png"
             alt=""
             width={210}
             height={210}
@@ -201,9 +201,9 @@ export function Crossing() {
             <h1 className="crossing__line crossing__line--a">{LINE_A}</h1>
             <p className="crossing__line crossing__line--b">{LINE_B}</p>
             <div className="crossing__line crossing__line--ledger">
-              <span className="crossing__destination">Find your way in.</span>
+              <span className="crossing__destination">Make room for your work.</span>
               <span className="crossing__cue">
-                a little context · a useful next step
+                a daily conversation · a team to take it further
               </span>
               <span className="crossing__arrow" aria-hidden="true">
                 ↓

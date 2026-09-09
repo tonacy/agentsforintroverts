@@ -8,7 +8,7 @@ export function Nav({ current }: NavProps) {
   return (
     <nav aria-label="Primary" className="site-nav page-width">
       <Link href="/" className="site-brand">
-        <Image src="/brand/navigational-shelter-mark.png" alt="" width={48} height={48} />
+        <Image src="/brand/drifting-page-mark.png" alt="" width={48} height={48} />
         <span>Agents for Introverts</span>
       </Link>
       <div className="site-nav__links">

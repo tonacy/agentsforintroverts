@@ -12,7 +12,7 @@
   padding: 0.75rem 1rem;
   background: var(--color-ink);
   color: var(--color-paper);
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 0.75rem;
   transform: translateY(calc(-100% - 1rem));
 }
@@ -48,7 +48,7 @@
 .permissions span,
 .channelMark figcaption,
 .nextSteps > div > span {
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -403,7 +403,7 @@
   border-bottom: 1px solid currentColor;
   align-items: center;
   color: var(--color-leaf);
-  font-family: var(--font-mono);
+  font-family: var(--font-detail);
   font-size: 0.74rem;
 }
 

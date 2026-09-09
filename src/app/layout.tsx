@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Newsreader, IBM_Plex_Mono, Inter } from "next/font/google";
+import { Newsreader, Source_Sans_3, Inter } from "next/font/google";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -9,11 +9,10 @@ const newsreader = Newsreader({
   style: ["normal", "italic"],
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
+const sourceSans = Source_Sans_3({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-detail",
   display: "swap",
-  weight: ["400", "500"],
 });
 
 const inter = Inter({
@@ -57,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${newsreader.variable} ${ibmPlexMono.variable} ${inter.variable}`}>
+    <html lang="en" className={`${newsreader.variable} ${sourceSans.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         {children}
       </body>

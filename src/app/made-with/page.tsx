@@ -206,7 +206,7 @@ export default function MadeWithPage() {
                   </div>
                   <div className={styles.desk}>
                     <Image
-                      src="/brand/navigational-shelter-mark.png"
+                      src="/brand/drifting-page-mark.png"
                       alt=""
                       width={88}
                       height={88}
