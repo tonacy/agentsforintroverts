@@ -289,9 +289,30 @@ shared action. Impressions, likes, followers, and opens are diagnostic only.
 
 - [ ] Explain the product in one sentence and distinguish the public practice
   from the installed app.
+- [x] Let the user configure a local feed permission plan that visibly
+  separates Outside inputs, Inside recall, and publishing destinations without
+  claiming that any account is connected.
+- [x] Make that plan harness-neutral and agent-readable while keeping plan,
+  identity, scope, and permission changes user-only.
+- [x] Add create-only, short-lived verification receipts that fail closed on
+  plan drift, identity drift, scope broadening, missing checks, and expiry.
+- [x] Add a metadata-only current-day Computer History availability check that
+  retains no activity content.
+- [x] Add separate create-only `inside-cues/` and `outside-cues/` inboxes whose
+  entries require a fresh matching receipt, expire within 24 hours, and cannot
+  promote themselves into evidence, living context, or a Place.
+- [x] Surface active cues in Daily Conversation with short/deep bounds,
+  session-only recall calibration, and a tested `no_new_input` path that admits
+  no cue.
+- [x] Require uncertainty and human calibration for both Inside and Outside
+  cues on append and disk reload. Regression coverage includes a separate
+  writer placing invalid cue files directly into the local inboxes.
+- [x] Exercise one bounded personal X Following read and show its minimized,
+  expiring Outside cue in the local Daily Conversation. This proves the manual
+  intake path, not recurring collection, durable evidence, or a live Place.
 - [ ] Let the user choose a local context directory they own.
 - [ ] Connect one agent harness through the provider-neutral MCP interface.
-- [ ] Show the Inside/Outside boundary before asking for any source access.
+- [x] Show the Inside/Outside boundary before asking for any source access.
 - [ ] Connect one read-only source first and display exactly what it may see.
 - [ ] Run a visible sample/no-op Daily Conversation.
 - [ ] Ask the user to correct the inferred day/context before persisting it.

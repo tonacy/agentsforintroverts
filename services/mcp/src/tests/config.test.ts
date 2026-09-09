@@ -15,7 +15,13 @@ test("loads safe local defaults", () => {
   assert.equal(config.contextRoot, undefined);
   assert.equal(config.contextActorId, "local-agent");
   assert.deepEqual(config.contextRoles, ["afi.daily-conversation", "afi.common-ground"]);
+  assert.match(config.feedStateRoot, /Agents for Introverts\/Quiet Desk\/feeds$/);
   assert.doesNotThrow(() => assertSafeRemoteBinding(config));
+});
+
+test("loads an explicit shared feed-state root", () => {
+  const config = loadConfig({ QUIET_FEED_STATE_ROOT: "/private/quiet-desk-feeds" });
+  assert.equal(config.feedStateRoot, "/private/quiet-desk-feeds");
 });
 
 test("loads an optional local Context Kernel without granting caller authority", () => {

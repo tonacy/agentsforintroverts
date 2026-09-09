@@ -36,6 +36,40 @@ replace the configured identity with a user actor or add confirmation, approval,
 publishing, merge, deployment, or execution authority. Omit
 `QUIET_CONTEXT_ROOT` to retain the legacy Hub/feed-only tool surface.
 
+## Shared feed plan and verification receipts
+
+The Mac app and the local MCP bridge use the same feed-state directory by
+default:
+
+```text
+~/Library/Application Support/Agents for Introverts/Quiet Desk/feeds
+```
+
+Set `QUIET_FEED_STATE_ROOT` only when both processes deliberately share a
+different private directory, and include it in the STDIO `env_vars` list. The
+directory contains a user-authored `plan.json`, create-only verification
+receipts, and separate `inside-cues/` and `outside-cues/` inboxes. It must never
+contain provider credentials or raw captured feed content.
+
+Agents use `list_feed_connections` before attempting a check. They may then use
+`record_feed_connection_receipt` only for a feed selected in the exact current
+plan. The bridge rejects identity drift, broader scopes, stale plan revisions,
+overlong freshness windows, and incomplete required checks. Recording a receipt
+does not authenticate, grant access, create a Context Kernel record, or publish.
+
+While a verified receipt is still fresh, an adapter may use `record_feed_cue`
+to append one minimized, uncertain prompt. `list_feed_cues` returns only active
+cues that still match the exact plan and receipt. Computer History cues accept
+no source doors; X Following cues require bounded `x.com` source doors. Cues
+expire within 24 hours, require human calibration, and cannot support a factual
+claim, living-context update, or Place. `no_new_input` must ignore the cue inbox.
+
+For X Following, the required checks are `account_visible`,
+`account_matches`, `following_selected`, and `bounded_read_completed`. For
+Computer History, they are `current_local_day`, `segment_readable`, and either
+`history_running` or `recent_segment`. Summaries and check details must remain
+concise and must not copy post text or activity content.
+
 ## Codex: local STDIO
 
 Build the bridge:
@@ -62,6 +96,7 @@ env_vars = [
   "QUIET_CONTEXT_ROOT",
   "QUIET_CONTEXT_AGENT_ID",
   "QUIET_CONTEXT_ROLES",
+  "QUIET_FEED_STATE_ROOT",
 ]
 default_tools_approval_mode = "writes"
 ```
@@ -71,7 +106,9 @@ secret; `observe_source`, feed, proposal, feedback, and completion tools fail
 closed when `QUIET_HUB_SECRET` is absent. `list_capabilities` reports Hub
 reachability and internal-write configuration separately; neither proves that a
 live outside source adapter exists. `context_capabilities` is registered only
-when the configured local workspace opens successfully.
+when the configured local workspace opens successfully. `list_feed_connections`
+is always present and reports unconfigured state without exposing the local
+filesystem path.
 
 ## Grok: remote Streamable HTTP
 

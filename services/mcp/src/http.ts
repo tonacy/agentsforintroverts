@@ -2,6 +2,7 @@ import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import type { NextFunction, Request, Response } from "express";
 import { assertSafeRemoteBinding, bearerMatches, loadConfig } from "./config.js";
+import { FileFeedConnectionGateway } from "./feed-state.js";
 import { HubClient } from "./hub-client.js";
 import { LocalContextGateway } from "./local-context-gateway.js";
 import { createQuietDeskServer } from "./server.js";
@@ -25,6 +26,7 @@ const contextGateway = config.contextRoot
       roles: config.contextRoles ?? ["afi.daily-conversation", "afi.common-ground"],
     })
   : undefined;
+const feedConnectionGateway = new FileFeedConnectionGateway(config.feedStateRoot);
 
 const app = createMcpExpressApp({
   host: config.host,
@@ -74,7 +76,7 @@ app.get("/health", (_req, res) => {
 app.use("/mcp", authorize);
 
 app.post("/mcp", async (req, res) => {
-  const server = createQuietDeskServer(new HubClient(config), contextGateway);
+  const server = createQuietDeskServer(new HubClient(config), contextGateway, feedConnectionGateway);
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
     enableJsonResponse: true,

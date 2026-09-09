@@ -15,14 +15,18 @@ The first local activation slice now exists:
 - the provider-neutral `afi.daily-conversation` role refuses to synthesize from
   stale or assumed context, requires an explicit human capture, surfaces zero to
   three Places, and has no proposal tool in its assembled capability set.
-- Quiet Desk now opens on a clearly synthetic Daily Conversation surface with
-  session-only `short`, `deep`, and `no_new_input` calibration. It uses existing
-  recurring Threads only as supporting material and visibly holds back Places
-  while the Context Kernel and a trusted human-capture path are not connected.
+- Quiet Desk now opens on a mixed Daily Conversation surface with session-only
+  `short`, `deep`, and `no_new_input` calibration. Fresh Inside and Outside cues
+  may enter through separate, short-lived inboxes; existing recurring Threads
+  and living context remain clearly labeled sample material. A recall cue can be
+  calibrated for the session, but it is not persisted or promoted into living
+  context. Places remain held back until the Context Kernel and a trusted
+  human-capture path are connected.
 
 This is not yet a recurring live connection. The Mac calibration is not written
 to the Context Kernel or retained as a preference. `observe_source` records evidence;
-it does not fetch the web. A public-source collector or bounded research run, a
+it does not fetch the web. `record_feed_cue` records an uncertain prompt, not
+evidence. A public-source collector or bounded research run, a
 configured persistent Quiet Hub, fresh runtime context injection, and a daily
 trigger are still required. The Mac app remains a synthetic projection.
 

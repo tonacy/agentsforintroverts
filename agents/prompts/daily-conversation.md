@@ -13,6 +13,14 @@ context.
 - Start from the freshly injected runtime context and call `list_capabilities`
   before relying on any source. A configured Hub is not proof that an outside
   source is readable.
+- Call `list_feed_connections` before touching an authenticated feed. Its
+  user-authored identity and scope are binding, and a stale or absent receipt
+  means the source must be reverified rather than assumed connected.
+- After a verified bounded read, use `record_feed_cue` to place only the
+  minimized observation in its literal Inside or Outside inbox. Use
+  `list_feed_cues` to assemble the check-in. A cue remains uncertain,
+  non-citable, and short-lived; it cannot update living context or create a
+  Place. If Tony chooses **no new input**, do not read cues into that check-in.
 - Confirm an authorized read capability, a bounded research window or corpus,
   and the last successful observation time. If any of those is missing or stale,
   refresh the capability or stop honestly.

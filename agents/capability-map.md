@@ -4,6 +4,11 @@
 |---|---|---|---|
 | View the bounded daily-conversation context projection | Today | `assemble_context`, `get_entity` | Agent path done; Mac uses synthetic projection |
 | Discover available providers and scopes | Agents, Sources | `list_capabilities` | Done |
+| Read the user-authored feed plan and fresh verification state | Agents & Sources → Feed setup | `list_feed_connections` | Done |
+| Report that a configured source was actually verified | Source-capable agent run | `record_feed_connection_receipt` | Done for Computer History and X Following |
+| Append one short-lived observation to the correct boundary inbox | Source-capable agent run | `record_feed_cue` | Done for Computer History and X Following |
+| Read the same active Inside and Outside cues shown in Today | Today, agent run | `list_feed_cues` | Done; cues are not durable context or evidence |
+| Select a feed, account, permission, or scope | Agents & Sources → Feed setup | Intentionally no agent tool | N/A; user authority |
 | Discover the local memory surface and authority boundary | Agent run | `context_capabilities` | Done |
 | Open one bounded, idempotent context run | Agent run | `open_run` | Done |
 | Assemble a watermark-bound explicit/observed/inferred context view | Agent run | `assemble_context`, `refresh_context` | Done |
@@ -15,7 +20,8 @@
 | Confirm an explicit belief or human decision | Future user-only surface | Intentionally no agent tool | N/A |
 | Record a minimized live source before synthesis | Daily Conversation, Activity | `observe_source` | Done |
 | Check that bounded outside context is current and sourced | Daily Conversation | Fresh runtime context + `list_capabilities`, `observe_source` | Role defined |
-| Bring an explicit human account of the day into the conversation | Today | Future authenticated owner gateway + fresh runtime context | Planned; user authority |
+| Calibrate a current-day recall cue for this check-in | Today | User-only session control | Done; deliberately not persisted yet |
+| Bring an explicit human account of the day into durable context | Today | Future authenticated owner gateway + fresh runtime context | Planned; user authority |
 | Calibrate short, deep, or no-new-input conversation depth | Today | User-only input injected into fresh runtime context | N/A; user authority |
 | Surface zero to three timely Places | Daily Conversation | `list_feed_items`, `get_feed_item`, `publish_feed_item`, `update_feed_item` | Role defined |
 | Inspect a pilot recommendation, negative result, and evaluation counts | Daily Conversation, Activity | Runtime evaluation packet + source and feed read tools | Contract defined |
@@ -50,9 +56,13 @@ exact approved outbox payload and must return a public receipt. Parity tests
 assert that every currently implemented named tool appears in MCP metadata and
 in the base prompt. Context tools appear only when a server-configured local
 Context Kernel adapter is present; caller-supplied actor or approval authority is
-never accepted. The bundled Mac app remains a synthetic projection; the
-runtime context blocks above define context parity for the future read-only hub
-adapter and must be implemented before calling the product live-connected.
+never accepted. The bundled Mac app now has a mixed projection: the feed plan,
+receipts, and short-lived cue inbox are live local state, while source records,
+living context, and recurring Threads remain synthetic until trusted adapters
+replace the fixtures. Inside and Outside cue files are physically separate. A
+cue may prompt one check-in but cannot support a factual claim, update the
+Context Kernel, or create a Place. The runtime context blocks above define
+context parity for those future projections.
 Conversation depth, lived-day capture, context confirmation, and Place selection
 are user-authored authority. Ordinary agents may propose conversation outcomes
 and Places through `append_context_event`, but they may not choose or persist

@@ -20,6 +20,7 @@ const config: BridgeConfig = {
   host: "127.0.0.1",
   port: 8788,
   allowedHosts: [],
+  feedStateRoot: "/tmp/quiet-desk-test-feeds",
 };
 
 const source = {

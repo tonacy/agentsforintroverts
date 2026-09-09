@@ -1,4 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
 export interface BridgeConfig {
   hubUrl: string;
@@ -14,6 +16,7 @@ export interface BridgeConfig {
   contextRoot?: string;
   contextActorId?: string;
   contextRoles?: string[];
+  feedStateRoot: string;
 }
 
 function optional(value: string | undefined): string | undefined {
@@ -62,6 +65,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): BridgeConfig {
       .split(",")
       .map((value) => value.trim())
       .filter(Boolean),
+    feedStateRoot: optional(env.QUIET_FEED_STATE_ROOT) ?? join(
+      homedir(),
+      "Library",
+      "Application Support",
+      "Agents for Introverts",
+      "Quiet Desk",
+      "feeds",
+    ),
   };
 }
 

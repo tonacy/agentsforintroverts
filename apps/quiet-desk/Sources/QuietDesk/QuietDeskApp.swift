@@ -12,7 +12,8 @@ struct QuietDeskApp: App {
     init() {
         _store = State(initialValue: QuietDeskStore(
             client: .bundledSyntheticFixtures,
-            defaults: .standard
+            defaults: .standard,
+            feedStateRepository: .applicationSupport
         ))
         _providerStore = State(initialValue: ProviderStore(
             bridge: ProcessRunnerBridge(),

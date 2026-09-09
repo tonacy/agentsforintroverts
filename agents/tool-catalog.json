@@ -7,6 +7,26 @@
       "description": "Discover the source kinds, operations, scopes, and current connection health available to this run."
     },
     {
+      "name": "list_feed_connections",
+      "effect": "read",
+      "description": "Read the user-authored feed plan and the latest short-lived verification receipt for each selected feed."
+    },
+    {
+      "name": "record_feed_connection_receipt",
+      "effect": "write_internal",
+      "description": "Append evidence that one configured feed was actually verified without changing its identity, scope, permission, or user-authored plan."
+    },
+    {
+      "name": "list_feed_cues",
+      "effect": "read",
+      "description": "Read active minimized cues from the separate Inside and Outside inboxes without upgrading them into durable context or evidence."
+    },
+    {
+      "name": "record_feed_cue",
+      "effect": "write_ephemeral",
+      "description": "Append one uncertain, short-lived cue that is bound to a fresh verification receipt and the exact user-authored feed plan."
+    },
+    {
       "name": "observe_source",
       "effect": "write_internal",
       "description": "Record one minimized, hash-addressed source observation before using it in a briefing or sourced claim."

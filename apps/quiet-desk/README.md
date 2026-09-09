@@ -13,11 +13,24 @@ The top level is intentionally small:
   history behind one filter instead of making it the product's center.
 - **Agents & Sources** keeps both together behind one destination.
 
-Today is an honest product projection, not a live conversation runtime. The
-depth choice is session-local and is not retained as a standing preference.
-The screen explicitly holds back Places until fresh outside evidence and a
-trusted, human-authored capture of the day are both connected. Existing Threads
-remain inspectable supporting material rather than being relabeled as Places.
+Agents & Sources now includes a feed-setup plan for X Following, LinkedIn
+organic, current-day Computer History, and separate X, LinkedIn, and Substack
+publishing permissions. Saving creates a revisioned local plan that trusted
+agent harnesses can read but cannot change. The app calls a feed connected only
+while a matching short-lived verification receipt is fresh. Computer History
+has a local, metadata-only availability check; an agent can record evidence for
+a visibly verified X Following session. A verified adapter may append one
+minimized cue to a physically separate Inside or Outside inbox while its receipt
+is fresh. Neither path retains raw source content.
+See [`docs/FEED_SETUP.md`](../../docs/FEED_SETUP.md).
+
+Today is an honest mixed projection, not a live conversation runtime. Fresh
+short-lived cues may appear beside clearly labeled synthetic Threads and living
+context. The depth choice and cue calibration are session-local and are not
+retained as standing preferences. The screen explicitly holds back Places until
+fresh outside evidence and a trusted, human-authored capture of the day are both
+connected. Existing Threads remain inspectable supporting material rather than
+being relabeled as Places.
 
 Selecting a supporting thread explains why it fits, shows which context
 statements were used, preserves source claims and uncertainty, makes the broad-to-human
@@ -25,9 +38,10 @@ narrowing visible, and names no more than three people. When a handoff has been
 earned, the inspector shows one exact proposed introduction. Local approval adds
 only `Approved` evidence; it does not contact a provider or claim delivery.
 
-The bundled context, people, counts, sources, and handoffs are synthetic product
-fixtures. They demonstrate the interaction and invariants, not a live network or
-real-world common ground.
+The bundled context, people, counts, sources, and handoffs remain synthetic
+product fixtures. Feed plans, receipts, and active cue files are real local
+state. A cue is not Context Kernel evidence, a belief, or proof of a live
+recurring network projection.
 
 ## Providers
 

@@ -7,32 +7,90 @@ struct SourcesView: View {
     @Bindable var router: AppRouter
 
     @State private var searchText = ""
+    @State private var isShowingFeedSetup = false
 
     var body: some View {
-        Group {
-            switch store.loadState {
-            case .idle, .loading:
-                List(0..<5, id: \.self) { _ in
-                    sourcePlaceholder.redacted(reason: .placeholder)
+        VStack(spacing: 0) {
+            feedSetupSummary
+            Divider()
+
+            Group {
+                switch store.loadState {
+                case .idle, .loading:
+                    List(0..<5, id: \.self) { _ in
+                        sourcePlaceholder.redacted(reason: .placeholder)
+                    }
+                    .disabled(true)
+                case .failed(let message):
+                    ContentUnavailableView(
+                        "Couldn’t load sources",
+                        systemImage: "externaldrive.badge.exclamationmark",
+                        description: Text(message)
+                    )
+                case .empty:
+                    ContentUnavailableView(
+                        "No observed sources",
+                        systemImage: "point.3.connected.trianglepath.dotted",
+                        description: Text("Set up a feed plan above. Live adapters are a separate activation step.")
+                    )
+                case .loaded:
+                    loadedList
                 }
-                .disabled(true)
-            case .failed(let message):
-                ContentUnavailableView(
-                    "Couldn’t load sources",
-                    systemImage: "externaldrive.badge.exclamationmark",
-                    description: Text(message)
-                )
-            case .empty:
-                ContentUnavailableView(
-                    "No sources",
-                    systemImage: "point.3.connected.trianglepath.dotted",
-                    description: Text("The shared store returned no source profiles.")
-                )
-            case .loaded:
-                loadedList
             }
         }
         .searchable(text: $searchText, placement: .toolbar, prompt: "Search sources")
+        .sheet(isPresented: $isShowingFeedSetup) {
+            FeedSetupView(store: store)
+        }
+    }
+
+    private var feedSetupSummary: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "slider.horizontal.3")
+                .font(.title2)
+                .foregroundStyle(.secondary)
+                .frame(width: 32)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Feed setup")
+                    .font(.headline)
+                Text(feedSetupSummaryText)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 16)
+
+            Button {
+                store.refreshFeedConnectionReceipts()
+            } label: {
+                Image(systemName: "arrow.clockwise")
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Refresh feed verification receipts")
+            .help("Refresh verification receipts written by your agents")
+
+            Button("Set up feeds") {
+                isShowingFeedSetup = true
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("quiet-desk.feeds.setup")
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 14)
+        .background(.bar)
+    }
+
+    private var feedSetupSummaryText: String {
+        if store.requestedFeedCount == 0 {
+            return "Choose what may come in and where released context may go. Nothing is connected yet."
+        }
+        let awaiting = store.requestedFeedCount - store.verifiedFeedCount
+        return "\(store.verifiedFeedCount) connected · \(awaiting) awaiting fresh verification · \(store.requestedFeedCount) selected"
+    }
+
+    private var configuredFeeds: [FeedConnectionPlan] {
+        store.feedConnectionPlans.filter(\.isEnabled)
     }
 
     private var sources: [SourceProfile] {
@@ -51,13 +109,29 @@ struct SourcesView: View {
                 ContentUnavailableView.search(text: searchText)
             } else {
                 List {
-                    ForEach(sources) { source in
-                        Button {
-                            router.show(.source(source.id))
-                        } label: {
-                            SourceRow(source: source)
+                    if !configuredFeeds.isEmpty {
+                        Section("Configured feeds") {
+                            ForEach(configuredFeeds) { plan in
+                                ConfiguredFeedRow(
+                                    plan: plan,
+                                    phase: store.feedConnectionPhase(for: plan.id),
+                                    verifyComputerHistory: {
+                                        store.verifyComputerHistory()
+                                    }
+                                )
+                            }
                         }
-                        .buttonStyle(.plain)
+                    }
+
+                    Section("Observed in sample data") {
+                        ForEach(sources) { source in
+                            Button {
+                                router.show(.source(source.id))
+                            } label: {
+                                SourceRow(source: source)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
                 .listStyle(.inset)
@@ -75,6 +149,55 @@ struct SourcesView: View {
         }
     }
 
+}
+
+private struct ConfiguredFeedRow: View {
+    let plan: FeedConnectionPlan
+    let phase: FeedConnectionPhase
+    let verifyComputerHistory: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: plan.id.systemImage)
+                .font(.title3)
+                .foregroundStyle(statusColor)
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(plan.id.title)
+                    .font(.headline)
+                Label(phase.title, systemImage: phase.systemImage)
+                    .font(.caption)
+                    .foregroundStyle(statusColor)
+                Text("\(plan.id.authorizedScope) · \(phase.detail)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 12)
+
+            if plan.id == .computerHistoryToday {
+                Button("Verify on this Mac", action: verifyComputerHistory)
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("quiet-desk.feed.computer_history_today.verify")
+            } else if plan.id == .xFollowing, let url = URL(string: "https://x.com/home") {
+                Link("Open X", destination: url)
+                    .buttonStyle(.bordered)
+                    .help("Open X in your default browser; a feed-capable agent still verifies the account and Following tab")
+            }
+        }
+        .padding(.vertical, 6)
+        .accessibilityElement(children: .contain)
+    }
+
+    private var statusColor: Color {
+        switch phase {
+        case .verified: .green
+        case .partial, .stale: .orange
+        case .unavailable: .red
+        case .notRequested, .awaitingVerification: .secondary
+        }
+    }
 }
 
 private struct SourceRow: View {

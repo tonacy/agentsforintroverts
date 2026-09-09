@@ -1,5 +1,6 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { loadConfig } from "./config.js";
+import { FileFeedConnectionGateway } from "./feed-state.js";
 import { HubClient } from "./hub-client.js";
 import { LocalContextGateway } from "./local-context-gateway.js";
 import { createQuietDeskServer } from "./server.js";
@@ -13,7 +14,11 @@ async function main(): Promise<void> {
         roles: config.contextRoles ?? ["afi.daily-conversation", "afi.common-ground"],
       })
     : undefined;
-  const server = createQuietDeskServer(new HubClient(config), contextGateway);
+  const server = createQuietDeskServer(
+    new HubClient(config),
+    contextGateway,
+    new FileFeedConnectionGateway(config.feedStateRoot),
+  );
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }

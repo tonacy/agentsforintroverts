@@ -1,12 +1,17 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as z from "zod/v4";
 import { registerContextKernelTools } from "./context-tools.js";
+import { UnavailableFeedConnectionGateway, type FeedConnectionGateway } from "./feed-state.js";
 import type { ContextKernelGateway, QuietDeskGateway } from "./types.js";
 
 export { CONTEXT_TOOL_NAMES } from "./context-tools.js";
 
 export const TOOL_NAMES = [
   "list_capabilities",
+  "list_feed_connections",
+  "record_feed_connection_receipt",
+  "list_feed_cues",
+  "record_feed_cue",
   "observe_source",
   "list_feed_items",
   "get_feed_item",
@@ -75,6 +80,12 @@ const claimSchema = z.object({
 
 const laneSchema = z.enum(["needs_you", "handled", "watching", "digest"]);
 
+const feedReceiptCheckSchema = z.object({
+  name: z.string().min(1).max(128),
+  passed: z.boolean(),
+  detail: z.string().min(1).max(256),
+});
+
 function structured(result: unknown): Record<string, unknown> {
   return result && typeof result === "object" && !Array.isArray(result)
     ? result as Record<string, unknown>
@@ -106,6 +117,7 @@ async function resultOf(label: string, operation: () => Promise<unknown>) {
 export function createQuietDeskServer(
   gateway: QuietDeskGateway,
   contextGateway?: ContextKernelGateway,
+  feedConnectionGateway: FeedConnectionGateway = new UnavailableFeedConnectionGateway(),
 ): McpServer {
   const server = new McpServer(
     { name: "quiet-desk", version: "0.1.0" },
@@ -132,6 +144,16 @@ export function createQuietDeskServer(
       healthError = error instanceof Error ? error.message : String(error);
     }
     const internalWriteAvailable = hubReachable && connection.internalWriteConfigured;
+    let feedConnections: unknown;
+    try {
+      feedConnections = await feedConnectionGateway.listConnections();
+    } catch (error) {
+      feedConnections = {
+        configured: false,
+        error: error instanceof Error ? error.message : String(error),
+        connections: [],
+      };
+    }
     return resultOf("Quiet Desk capabilities", async () => ({
       hub: {
         reachable: hubReachable,
@@ -165,8 +187,117 @@ export function createQuietDeskServer(
         approve: false,
         execute: false,
       },
+      feed_connections: feedConnections,
     }));
   });
+
+  server.registerTool("list_feed_connections", {
+    title: "List feed connections",
+    description: "Read the user-authored feed plan and its latest short-lived verification receipts. This exposes no credentials and cannot grant or broaden access.",
+    inputSchema: z.object({}),
+    annotations: readAnnotations,
+  }, async () => resultOf(
+    "Quiet Desk feed connections",
+    () => feedConnectionGateway.listConnections(),
+  ));
+
+  server.registerTool("record_feed_connection_receipt", {
+    title: "Record feed connection receipt",
+    description: "Append a short-lived verification receipt after actually checking one enabled feed. This records evidence only; it cannot select a feed, change its identity or scope, or authorize the agent.",
+    inputSchema: z.object({
+      receipt_id: z.string().uuid().optional(),
+      feed_id: z.string().min(1).max(128),
+      plan_revision: z.number().int().min(1),
+      plan_hash: z.string().regex(/^sha256:[a-f0-9]{64}$/),
+      adapter: z.string().min(1).max(128),
+      expected_identity: z.string().max(256),
+      observed_identity: z.string().max(256).optional(),
+      permission: z.string().min(1).max(128),
+      scope: z.string().min(1).max(512),
+      status: z.enum(["verified", "partial", "unavailable"]),
+      verified_at: rfc3339TimestampSchema,
+      expires_at: rfc3339TimestampSchema,
+      last_successful_read_at: rfc3339TimestampSchema.optional(),
+      checks: z.array(feedReceiptCheckSchema).min(1).max(16),
+      summary: z.string().min(1).max(512),
+    }),
+    annotations: internalWriteAnnotations,
+  }, async (input) => resultOf(
+    `Recorded ${input.feed_id} verification receipt; no permission was granted`,
+    () => feedConnectionGateway.recordReceipt({
+      id: input.receipt_id,
+      feedID: input.feed_id,
+      planRevision: input.plan_revision,
+      planHash: input.plan_hash,
+      adapter: input.adapter,
+      expectedIdentity: input.expected_identity,
+      observedIdentity: input.observed_identity,
+      permission: input.permission,
+      scope: input.scope,
+      status: input.status,
+      verifiedAt: input.verified_at,
+      expiresAt: input.expires_at,
+      lastSuccessfulReadAt: input.last_successful_read_at,
+      checks: input.checks,
+      summary: input.summary,
+    }),
+  ));
+
+  server.registerTool("list_feed_cues", {
+    title: "List short-lived feed cues",
+    description: "Read active, minimized cues from the literal Inside or Outside inbox. Cues are not durable context, factual evidence, beliefs, or Places, and no-new-input mode must ignore them.",
+    inputSchema: z.object({
+      boundary: z.enum(["inside_recall", "outside_input"]).optional(),
+      feed_id: z.string().min(1).max(128).optional(),
+      limit: z.number().int().min(1).max(50).default(10),
+    }),
+    annotations: readAnnotations,
+  }, async (input) => resultOf(
+    "Quiet Desk short-lived feed cues",
+    () => feedConnectionGateway.listCues({
+      boundary: input.boundary,
+      feedID: input.feed_id,
+      limit: input.limit,
+    }),
+  ));
+
+  server.registerTool("record_feed_cue", {
+    title: "Record short-lived feed cue",
+    description: "Append one minimized, uncertain cue after a bounded read with a fresh matching receipt. Inside and Outside are written to separate inboxes; this cannot update the Context Kernel or create a Place.",
+    inputSchema: z.object({
+      cue_id: z.string().uuid().optional(),
+      feed_id: z.string().min(1).max(128),
+      boundary: z.enum(["inside_recall", "outside_input"]),
+      plan_revision: z.number().int().min(1),
+      plan_hash: z.string().regex(/^sha256:[a-f0-9]{64}$/),
+      receipt_id: z.string().uuid(),
+      minimized_cue: z.string().min(1).max(512),
+      observed_at: rfc3339TimestampSchema,
+      recorded_at: rfc3339TimestampSchema,
+      expires_at: rfc3339TimestampSchema,
+      source_doors: z.array(httpSourceUrlSchema).max(3).default([]),
+      uncertain: z.literal(true),
+      requires_calibration: z.literal(true),
+    }),
+    annotations: internalWriteAnnotations,
+  }, async (input) => resultOf(
+    `Recorded ephemeral ${input.boundary} cue; no context was promoted and no Place was created`,
+    () => feedConnectionGateway.recordCue({
+      id: input.cue_id,
+      feedID: input.feed_id,
+      boundary: input.boundary,
+      planRevision: input.plan_revision,
+      planHash: input.plan_hash,
+      receiptID: input.receipt_id,
+      minimizedCue: input.minimized_cue,
+      observedAt: input.observed_at,
+      recordedAt: input.recorded_at,
+      expiresAt: input.expires_at,
+      sourceDoors: input.source_doors,
+      uncertain: input.uncertain,
+      requiresCalibration: input.requires_calibration,
+    }),
+  ));
 
   server.registerTool("observe_source", {
     title: "Observe source",

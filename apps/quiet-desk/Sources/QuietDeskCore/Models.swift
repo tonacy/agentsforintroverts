@@ -62,6 +62,7 @@ public enum DailyConversationMode: String, CaseIterable, Codable, Hashable, Iden
 
 public enum DailyConversationReadiness: String, Codable, Hashable, Sendable {
     case ready
+    case cueOnly
     case sampleOnly
     case notConnected
 }
@@ -77,6 +78,8 @@ public struct DailyConversationProjection: Hashable, Sendable {
     public let livedReadiness: DailyConversationReadiness
     public let context: LivingContext
     public let supportingThreads: [CommonGroundThread]
+    public let outsideCues: [FeedCue]
+    public let insideCues: [FeedCue]
     public let noActionReason: String?
 
     public var canSurfacePlaces: Bool {
@@ -111,6 +114,8 @@ public enum QuietDeskPresentationPolicy {
     public static let maximumPeoplePerThread = 3
     public static let maximumSupportingThreadsForShortConversation = 1
     public static let maximumSupportingThreadsForDeepConversation = 3
+    public static let maximumCuesPerBoundaryForShortConversation = 1
+    public static let maximumCuesPerBoundaryForDeepConversation = 3
 }
 
 public enum ConnectionKind: String, CaseIterable, Identifiable, Sendable {
@@ -676,7 +681,9 @@ public struct QuietDeskSnapshot: Codable, Hashable, Sendable {
     /// Builds the product-facing conversation preview without upgrading sample
     /// data into live evidence or treating an inferred day as human-authored.
     public func dailyConversationProjection(
-        for mode: DailyConversationMode
+        for mode: DailyConversationMode,
+        feedCues: [FeedCue] = [],
+        now: Date = Date()
     ) -> DailyConversationProjection {
         let threadLimit: Int
         switch mode {
@@ -688,6 +695,21 @@ public struct QuietDeskSnapshot: Codable, Hashable, Sendable {
             threadLimit = QuietDeskPresentationPolicy.maximumSupportingThreadsForDeepConversation
         }
 
+        let cueLimit: Int
+        switch mode {
+        case .notChecked, .noNewInput:
+            cueLimit = 0
+        case .short:
+            cueLimit = QuietDeskPresentationPolicy.maximumCuesPerBoundaryForShortConversation
+        case .deep:
+            cueLimit = QuietDeskPresentationPolicy.maximumCuesPerBoundaryForDeepConversation
+        }
+        let activeCues = feedCues
+            .filter { $0.isActive(at: now) }
+            .sorted { $0.recordedAt > $1.recordedAt }
+        let outsideCues = Array(activeCues.filter { $0.boundary == .outsideInput }.prefix(cueLimit))
+        let insideCues = Array(activeCues.filter { $0.boundary == .insideRecall }.prefix(cueLimit))
+
         let noActionReason: String?
         switch mode {
         case .notChecked:
@@ -695,15 +717,25 @@ public struct QuietDeskSnapshot: Codable, Hashable, Sendable {
         case .noNewInput:
             noActionReason = "No new outside context was introduced for this check-in."
         case .short, .deep:
-            noActionReason = "No Place was proposed because fresh outside context and a confirmed account of today are not both connected."
+            if !outsideCues.isEmpty && !insideCues.isEmpty {
+                noActionReason = "No Place was proposed. The outside cue is current, but the Inside cue is only a recall prompt until you confirm what the day meant."
+            } else if !outsideCues.isEmpty {
+                noActionReason = "No Place was proposed because there is no human-confirmed account of today."
+            } else {
+                noActionReason = "No Place was proposed because fresh outside context and a confirmed account of today are not both connected."
+            }
         }
 
         return DailyConversationProjection(
             mode: mode,
-            outsideReadiness: isSynthetic ? .sampleOnly : .notConnected,
-            livedReadiness: .notConnected,
+            outsideReadiness: outsideCues.isEmpty
+                ? (isSynthetic ? .sampleOnly : .notConnected)
+                : .ready,
+            livedReadiness: insideCues.isEmpty ? .notConnected : .cueOnly,
             context: personalContext,
             supportingThreads: Array(topLevelThreads().prefix(threadLimit)),
+            outsideCues: outsideCues,
+            insideCues: insideCues,
             noActionReason: noActionReason
         )
     }

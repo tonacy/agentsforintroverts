@@ -8,6 +8,7 @@ struct DailyConversationView: View {
     @Bindable var router: AppRouter
 
     @State private var mode: DailyConversationMode = .notChecked
+    @State private var cueCalibrations: [String: CueCalibration] = [:]
 
     init(
         store: QuietDeskStore,
@@ -36,10 +37,13 @@ struct DailyConversationView: View {
         }
         .navigationTitle("Daily conversation")
         .accessibilityLabel("Daily conversation")
+        .onAppear {
+            store.refreshFeedStateSilently()
+        }
     }
 
     private var conversation: some View {
-        let projection = store.snapshot.dailyConversationProjection(for: mode)
+        let projection = store.dailyConversationProjection(for: mode)
 
         return ScrollView {
             VStack(alignment: .leading, spacing: 28) {
@@ -64,15 +68,20 @@ struct DailyConversationView: View {
     }
 
     private var connectionBanner: some View {
-        ViewThatFits(in: .horizontal) {
+        let cueCount = store.activeOutsideCueCount + store.activeInsideCueCount
+        let cueLabel = cueCount == 0
+            ? "Sample conversation"
+            : "\(cueCount) live \(cueCount == 1 ? "cue" : "cues") · sample context"
+
+        return ViewThatFits(in: .horizontal) {
             HStack(spacing: 14) {
-                Label("Sample conversation", systemImage: "testtube.2")
+                Label(cueLabel, systemImage: cueCount == 0 ? "testtube.2" : "sparkle.magnifyingglass")
                 Spacer()
                 Label("Context Kernel not connected", systemImage: "bolt.horizontal.circle")
             }
 
             VStack(alignment: .leading, spacing: 7) {
-                Label("Sample conversation", systemImage: "testtube.2")
+                Label(cueLabel, systemImage: cueCount == 0 ? "testtube.2" : "sparkle.magnifyingglass")
                 Label("Context Kernel not connected", systemImage: "bolt.horizontal.circle")
             }
         }
@@ -96,12 +105,29 @@ struct DailyConversationView: View {
                 .font(.largeTitle.weight(.semibold))
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("There are a few synthetic threads available, but nothing here is live or urgent. This choice applies only to this check-in and is not saved as a preference.")
+            Text(introductionDetail)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private var introductionDetail: String {
+        let outside = store.activeOutsideCueCount
+        let inside = store.activeInsideCueCount
+        guard outside + inside > 0 else {
+            return "There are a few synthetic threads available, but nothing here is live or urgent. This choice applies only to this check-in and is not saved as a preference."
+        }
+        let outsideText = outside == 1 ? "one fresh Outside cue" : "\(outside) fresh Outside cues"
+        let insideText = inside == 1 ? "one uncertain Inside recall cue" : "\(inside) uncertain Inside recall cues"
+        if outside == 0 {
+            return "There are \(insideText) available for calibration. No outside cue is current. Your depth choice applies only to this check-in."
+        }
+        if inside == 0 {
+            return "There are \(outsideText) available. Nothing here claims to know what your day meant, and your depth choice applies only to this check-in."
+        }
+        return "There are \(outsideText) and \(insideText) available. Recall cues ask; they do not decide what your day meant. Your depth choice applies only to this check-in."
     }
 
     private var modeChooser: some View {
@@ -171,30 +197,59 @@ struct DailyConversationView: View {
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .tracking(0.8)
-            Text(projection.mode == .short ? "One thread is available to discuss." : "Two recurring threads are available to discuss.")
+            Text(resultHeadline(projection))
                 .font(.title2.weight(.semibold))
-            Text("These are supporting conversations from the sample projection—not timely Places and not a reason to publish.")
+            Text("Fresh cues are short-lived prompts. Recurring threads below remain sample context—not timely Places and not a reason to publish.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
     }
 
+    private func resultHeadline(_ projection: DailyConversationProjection) -> String {
+        let cueCount = projection.outsideCues.count + projection.insideCues.count
+        if cueCount > 0 {
+            return "\(cueCount) fresh \(cueCount == 1 ? "cue is" : "cues are") available to discuss."
+        }
+        return projection.mode == .short
+            ? "One sample thread is available to discuss."
+            : "Two recurring sample threads are available to discuss."
+    }
+
     private func outsideSection(_ projection: DailyConversationProjection) -> some View {
         conversationSection("Outside") {
-            Text("The sample network has compressed recurring discourse into \(projection.supportingThreads.count) human-scale \(projection.supportingThreads.count == 1 ? "thread" : "threads"). Open one only if you want its context, evidence, and people.")
-                .font(.callout)
-                .foregroundStyle(.secondary)
+            if projection.outsideCues.isEmpty {
+                Text("No short-lived Outside cue is current. The recurring conversations below come from the sample projection.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("These observations came through a bounded feed read. Open a source door to challenge the compression; the cue itself will expire and is not durable evidence.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
 
-            VStack(spacing: 10) {
-                ForEach(projection.supportingThreads) { thread in
-                    Button {
-                        router.show(.thread(thread.id))
-                    } label: {
-                        SupportingThreadCard(thread: thread)
+                VStack(spacing: 10) {
+                    ForEach(projection.outsideCues) { cue in
+                        FeedCueCard(cue: cue)
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("quiet-desk.conversation.thread.\(thread.id.uuidString)")
+                }
+            }
+
+            if !projection.supportingThreads.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("SUPPORTING SAMPLE THREADS")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .tracking(0.7)
+
+                    ForEach(projection.supportingThreads) { thread in
+                        Button {
+                            router.show(.thread(thread.id))
+                        } label: {
+                            SupportingThreadCard(thread: thread)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("quiet-desk.conversation.thread.\(thread.id.uuidString)")
+                    }
                 }
             }
         }
@@ -202,22 +257,36 @@ struct DailyConversationView: View {
 
     private func insideSection(_ projection: DailyConversationProjection) -> some View {
         conversationSection("Inside") {
-            Text(projection.context.summary)
-                .font(.callout)
-                .foregroundStyle(.secondary)
+            if projection.insideCues.isEmpty {
+                Text("No current-day recall cue is available. Quiet Desk will not infer an account of your day from the sample context.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("Computer History can suggest a shape of the day, but only you can say whether it is meaningful.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
 
-            let inferredCount = projection.context.statements.filter(\.needsConfirmation).count
-            Label(
-                inferredCount == 0
-                    ? "No inferred statements need confirmation"
-                    : "\(inferredCount) inferred \(inferredCount == 1 ? "statement needs" : "statements need") confirmation",
-                systemImage: inferredCount == 0 ? "checkmark.circle" : "questionmark.circle"
-            )
-            .font(.caption)
-            .foregroundStyle(inferredCount == 0 ? Color.secondary : Color.orange)
+                VStack(spacing: 10) {
+                    ForEach(projection.insideCues) { cue in
+                        VStack(alignment: .leading, spacing: 12) {
+                            FeedCueCard(cue: cue)
+                            insideCalibration(cue)
+                        }
+                    }
+                }
+            }
 
             if projection.mode == .deep {
                 VStack(alignment: .leading, spacing: 12) {
+                    Text("SAMPLE LIVING CONTEXT")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .tracking(0.7)
+
+                    Text(projection.context.summary)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+
                     ForEach(projection.context.statements) { statement in
                         ConversationContextStatementRow(statement: statement)
                     }
@@ -229,6 +298,41 @@ struct DailyConversationView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
+    }
+
+    @ViewBuilder
+    private func insideCalibration(_ cue: FeedCue) -> some View {
+        let calibration = cueCalibrations[cue.id]
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Does this resemble the day you actually had?")
+                .font(.caption.weight(.semibold))
+            HStack(spacing: 8) {
+                Button("Close enough") {
+                    cueCalibrations[cue.id] = .fits
+                }
+                .buttonStyle(.bordered)
+                .accessibilityValue(calibration == .fits ? "Selected" : "Not selected")
+
+                Button("Not quite") {
+                    cueCalibrations[cue.id] = .doesNotFit
+                }
+                .buttonStyle(.bordered)
+                .accessibilityValue(calibration == .doesNotFit ? "Selected" : "Not selected")
+            }
+            if let calibration {
+                Text(calibration == .fits
+                    ? "Accepted for this check-in only. It was not added to your living context."
+                    : "Set aside for this check-in only. No correction was saved.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("This calibration is session-only until the owner context gateway is connected.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.bottom, 12)
     }
 
     private func placeGate(_ projection: DailyConversationProjection) -> some View {
@@ -245,12 +349,12 @@ struct DailyConversationView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     ConversationReadinessRow(
                         title: "Outside context",
-                        value: "Sample only",
-                        systemImage: "testtube.2"
+                        value: readinessLabel(projection.outsideReadiness, outside: true),
+                        systemImage: projection.outsideReadiness == .ready ? "checkmark.circle" : "testtube.2"
                     )
                     ConversationReadinessRow(
                         title: "Your lived day",
-                        value: "Not captured here",
+                        value: readinessLabel(projection.livedReadiness, outside: false),
                         systemImage: "person.crop.circle.badge.questionmark"
                     )
                     ConversationReadinessRow(
@@ -273,6 +377,15 @@ struct DailyConversationView: View {
             }
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("quiet-desk.conversation.place-gate")
+        }
+    }
+
+    private func readinessLabel(_ readiness: DailyConversationReadiness, outside: Bool) -> String {
+        switch readiness {
+        case .ready: outside ? "Fresh cue" : "Confirmed"
+        case .cueOnly: "Recall cue only"
+        case .sampleOnly: "Sample only"
+        case .notConnected: outside ? "Not current" : "Not captured"
         }
     }
 
@@ -369,6 +482,62 @@ private struct ConversationModeButtonStyle: ButtonStyle {
             }
             .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .opacity(configuration.isPressed ? 0.72 : 1)
+    }
+}
+
+private enum CueCalibration {
+    case fits
+    case doesNotFit
+}
+
+private struct FeedCueCard: View {
+    let cue: FeedCue
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Label(
+                    cue.boundary == .insideRecall ? "Recall prompt" : "Fresh observation",
+                    systemImage: cue.boundary == .insideRecall ? "questionmark.bubble" : "globe"
+                )
+                .font(.caption.weight(.medium))
+                .foregroundStyle(cue.boundary == .insideRecall ? Color.orange : Color.blue)
+
+                Spacer(minLength: 8)
+
+                Text("Expires \(cue.expiresAt, style: .relative)")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            Text(cue.minimizedCue)
+                .font(.body)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if !cue.sourceDoors.isEmpty {
+                HStack(spacing: 10) {
+                    ForEach(Array(cue.sourceDoors.enumerated()), id: \.offset) { index, url in
+                        Link(index == 0 ? "Open source" : "Source \(index + 1)", destination: url)
+                            .font(.caption.weight(.medium))
+                    }
+                }
+            }
+
+            Text(cue.boundary == .insideRecall
+                ? "Uncertain · requires your calibration · never a factual claim"
+                : "Observed · short-lived · not yet durable evidence")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
+                .stroke(Color(nsColor: .separatorColor).opacity(0.6), lineWidth: 1)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("quiet-desk.conversation.cue.\(cue.id)")
     }
 }
 

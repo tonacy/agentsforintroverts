@@ -5,6 +5,7 @@ import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createQuietDeskServer, TOOL_NAMES } from "../server.js";
+import type { FeedConnectionGateway, FeedConnectionReceiptInput, FeedCueInput } from "../feed-state.js";
 import type { QuietDeskGateway } from "../types.js";
 
 function gateway(): QuietDeskGateway {
@@ -192,6 +193,99 @@ test("write tools reject non-HTTP source doors before reaching the hub", async (
 
   assert.equal(result.isError, true);
   assert.equal(publishCalls, 0);
+
+  await client.close();
+  await server.close();
+});
+
+test("feed tools expose the user plan and append evidence without granting access", async () => {
+  let recorded: FeedConnectionReceiptInput | undefined;
+  let recordedCue: FeedCueInput | undefined;
+  const feedGateway: FeedConnectionGateway = {
+    listConnections: async () => ({
+      configured: true,
+      revision: 2,
+      connections: [{ feed_id: "x_following", phase: "awaiting_verification" }],
+    }),
+    recordReceipt: async (input) => {
+      recorded = input;
+      return { ...input, schema: "afi.feed_connection_receipt.v1", id: "00000000-0000-4000-8000-000000000001" };
+    },
+    listCues: async () => ({
+      configured: true,
+      active_count: 1,
+      cues: [{ feedID: "x_following", boundary: "outside_input" }],
+    }),
+    recordCue: async (input) => {
+      recordedCue = input;
+      return { ...input, schema: "afi.feed_cue.v1", id: "00000000-0000-4000-8000-000000000002" };
+    },
+  };
+  const server = createQuietDeskServer(gateway(), undefined, feedGateway);
+  const client = new Client({ name: "quiet-desk-test", version: "1.0.0" }, { capabilities: {} });
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  await server.connect(serverTransport);
+  await client.connect(clientTransport);
+
+  const listed = await client.callTool({ name: "list_feed_connections", arguments: {} });
+  assert.match(JSON.stringify(listed.structuredContent), /awaiting_verification/);
+
+  const verifiedAt = new Date();
+  const receipt = await client.callTool({
+    name: "record_feed_connection_receipt",
+    arguments: {
+      feed_id: "x_following",
+      plan_revision: 2,
+      plan_hash: `sha256:${"a".repeat(64)}`,
+      adapter: "x.safari-following.v1",
+      expected_identity: "@tonylongname",
+      observed_identity: "@tonylongname",
+      permission: "read_only",
+      scope: "Following timeline only · bounded read",
+      status: "verified",
+      verified_at: verifiedAt.toISOString(),
+      expires_at: new Date(verifiedAt.getTime() + 60 * 60_000).toISOString(),
+      last_successful_read_at: verifiedAt.toISOString(),
+      checks: [
+        { name: "account_visible", passed: true, detail: "Visible." },
+        { name: "account_matches", passed: true, detail: "Matched." },
+        { name: "following_selected", passed: true, detail: "Selected." },
+        { name: "bounded_read_completed", passed: true, detail: "Completed read-only." },
+      ],
+      summary: "Verified a bounded read without retaining feed content.",
+    },
+  });
+
+  assert.equal(receipt.isError, undefined);
+  assert.equal(recorded?.feedID, "x_following");
+  assert.equal("authorize" in (recorded ?? {}), false);
+  assert.equal("credential" in (recorded ?? {}), false);
+
+  const cues = await client.callTool({ name: "list_feed_cues", arguments: { boundary: "outside_input" } });
+  assert.match(JSON.stringify(cues.structuredContent), /outside_input/);
+
+  const recordedAt = new Date();
+  const cue = await client.callTool({
+    name: "record_feed_cue",
+    arguments: {
+      feed_id: "x_following",
+      boundary: "outside_input",
+      plan_revision: 2,
+      plan_hash: `sha256:${"a".repeat(64)}`,
+      receipt_id: "00000000-0000-4000-8000-000000000001",
+      minimized_cue: "A bounded conversation may be worth calibrating.",
+      observed_at: recordedAt.toISOString(),
+      recorded_at: recordedAt.toISOString(),
+      expires_at: new Date(recordedAt.getTime() + 60 * 60_000).toISOString(),
+      source_doors: ["https://x.com/example/status/1"],
+      uncertain: true,
+      requires_calibration: true,
+    },
+  });
+  assert.equal(cue.isError, undefined);
+  assert.equal(recordedCue?.boundary, "outside_input");
+  assert.equal("promote" in (recordedCue ?? {}), false);
+  assert.equal("publish" in (recordedCue ?? {}), false);
 
   await client.close();
   await server.close();
