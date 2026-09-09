@@ -1,4 +1,4 @@
-import { Nav, Footer, Crossing, Ledger, Practice } from "@/components";
+import { Nav, Footer, Crossing, Story, Practice } from "@/components";
 import { parseDay } from "@/lib/day";
 import dayJson from "@/content/day.json";
 
@@ -15,8 +15,8 @@ export default function Home() {
         <Nav />
       </div>
       <main id="main-content" tabIndex={-1}>
-        <Crossing day={day} />
-        <Ledger day={day} />
+        <Crossing />
+        <Story day={day} />
         <Practice />
       </main>
       <Footer />

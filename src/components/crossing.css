@@ -13,6 +13,38 @@
   margin-top: -80px; /* sit under the nav so the sea reads edge to edge */
 }
 
+/* Fine ink currents frame the crossing. The center remains a reading channel. */
+.contour-sea {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+  opacity: calc(1 - var(--p));
+  mask-image: radial-gradient(ellipse 48% 62% at 50% 48%, transparent 30%, #000 90%);
+}
+
+.contour-sea__canvas,
+.contour-sea__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.contour-sea__canvas { opacity: 0; }
+.contour-sea__canvas[data-ready="true"] { opacity: 1; }
+.contour-sea__still { color: var(--color-leaf); opacity: 0.16; }
+.contour-sea__canvas[data-ready="true"] + .contour-sea__still { visibility: hidden; }
+
+[data-motion="reduced"] .contour-sea { opacity: 0.3; }
+
+@media (prefers-reduced-motion: reduce) {
+  .contour-sea__canvas { display: none; }
+  .contour-sea__canvas[data-ready="true"] + .contour-sea__still { visibility: visible; }
+}
+
 /* The sea is fixed to the viewport: the outside world keeps moving under
    everything that follows, faintly, until the forest band covers it. */
 .sea {
@@ -160,7 +192,7 @@
   transform: translateY(calc((1 - var(--ledger)) * 18px));
 }
 
-.crossing__weekday {
+.crossing__destination {
   font-size: clamp(44px, 6vw, 84px);
   line-height: 1;
   letter-spacing: -0.02em;
@@ -252,6 +284,18 @@
 }
 
 @media (max-width: 899px) {
+  .contour-sea {
+    mask-image: radial-gradient(ellipse 75% 62% at 50% 48%, transparent 45%, #000 100%);
+  }
+  .crossing__pool {
+    background: radial-gradient(
+      ellipse calc(42% + var(--spread) * 30%) calc(26% + var(--spread) * 36%) at 50% 50%,
+      var(--color-paper) 0%,
+      var(--color-paper) 55%,
+      rgba(253, 251, 247, 0.85) 75%,
+      rgba(253, 251, 247, 0) 100%
+    );
+  }
   .crossing {
     margin-top: -128px;
   }

@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, type CSSProperties } from "react";
 
-import type { Day } from "@/lib/day";
 import { buildSea } from "@/lib/sea";
 import { seaRate, stageLayers, stageProgress } from "@/lib/stage-progress";
+import { createContourRenderer, type ContourRenderer } from "@/lib/contour-shader";
+import { ContourSea } from "./ContourSea";
 
 import "./crossing.css";
 
@@ -27,10 +28,11 @@ type SeaStyle = CSSProperties & { "--speed"?: string };
  * over to today's ledger. Progress is scrubbed by scroll, never timed, so the
  * visitor sets the pace. Reduced motion renders everything at rest.
  */
-export function Crossing({ day }: { day: Day }) {
+export function Crossing() {
   const stageRef = useRef<HTMLElement>(null);
   const seaRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const sea = useMemo(() => buildSea({ columns: COLUMNS, lines: LINES }), []);
 
   useEffect(() => {
@@ -53,15 +55,12 @@ export function Crossing({ day }: { day: Day }) {
     // visitor's preference, not React state, and flipping it must not re-render
     // sixteen columns of text.
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduced.matches) {
-      stage.dataset.motion = "reduced";
-      applyLayers(1);
-      return;
-    }
-    stage.dataset.motion = "scroll";
-
     const columns = Array.from(seaElement.querySelectorAll<HTMLElement>(".sea__scroll"));
     const blockHeight = LINES * LINE_HEIGHT;
+    let contours: ContourRenderer | null = null;
+    let shaderTime = 0;
+    let lastShaderAt = -Infinity;
+    let stageVisible = true;
 
     let top = 0;
     let stageHeight = 0;
@@ -73,6 +72,8 @@ export function Crossing({ day }: { day: Day }) {
       stageHeight = stage.offsetHeight;
       viewportHeight = window.innerHeight;
       viewportWidth = window.innerWidth;
+      contours?.resize(viewportWidth, viewportHeight);
+      lastShaderAt = -Infinity;
     };
     measure();
 
@@ -82,12 +83,21 @@ export function Crossing({ day }: { day: Day }) {
     let frame = 0;
 
     const tick = (now: number) => {
+      frame = 0;
+      if (document.hidden || reduced.matches) return;
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
 
       const p = stageProgress(top, stageHeight, window.scrollY, viewportHeight);
       const layers = applyLayers(p);
       travelled += dt * BASE_SPEED * seaRate(p);
+      shaderTime += dt * seaRate(p);
+
+      // Share the sea's clock. The GPU draws at most 30fps and only in the opening.
+      if (stageVisible && p < 1 && now - lastShaderAt >= 1000 / 30) {
+        contours?.draw(shaderTime, p);
+        lastShaderAt = now;
+      }
 
       for (let i = 0; i < columns.length; i += 1) {
         const column = sea[i];
@@ -107,23 +117,38 @@ export function Crossing({ day }: { day: Day }) {
     };
 
     const onVisibility = () => {
-      if (document.hidden) {
-        window.cancelAnimationFrame(frame);
-      } else {
-        last = performance.now();
-        frame = window.requestAnimationFrame(tick);
-      }
+      window.cancelAnimationFrame(frame);
+      frame = 0;
+      if (document.hidden || reduced.matches) return;
+      last = performance.now();
+      frame = window.requestAnimationFrame(tick);
     };
 
     const onPreference = () => {
+      window.cancelAnimationFrame(frame);
+      frame = 0;
       if (reduced.matches) {
-        window.cancelAnimationFrame(frame);
         stage.dataset.motion = "reduced";
         applyLayers(1);
+        // Both thesis lines must stay visible when the scroll sequence is removed.
+        stage.style.setProperty("--line-a", "1");
+        stage.style.setProperty("--line-b", "1");
+        contours?.dispose();
+        contours = null;
+      } else {
+        stage.dataset.motion = "scroll";
+        if (!contours && canvasRef.current) contours = createContourRenderer(canvasRef.current);
+        measure();
+        applyLayers(stageProgress(top, stageHeight, window.scrollY, viewportHeight));
+        onVisibility();
       }
     };
 
-    frame = window.requestAnimationFrame(tick);
+    const observer = typeof IntersectionObserver !== "undefined"
+      ? new IntersectionObserver(([entry]) => { stageVisible = entry.isIntersecting; })
+      : null;
+    observer?.observe(stage);
+    onPreference();
     window.addEventListener("resize", measure);
     document.addEventListener("visibilitychange", onVisibility);
     reduced.addEventListener("change", onPreference);
@@ -133,6 +158,8 @@ export function Crossing({ day }: { day: Day }) {
       window.removeEventListener("resize", measure);
       document.removeEventListener("visibilitychange", onVisibility);
       reduced.removeEventListener("change", onPreference);
+      observer?.disconnect();
+      contours?.dispose();
     };
   }, [sea]);
 
@@ -141,9 +168,10 @@ export function Crossing({ day }: { day: Day }) {
       ref={stageRef}
       className="crossing"
       data-stage
-      data-motion="scroll"
+      data-motion="reduced"
       aria-label="Opening"
     >
+      <ContourSea canvasRef={canvasRef} />
       <div ref={seaRef} className="sea" aria-hidden="true">
         {sea.map((column, index) => (
           <div className="sea__col" key={index} style={{ "--speed": String(column.speed) } as SeaStyle}>
@@ -173,9 +201,9 @@ export function Crossing({ day }: { day: Day }) {
             <h1 className="crossing__line crossing__line--a">{LINE_A}</h1>
             <p className="crossing__line crossing__line--b">{LINE_B}</p>
             <div className="crossing__line crossing__line--ledger">
-              <span className="crossing__weekday">{day.weekday}</span>
+              <span className="crossing__destination">Find your way in.</span>
               <span className="crossing__cue">
-                today&apos;s page · kept in public · nothing sent
+                a little context · a useful next step
               </span>
               <span className="crossing__arrow" aria-hidden="true">
                 ↓
