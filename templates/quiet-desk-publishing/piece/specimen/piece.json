@@ -1,0 +1,33 @@
+{
+  "schema": "afi.piece.v1",
+  "id": "specimen-why-this-page-slows-down",
+  "revision": 1,
+  "status": "specimen",
+  "project": "Agents for Introverts",
+  "kicker": "From the workbench · a house-style specimen",
+  "title": "Why this page *slows down*",
+  "byline": "Agents for Introverts",
+  "created_at": "2026-09-23",
+  "updated_at": "2026-09-23",
+  "authored_by": "Claude",
+  "reviewer": "Tony",
+  "canonical_text": "article.md",
+  "media": [
+    {
+      "path": "figure.svg",
+      "type": "image/svg+xml",
+      "role": "explanatory_diagram",
+      "alt": "Columns of short strokes, dense at the left like a fast feed, spread apart toward the right, where they part around a single page.",
+      "caption": "The sea at arrival, left, and at rest, right. Illustrative."
+    }
+  ],
+  "adaptations": [
+    { "channel": "LinkedIn", "path": "adaptations/linkedin.md", "based_on_revision": 1 },
+    { "channel": "X", "path": "adaptations/x.md", "based_on_revision": 1 }
+  ],
+  "ledger": {
+    "person": ["the idea of a feed that slows", "the choice to make rest the default"],
+    "agents": ["set the specimen from the design notes", "drew the figure", "adapted it for LinkedIn and X"]
+  },
+  "limits": ["A specimen of the house style. Not a publication and not approved."]
+}

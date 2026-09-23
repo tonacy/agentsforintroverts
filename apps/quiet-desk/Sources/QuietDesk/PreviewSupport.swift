@@ -57,6 +57,7 @@ struct QuietDeskPreviewProvider: PreviewProvider {
                 .frame(width: 980, height: 680)
                 .previewDisplayName("Error")
         }
+        .environment(DeskStore())
     }
 }
 #endif

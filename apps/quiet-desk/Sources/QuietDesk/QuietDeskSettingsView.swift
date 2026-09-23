@@ -5,6 +5,8 @@ import SwiftUI
 struct QuietDeskSettingsView: View {
     @Bindable var store: QuietDeskStore
     @Bindable var providerStore: ProviderStore
+    @State private var workspaceInput = ""
+    @AppStorage("quietDesk.appearance") private var appearance = "system"
 
     var body: some View {
         TabView {
@@ -21,6 +23,11 @@ struct QuietDeskSettingsView: View {
                 }
 
                 Section("Mac") {
+                    Picker("Appearance", selection: $appearance) {
+                        Text("System").tag("system")
+                        Text("Light").tag("light")
+                        Text("Dark").tag("dark")
+                    }
                     Toggle("Show menu bar status", isOn: $store.menuBarEnabled)
                 }
             }
@@ -63,6 +70,16 @@ struct QuietDeskSettingsView: View {
         let environment = providerStore.resolvedEnvironment()
         return Form {
             Section("Workspace folder") {
+                TextField("Workspace path", text: $workspaceInput, prompt: Text("~/Quiet Desk"))
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityIdentifier("quiet-desk.workspace.path")
+                Button("Use this workspace") {
+                    Task { await providerStore.setWorkspace(path: workspaceInput) }
+                }
+                .disabled(workspaceInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || providerStore.isBusy)
+                .accessibilityIdentifier("quiet-desk.workspace.use")
+                if let error = providerStore.lastError { Text(error).foregroundStyle(.red) }
+
                 pathRow(
                     label: "Workspace",
                     value: providerStore.workspacePath,
@@ -72,7 +89,7 @@ struct QuietDeskSettingsView: View {
                             title: "Choose the Quiet Desk workspace",
                             message: "A private folder copied from templates/quiet-desk-publishing."
                         ) {
-                            providerStore.workspacePath = path
+                            Task { await providerStore.setWorkspace(path: path) }
                         }
                     }
                 )
@@ -140,10 +157,12 @@ struct QuietDeskSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .onAppear { workspaceInput = providerStore.workspacePath ?? "~/Quiet Desk" }
     }
 
     private func pathRow(label: String, value: String?, placeholder: String, choose: @escaping () -> Void) -> some View {
-        LabeledContent(label) {
+        VStack(alignment: .leading) {
+            Text(label).font(.caption).foregroundStyle(.secondary)
             HStack(spacing: 8) {
                 Text(value ?? placeholder)
                     .font(.system(.caption, design: .monospaced))

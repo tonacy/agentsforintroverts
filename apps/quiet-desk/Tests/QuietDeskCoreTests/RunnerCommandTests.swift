@@ -21,7 +21,7 @@ final class RunnerCommandTests: XCTestCase {
         XCTAssertEqual(RunnerCommand.status(workspace: "/w", date: "2026-09-07").script, "status.mjs")
         XCTAssertEqual(RunnerCommand.newCapture(workspace: "/w", date: "2026-09-07").arguments, ["new", "--workspace", "/w", "--date", "2026-09-07", "--json"])
         XCTAssertEqual(RunnerCommand.newCapture(workspace: "/w", date: "2026-09-07").script, "capture.mjs")
-        XCTAssertEqual(RunnerCommand.collect(workspace: "/w").arguments, ["--workspace", "/w", "--json"])
+        XCTAssertEqual(RunnerCommand.collect(workspace: "/w").arguments, ["--workspace", "/w", "--refresh", "--json"])
     }
 
     func testRunDayArgumentsAndTolerance() {
@@ -59,5 +59,16 @@ final class RunnerCommandTests: XCTestCase {
         XCTAssertEqual(invocation.environment["PATH"], "/nvm/v22/bin:/usr/bin")
         XCTAssertNil(invocation.environment["ANTHROPIC_API_KEY"], "the app never injects a credential")
         XCTAssertEqual(invocation.workingDirectory.path, "/repo")
+    }
+
+    func testRenderingAPieceNamesTheFolderAndNeverForces() {
+        let command = RunnerCommand.renderPiece(workspace: "/Users/me/Quiet Desk", folder: "drafts/2026-09-23-why")
+        XCTAssertEqual(command.script, "piece.mjs")
+        XCTAssertEqual(command.arguments, ["render", "--workspace", "/Users/me/Quiet Desk", "--piece", "drafts/2026-09-23-why"])
+        XCTAssertFalse(command.arguments.contains("--force"))
+        XCTAssertEqual(
+            RunnerCommand.renderPiece(workspace: "/w", folder: "drafts/a", output: "edition.html").arguments.suffix(2),
+            ["--output", "edition.html"]
+        )
     }
 }

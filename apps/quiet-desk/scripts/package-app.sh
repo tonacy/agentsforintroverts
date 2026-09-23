@@ -20,6 +20,7 @@ rm -rf -- "$bundle_path"
 mkdir -p "$bundle_path/Contents/MacOS" "$bundle_path/Contents/Resources"
 cp "$binary_dir/QuietDesk" "$bundle_path/Contents/MacOS/QuietDesk"
 cp "$project_dir/AppResources/Info.plist" "$bundle_path/Contents/Info.plist"
+cp "$project_dir/AppResources/DriftingPage.png" "$bundle_path/Contents/Resources/DriftingPage.png"
 cp "$project_dir/Sources/QuietDeskCore/Resources/synthetic-feed.json" \
   "$bundle_path/Contents/Resources/synthetic-feed.json"
 

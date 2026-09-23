@@ -228,6 +228,7 @@ public struct DayStatus: Codable, Hashable, Sendable {
     public let latestRun: RunRecordSummary?
     public let conversation: Conversation
     public let providerPreference: ProviderPreference?
+    public let publicTopics: String?
 }
 
 public struct RunDayResult: Codable, Hashable, Sendable {
@@ -247,11 +248,27 @@ public struct CollectResult: Codable, Hashable, Sendable {
     public struct Failure: Codable, Hashable, Sendable {
         public let url: String
         public let message: String
+        private enum CodingKeys: String, CodingKey { case url, message, error }
+        public init(from decoder: Decoder) throws {
+            let values = try decoder.container(keyedBy: CodingKeys.self)
+            url = try values.decode(String.self, forKey: .url)
+            message = try values.decodeIfPresent(String.self, forKey: .error) ?? values.decode(String.self, forKey: .message)
+        }
+        public func encode(to encoder: Encoder) throws {
+            var values = encoder.container(keyedBy: CodingKeys.self)
+            try values.encode(url, forKey: .url); try values.encode(message, forKey: .error)
+        }
     }
-
     public let written: Int
     public let skipped: Int
     public let errors: [Failure]
+    private enum CodingKeys: String, CodingKey { case written, skipped, errors }
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        written = try (try? values.decode(Int.self, forKey: .written)) ?? (try values.decode([String].self, forKey: .written)).count
+        skipped = try (try? values.decode(Int.self, forKey: .skipped)) ?? (try values.decode([String].self, forKey: .skipped)).count
+        errors = try values.decode([Failure].self, forKey: .errors)
+    }
 }
 
 public struct CaptureResult: Codable, Hashable, Sendable {
@@ -263,6 +280,10 @@ public struct CaptureResult: Codable, Hashable, Sendable {
 public enum RunBlocker {
     public static func explanation(for code: String) -> String {
         switch code {
+        case "provider_reported_partial":
+            "The provider could not finish. See the reason below."
+        case "reviewed_recall_changed":
+            "The recap changed after review. Restore the reviewed recap before running."
         case "capture_missing":
             "There is no capture for today yet. Write one in your own words first."
         case "capture_not_human_authored":
@@ -282,5 +303,84 @@ public enum RunBlocker {
         default:
             "The run stopped: \(code)."
         }
+    }
+}
+
+public struct CheckInRecap: Codable, Hashable, Sendable {
+    public let date: String
+    public let recap: String
+    public let coverage: String
+    public let evidence: [String]
+    public let question: String
+    public let revision: String
+    public let useHistory: Bool
+}
+
+public struct CompanionState: Decodable, Sendable {
+    public let threadId: String?
+    public let revision: String
+    public let summary: String?
+    public let openQuestions: [String]
+    public let updatedAt: Date?
+    public let syncedAt: Date?
+    public let syncError: String?
+    public let url: String?
+    public let updates: [CompanionUpdate]
+    public let workItems: [CompanionWorkItem]?
+    public let latestDecision: CompanionDecision?
+}
+
+public struct CompanionUpdate: Decodable, Identifiable, Sendable {
+    public var id: String { revision }
+    public let revision: String
+    public let reason: String
+    public let createdAt: Date
+}
+
+/// An explicit agent-authored projection, never inferred from summary keywords.
+public struct CompanionWorkItem: Decodable, Identifiable, Sendable {
+    public let id: String
+    public let project: String
+    public let title: String
+    public let state: String
+    public let preview: [CompanionPreviewBlock]
+    public let notes: String
+    public let evidence: String
+    public let messageIds: [String]
+    public let sources: [CompanionWorkSource]
+    public let imagePath: String?
+}
+
+public struct CompanionPreviewBlock: Decodable, Sendable {
+    public let heading: String
+    public let text: String
+}
+
+public struct CompanionDecision: Decodable, Sendable {
+    public let text: String
+    public let workItemId: String
+}
+
+public struct CompanionWorkSource: Decodable, Sendable {
+    public let label: String
+    public let path: String?
+    public let url: String?
+
+    public init(label: String, path: String?, url: String?) {
+        self.label = label; self.path = path; self.url = url
+    }
+
+    /// Never execute a stored URL scheme or follow a file outside this Desk.
+    public func destination(workspace: String) -> URL? {
+        if let path {
+            guard !path.hasPrefix("/") else { return nil }
+            let root = URL(fileURLWithPath: workspace).resolvingSymlinksInPath()
+            let file = root.appendingPathComponent(path).standardizedFileURL.resolvingSymlinksInPath()
+            guard file.path.hasPrefix(root.path + "/"), FileManager.default.fileExists(atPath: file.path) else { return nil }
+            return file
+        }
+        guard let url, let value = URL(string: url), value.scheme == "https", value.host != nil,
+              value.user == nil, value.password == nil else { return nil }
+        return value
     }
 }

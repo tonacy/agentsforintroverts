@@ -41,8 +41,10 @@ public struct RunnerCommand: Hashable, Sendable {
     /// run-day exits non-zero for a partial or failed day; that is a result
     /// the app must read, not a crash.
     public let toleratesNonZeroExit: Bool
+    public let input: String?
 
-    public init(name: String, script: String, arguments: [String], toleratesNonZeroExit: Bool = false) {
+    public init(name: String, script: String, arguments: [String], toleratesNonZeroExit: Bool = false, input: String? = nil) {
+        self.input = input
         self.name = name
         self.script = script
         self.arguments = arguments
@@ -70,8 +72,20 @@ public struct RunnerCommand: Hashable, Sendable {
         RunnerCommand(name: "capture.new", script: "capture.mjs", arguments: ["new", "--workspace", workspace, "--date", date, "--json"])
     }
 
+    public static func checkIn(_ action: String, workspace: String, date: String, input: String? = nil) -> RunnerCommand {
+        RunnerCommand(name: "check-in.\(action)", script: "check-in.mjs", arguments: [action, "--workspace", workspace, "--date", date], input: input)
+    }
+
+    public static func companion(_ action: String, workspace: String) -> RunnerCommand {
+        RunnerCommand(name: "companion.\(action)", script: "companion.mjs", arguments: [action, "--workspace", workspace])
+    }
+
+    public static func research(workspace: String, date: String, input: String) -> RunnerCommand {
+        RunnerCommand(name: "research", script: "research.mjs", arguments: ["--workspace", workspace, "--date", date], input: input)
+    }
+
     public static func collect(workspace: String) -> RunnerCommand {
-        RunnerCommand(name: "collect", script: "collect.mjs", arguments: ["--workspace", workspace, "--json"])
+        RunnerCommand(name: "collect", script: "collect.mjs", arguments: ["--workspace", workspace, "--refresh", "--json"])
     }
 
     public static func runDay(
@@ -86,6 +100,14 @@ public struct RunnerCommand: Hashable, Sendable {
         if let model, !model.isEmpty { arguments += ["--model", model] }
         arguments += ["--mode", mode.rawValue]
         return RunnerCommand(name: "run-day", script: "run-day.mjs", arguments: arguments, toleratesNonZeroExit: true)
+    }
+
+    /// Set a piece in the house style. Never replaces a hand-built page: the
+    /// runner refuses, and `output` can name a file beside it instead.
+    public static func renderPiece(workspace: String, folder: String, output: String? = nil) -> RunnerCommand {
+        var arguments = ["render", "--workspace", workspace, "--piece", folder]
+        if let output, !output.isEmpty { arguments += ["--output", output] }
+        return RunnerCommand(name: "piece.render", script: "piece.mjs", arguments: arguments)
     }
 
     /// `--approve` is always present: calling this is the approval.

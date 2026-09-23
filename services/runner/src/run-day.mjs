@@ -1,3 +1,4 @@
+import { reviewedRecall } from "./check-in.mjs";
 /**
  * One daily conversation, locally.
  *
@@ -105,7 +106,7 @@ function contextVariables({ workspace, date, runId, mode, sources, capture, prov
     outside_corpus_scope: "verified public source records in the local workspace",
     outside_source_limit: sources.length,
     outside_coverage_notes:
-      "Local collector only: RSS feeds and public pages listed in preferences/feeds.json. No authenticated surfaces. Recurrence across pockets is not established by this corpus.",
+      "Local collector: configured RSS/pages and individually verified public pages discovered through the public-topics research step. No authenticated surfaces. Recurrence across pockets is not established by this corpus.",
     outside_source_observations: sources.map((s) => ({
       source_item_id: s.source_item_id,
       kind: s.kind,
@@ -145,21 +146,22 @@ function sourceSheet(sources) {
   return sources
     .map(
       (s) =>
-        `- ${s.source_item_id} · ${s.kind} · ${s.title ?? "untitled"} · ${s.url}\n  captured ${s.captured_at} · hash ${s.content_hash}\n  excerpt: ${s.excerpt ?? ""}`,
+        `- ${s.source_item_id} · ${s.kind} · ${s.title ?? "untitled"} · ${s.url}\n  captured ${s.captured_at} · published ${s.metadata?.published_at ?? "unknown"} · hash ${s.content_hash}\n  excerpt: ${s.excerpt ?? ""}`,
     )
     .join("\n");
 }
 
-function userMessage({ context, capture, sources, mode }) {
+function userMessage({ context, capture, sources, mode, recall }) {
   return [
     context,
     "",
     "## Source records available to this run",
     "",
-    "These are the only sources you may cite. Cite them by source_item_id.",
+    "These are the only sources you may cite. Cite them by source_item_id. Retrieval is not publication: if publication time is unknown or old, never describe the item as a new development without dated evidence.",
     "",
     sourceSheet(sources),
     "",
+    ...(recall ? ["## Agent-observed recap, reviewed by Tony", JSON.stringify(recall), "The recap remains agent-authored and uncertain. Human corrections below take precedence. Do not attribute the recap wording to Tony."] : []),
     "## Today's capture, verbatim, authored by Tony",
     "",
     "Preserve his wording. Do not rewrite it, only read it.",
@@ -427,6 +429,9 @@ export async function runDay({
     return finish("failed", { completion_mode: "none" });
   }
 
+  let recall;
+  try { recall = await reviewedRecall(workspace, date, capture); }
+  catch (error) { blockers.push("reviewed_recall_changed"); notes.push(error.message); return finish("failed", { completion_mode: "none" }); }
   const sources = await loadSources(workspace, { date, windowDays });
   if (sources.length < MIN_SOURCES) {
     blockers.push("outside_context_not_ready");
@@ -446,8 +451,10 @@ export async function runDay({
   let answer;
   try {
     answer = await providerImpl.converse({
-      system: bundle.system_prompt,
-      user: userMessage({ context, capture, sources, mode }),
+      system: bundle.system_prompt + `
+LOCAL RUNNER ADAPTER (specific to this invocation):
+This is the isolated local synthesis step, not a Hub/MCP agent session. The host has already checked the human capture, pinned any reviewed recap, loaded at least two verified public source records within the time window, and built the runtime context below. These are the local equivalents of capability discovery and observe_source; no Hub tool call was made or is required. You must not call list_capabilities, observe_source, list_feed_connections, publish_feed_item, or complete_run here. Do not fetch more data or inspect local files. Return the schema's completion object instead of calling complete_run; the host records that result. Missing Hub tools alone are not a blocker in this adapter. Use only the supplied evidence; mark genuine evidence or capture limitations partial. A short human check-in may be a product priority or correction, not an autobiography. Do not invent a fuller day. Reviewed agent recall remains uncertain, separately attributed context and cannot establish a belief.`,
+      user: userMessage({ context, capture, sources, mode, recall }),
       schema: conversationSchema,
       sourceIds,
       positions: capture.positions,
@@ -463,6 +470,17 @@ export async function runDay({
     blockers.push(answer.stop_reason && answer.stop_reason !== "end_turn" ? `provider_stop_${answer.stop_reason}` : "provider_output_unparseable");
     if (answer.stop_details) notes.push(`stop details: ${JSON.stringify(answer.stop_details)}`);
     return finish("failed", { completion_mode: "none" });
+  }
+
+  const completion = answer.output.completion;
+  if (!completion || !["completed", "partial"].includes(completion.status)) {
+    blockers.push("provider_output_unparseable"); notes.push("Provider omitted an explicit completion status.");
+    return finish("failed", { completion_mode: "none" });
+  }
+  if (completion.status === "partial" || completion.blocker) {
+    blockers.push("provider_reported_partial");
+    notes.push(completion.blocker || answer.output.honest_note || "Provider could not finish the synthesis.");
+    return finish("partial", { completion_mode: "none" });
   }
 
   const { conversation, dropped } = validateConversation(answer.output, sourceIds);
@@ -513,6 +531,7 @@ export async function runDay({
     generated_at: startedAt.toISOString(),
     provider: providerImpl.name,
     model: providerImpl.model,
+    reviewed_recall: recall ?? null,
     capture: {
       path: capture.relativePath,
       sha256: capture.sha256,

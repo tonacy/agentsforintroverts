@@ -43,6 +43,36 @@ product fixtures. Feed plans, receipts, and active cue files are real local
 state. A cue is not Context Kernel evidence, a belief, or proof of a live
 recurring network projection.
 
+## The Desk
+
+With a workspace chosen, Today is the Desk, in the order the loop runs:
+
+1. **Put it on the desk.** A capture well at the top takes words, links, files
+   and screenshots (type, paste or drop; ⌘↩ to put it down, ⌘N from anywhere in
+   the app). The menu bar item does the same without opening the window. Each
+   page is written under `captures/<date>/` with `author: human`, verbatim;
+   dropped files are copied beside it and the originals stay where they were.
+2. **Loose pages** are the ones no conversation has gathered yet. *Talk these
+   through* continues in Codex, which reads them. When a work item or piece names
+   a page in its sources, the page leaves the row. *Set aside* keeps the words
+   and takes the page off the desk.
+3. **Pieces** are the work that became something to share, each shown as a
+   picture of its page with a dot per form: hollow for a draft, red once you
+   signed it, green once it is out in the world.
+4. **In progress** is Codex's reading of the work, as before.
+
+Each piece opens in its own **studio** window: the essay as it will read, each
+channel draft in the shape its readers will meet (LinkedIn's fold, X's 280
+characters), and the social cards, which export as PNGs. Beside every form is
+**your mark**. Signing covers that form's exact bytes; editing a word unsigns it.
+When you publish it yourself, paste the public link and the Desk keeps it as a
+receipt for those bytes. *Ask for a change* leaves your words in the piece's
+`review/requests.md` for the next conversation. Nothing is ever posted for you.
+
+The core is tested in `DeskTests.swift`. For design review, a debug build run
+with `QUIET_DESK_SNAPSHOT_DIR` (and `QUIET_DESK_SNAPSHOT_WORKSPACE`) pictures its
+own windows and quits; it keeps its settings apart from yours.
+
 ## Providers
 
 Quiet Desk runs the daily conversation through a provider you already use on

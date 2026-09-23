@@ -174,9 +174,9 @@ function buildRecord({ item, now, label }) {
   };
 }
 
-export async function collect({ workspace, fetch: fetchImpl = globalThis.fetch, now = () => new Date(), max = 20, timeoutMs = DEFAULT_TIMEOUT_MS }) {
+export async function collect({ workspace, fetch: fetchImpl = globalThis.fetch, now = () => new Date(), max = 20, timeoutMs = DEFAULT_TIMEOUT_MS, pages, refresh = false }) {
   const stamp = now();
-  const preferences = (await readJsonIfExists(join(workspace, "preferences", "feeds.json"))) ?? { feeds: [], pages: [] };
+  const preferences = pages ? { feeds: [], pages } : (await readJsonIfExists(join(workspace, "preferences", "feeds.json"))) ?? { feeds: [], pages: [] };
   const existing = new Set((await loadAllSources(workspace)).map(({ record }) => record.external_id));
   const written = [];
   const skipped = [];
@@ -199,12 +199,16 @@ export async function collect({ workspace, fetch: fetchImpl = globalThis.fetch, 
     try {
       const html = await fetchText(fetchImpl, page.url, timeoutMs);
       const extracted = extractPage(html);
+      if (/^(client challenge|just a moment|access denied|attention required|security check)/i.test(extracted.title)
+          || /verify (?:that )?you are (?:a )?human|enable javascript and cookies to continue/i.test(extracted.text.slice(0, 600))) {
+        throw new Error("Source returned an access challenge, not readable evidence.");
+      }
       candidates.push({
         kind: "public_web",
         url: page.url,
         title: extracted.title || page.label || page.url,
         excerpt: excerptOf([extracted.description, extracted.text].filter(Boolean).join(" ")),
-        published: null,
+        published: toIso(/<meta[^>]+(?:property|name)=["'](?:article:published_time|datePublished|date)["'][^>]+content=["']([^"']+)/i.exec(html)?.[1] ?? /"datePublished"\s*:\s*"([^"]+)"/.exec(html)?.[1] ?? ""),
         label: page.label ?? page.url,
       });
     } catch (error) {
@@ -215,7 +219,7 @@ export async function collect({ workspace, fetch: fetchImpl = globalThis.fetch, 
   const usedIds = new Set();
   for (const candidate of candidates) {
     const canonical = canonicalUrl(candidate.url);
-    if (existing.has(canonical)) {
+    if (!refresh && existing.has(canonical)) {
       skipped.push(canonical);
       continue;
     }

@@ -3,9 +3,12 @@ import SwiftUI
 
 @MainActor
 struct AppShellView: View {
+    @AppStorage("quietDesk.appearance") private var appearance = "system"
     @Bindable var store: QuietDeskStore
     @Bindable var providerStore: ProviderStore
     @Bindable var router: AppRouter
+    @Environment(\.openWindow) private var openWindow
+    @Environment(DeskStore.self) private var desk
 
     var body: some View {
         NavigationSplitView(columnVisibility: $router.columnVisibility) {
@@ -15,6 +18,7 @@ struct AppShellView: View {
             contentColumn
         }
         .navigationSplitViewStyle(.balanced)
+        .preferredColorScheme(appearance == "light" ? .light : appearance == "dark" ? .dark : nil)
         .inspector(isPresented: inspectorPresented) {
             VStack(spacing: 0) {
                 HStack {
@@ -43,6 +47,7 @@ struct AppShellView: View {
         .task {
             await store.loadIfNeeded()
             router.ensureSelection(in: store.snapshot)
+            if SnapshotHarness.isActive { await SnapshotHarness.run(openWindow: openWindow, desk: desk) }
         }
         .onChange(of: store.loadState) { _, _ in
             router.ensureSelection(in: store.snapshot)

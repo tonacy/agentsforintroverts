@@ -12,6 +12,7 @@ struct RunTodayPanel: View {
 
     @State private var showApproveSheet = false
     @State private var includeInside = false
+    @State private var workspaceInput = "~/Quiet Desk"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -350,12 +351,19 @@ struct RunTodayPanel: View {
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+            TextField("Workspace path", text: $workspaceInput)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityIdentifier("quiet-desk.workspace.path")
+            Button("Use this workspace") { Task { await providerStore.setWorkspace(path: workspaceInput) } }
+                .disabled(providerStore.isBusy || workspaceInput.isEmpty)
+                .accessibilityIdentifier("quiet-desk.workspace.use")
+            if let error = providerStore.lastError { Text(error).foregroundStyle(.red) }
             Button("Choose workspace folder…") {
                 if let path = MacHelpers.chooseDirectory(
                     title: "Choose the Quiet Desk workspace",
                     message: "A private folder copied from templates/quiet-desk-publishing."
                 ) {
-                    providerStore.workspacePath = path
+                    Task { await providerStore.setWorkspace(path: path) }
                 }
             }
             .buttonStyle(.borderedProminent)

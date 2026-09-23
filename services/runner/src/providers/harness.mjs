@@ -24,21 +24,27 @@ const defaultFs = {
 /** Runs a process to completion, feeding stdin and collecting both streams. */
 export function spawnProcess({ bin, args, cwd, stdin, env, timeoutMs = 10 * 60 * 1000 }) {
   return new Promise((resolve, reject) => {
-    const child = nodeSpawn(bin, args, { cwd, env, stdio: ["pipe", "pipe", "pipe"] });
+    const child = nodeSpawn(bin, args, { cwd, env, stdio: ["pipe", "pipe", "pipe"], detached: process.platform !== "win32" });
     let stdout = "";
     let stderr = "";
+    const terminate = () => {
+      try { if (process.platform !== "win32") process.kill(-child.pid, "SIGTERM"); else child.kill("SIGTERM"); } catch { /* already exited */ }
+    };
+    const onTerminate = () => { terminate(); process.exit(143); };
+    process.once("SIGTERM", onTerminate);
+    const cleanup = () => { clearTimeout(timer); process.removeListener("SIGTERM", onTerminate); };
     const timer = setTimeout(() => {
-      child.kill("SIGTERM");
+      terminate();
       reject(new Error(`${bin} did not finish within ${Math.round(timeoutMs / 1000)}s`));
     }, timeoutMs);
     child.stdout.on("data", (chunk) => (stdout += chunk));
     child.stderr.on("data", (chunk) => (stderr += chunk));
     child.on("error", (error) => {
-      clearTimeout(timer);
+      cleanup();
       reject(error);
     });
     child.on("close", (code) => {
-      clearTimeout(timer);
+      cleanup();
       resolve({ code, stdout, stderr });
     });
     child.stdin.on("error", () => {});
@@ -137,7 +143,7 @@ export function claudeProvider({ bin = "claude", model = null, spawn = spawnProc
  * Codex CLI in non-interactive mode. Read-only sandbox, ephemeral session, the
  * person's config file ignored so no MCP server or plugin joins the run.
  */
-export function codexProvider({ bin = "codex", model = null, spawn = spawnProcess, fs = defaultFs, env = process.env } = {}) {
+export function codexProvider({ bin = "codex", model = null, spawn = spawnProcess, fs = defaultFs, env = process.env, config = [] } = {}) {
   return {
     name: "codex",
     model,
@@ -163,6 +169,7 @@ export function codexProvider({ bin = "codex", model = null, spawn = spawnProces
           outPath,
           "--json",
         ];
+        for (const value of config) args.push("-c", value);
         if (model) args.push("-m", model);
         args.push("-");
 

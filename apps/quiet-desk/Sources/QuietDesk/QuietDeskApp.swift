@@ -8,30 +8,56 @@ struct QuietDeskApp: App {
     @State private var store: QuietDeskStore
     @State private var providerStore: ProviderStore
     @State private var router: AppRouter
+    @State private var desk = DeskStore()
 
     init() {
+        // A snapshot run keeps its settings apart from the person's own.
+        let defaults = SnapshotHarness.defaults ?? .standard
         _store = State(initialValue: QuietDeskStore(
             client: .bundledSyntheticFixtures,
-            defaults: .standard,
+            defaults: defaults,
             feedStateRepository: .applicationSupport
         ))
-        _providerStore = State(initialValue: ProviderStore(
-            bridge: ProcessRunnerBridge(),
-            defaults: .standard
-        ))
+        let providers = ProviderStore(bridge: ProcessRunnerBridge(), defaults: defaults)
+        if let workspace = SnapshotHarness.workspace { providers.workspacePath = workspace }
+        if !providers.hasWorkspace {
+            let defaultWorkspace = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Quiet Desk")
+            let existing = providers.workspacePath
+            providers.workspacePath = defaultWorkspace.path
+            if !providers.hasWorkspace { providers.workspacePath = existing }
+        }
+        _providerStore = State(initialValue: providers)
         _router = State(initialValue: AppRouter())
     }
 
     var body: some Scene {
         WindowGroup("Quiet Desk", id: "main") {
             AppShellView(store: store, providerStore: providerStore, router: router)
+                .environment(desk)
+                .snapshotActiveAppearance()
                 .frame(minWidth: 880, minHeight: 600)
         }
         .defaultSize(width: 1_120, height: 760)
         .commands {
             SidebarCommands()
+            CommandGroup(replacing: .newItem) {
+                Button("New Loose Page") {
+                    router.destination = .conversation
+                    router.captureFocus = true
+                }
+                .keyboardShortcut("n", modifiers: .command)
+            }
             QuietDeskCommands(store: store, providerStore: providerStore, router: router)
         }
+
+        WindowGroup("Piece", id: "piece", for: String.self) { $folder in
+            if let folder {
+                PieceStudioView(desk: desk, providerStore: providerStore, folder: folder)
+                    .environment(desk)
+                    .snapshotActiveAppearance()
+            }
+        }
+        .defaultSize(width: 1_320, height: 860)
 
         Settings {
             QuietDeskSettingsView(store: store, providerStore: providerStore)
@@ -39,13 +65,14 @@ struct QuietDeskApp: App {
 
         MenuBarExtra(
             "Quiet Desk",
-            systemImage: "circle.grid.cross",
+            systemImage: "square.and.pencil",
             isInserted: Binding(
                 get: { store.menuBarEnabled },
                 set: { store.menuBarEnabled = $0 }
             )
         ) {
-            MenuBarStatusView(store: store)
+            MenuBarStatusView(store: store, providerStore: providerStore)
+                .environment(desk)
         }
         .menuBarExtraStyle(.window)
     }

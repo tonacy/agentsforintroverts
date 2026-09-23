@@ -7,6 +7,7 @@ struct DailyConversationView: View {
     @Bindable var providerStore: ProviderStore
     @Bindable var router: AppRouter
 
+    @Environment(\.colorScheme) private var colorScheme
     @State private var mode: DailyConversationMode = .notChecked
     @State private var cueCalibrations: [String: CueCalibration] = [:]
 
@@ -24,6 +25,9 @@ struct DailyConversationView: View {
 
     var body: some View {
         Group {
+            if providerStore.hasWorkspace {
+                conversation
+            } else {
             switch store.loadState {
             case .idle, .loading:
                 loadingView
@@ -34,8 +38,9 @@ struct DailyConversationView: View {
             case .loaded:
                 conversation
             }
+            }
         }
-        .navigationTitle("Daily conversation")
+        .navigationTitle(providerStore.hasWorkspace ? "On the desk" : "Daily conversation")
         .accessibilityLabel("Daily conversation")
         .onAppear {
             store.refreshFeedStateSilently()
@@ -47,24 +52,30 @@ struct DailyConversationView: View {
 
         return ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                RunTodayPanel(providerStore: providerStore, router: router, mode: mode)
+                if providerStore.hasWorkspace {
+                    CodexCompanionView(providerStore: providerStore, router: router)
+                } else {
+                    RunTodayPanel(providerStore: providerStore, router: router, mode: mode)
+                }
                 if !providerStore.hasWorkspace {
                     connectionBanner
                 }
-                introduction
-                modeChooser
+                if !providerStore.hasWorkspace {
+                    introduction
+                    modeChooser
+                }
 
-                if mode != .notChecked {
+                if mode != .notChecked && !providerStore.hasWorkspace {
                     Divider()
                     conversationResult(projection)
                 }
             }
             .padding(.horizontal, 28)
             .padding(.vertical, 24)
-            .frame(maxWidth: 780, alignment: .leading)
+            .frame(maxWidth: providerStore.hasWorkspace ? 1320 : 780, alignment: .leading)
             .frame(maxWidth: .infinity, alignment: .top)
         }
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(providerStore.hasWorkspace ? DeskPalette(scheme: colorScheme).canvas : Color(nsColor: .windowBackgroundColor))
     }
 
     private var connectionBanner: some View {

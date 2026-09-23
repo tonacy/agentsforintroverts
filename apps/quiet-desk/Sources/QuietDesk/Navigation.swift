@@ -38,6 +38,8 @@ final class AppRouter {
     var connectionKind: ConnectionKind = .providers
     var inspectorSelection: InspectorSelection?
     var columnVisibility: NavigationSplitViewVisibility = .all
+    /// Set to put the cursor in the capture well (⌘N).
+    var captureFocus = false
 
     var selectedFeedID: UUID? {
         guard case .feed(let id) = inspectorSelection else { return nil }

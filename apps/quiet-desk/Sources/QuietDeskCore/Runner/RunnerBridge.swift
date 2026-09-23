@@ -61,15 +61,22 @@ public struct ProcessRunnerBridge: RunnerBridge {
         let stderr = Pipe()
         process.standardOutput = stdout
         process.standardError = stderr
-        process.standardInput = FileHandle.nullDevice
+        let stdin = Pipe()
+        process.standardInput = command.input == nil ? FileHandle.nullDevice : stdin.fileHandleForReading
 
         let box = ProcessBox(process: process)
+        let outBuffer = RunnerDataBuffer()
+        let errBuffer = RunnerDataBuffer()
+        let readers = DispatchGroup()
+        readers.enter()
+        readers.enter()
 
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<RunnerOutput, Error>) in
                 process.terminationHandler = { finished in
-                    let outData = stdout.fileHandleForReading.readDataToEndOfFile()
-                    let errData = stderr.fileHandleForReading.readDataToEndOfFile()
+                    readers.wait()
+                    let outData = outBuffer.data
+                    let errData = errBuffer.data
                     let errText = String(decoding: errData, as: UTF8.self)
                     let tail = errText.split(separator: "\n").suffix(6).joined(separator: "\n")
                     let code = finished.terminationStatus
@@ -84,7 +91,25 @@ public struct ProcessRunnerBridge: RunnerBridge {
                     continuation.resume(returning: RunnerOutput(stdout: outData, exitCode: code, stderrTail: tail))
                 }
                 do {
+                    if Task.isCancelled {
+                        continuation.resume(throwing: RunnerError.cancelled)
+                        return
+                    }
                     try process.run()
+                    // Drain both pipes while the child runs, including large context responses.
+                    DispatchQueue.global().async {
+                        outBuffer.set(stdout.fileHandleForReading.readDataToEndOfFile())
+                        readers.leave()
+                    }
+                    DispatchQueue.global().async {
+                        errBuffer.set(stderr.fileHandleForReading.readDataToEndOfFile())
+                        readers.leave()
+                    }
+                    if Task.isCancelled { process.terminate() }
+                    if let input = command.input {
+                        try? stdin.fileHandleForWriting.write(contentsOf: Data(input.utf8))
+                        try? stdin.fileHandleForWriting.close()
+                    }
                 } catch {
                     continuation.resume(throwing: error)
                 }
@@ -138,4 +163,11 @@ public actor StubRunnerBridge: RunnerBridge {
         }
         return RunnerOutput(stdout: Data(response.utf8), exitCode: code, stderrTail: "")
     }
+}
+
+private final class RunnerDataBuffer: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value = Data()
+    var data: Data { lock.withLock { value } }
+    func set(_ data: Data) { lock.withLock { value = data } }
 }

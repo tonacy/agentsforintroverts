@@ -13,8 +13,13 @@ const stringArray = { type: "array", items: { type: "string" } };
 export const conversationSchema = {
   type: "object",
   additionalProperties: false,
-  required: ["developments", "inside_reading", "places", "return_tomorrow", "honest_note"],
+  required: ["completion", "developments", "inside_reading", "places", "return_tomorrow", "honest_note"],
   properties: {
+    completion: {
+      type: "object", additionalProperties: false, required: ["status", "blocker"],
+      properties: { status: { type: "string", enum: ["completed", "partial"] }, blocker: { type: ["string", "null"] } },
+      description: "Report partial if synthesis is blocked. Zero developments can be completed only when a valid bounded review found nothing worth surfacing."
+    },
     developments: {
       type: "array",
       description: "At most three outside developments that plausibly matter. Every claim must cite loaded source_item_ids.",

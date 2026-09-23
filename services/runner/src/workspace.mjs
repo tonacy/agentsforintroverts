@@ -172,6 +172,7 @@ export async function loadSources(workspace, { date, windowDays = 7 }) {
   // after the date ends rather than at UTC midnight.
   const dayEnd = dayStart + 2 * 86_400_000;
   const all = await loadAllSources(workspace);
+  const seen = new Set();
   return all
     .map(({ record }) => record)
     .filter((record) => record.public_revalidation?.status === "verified")
@@ -179,5 +180,6 @@ export async function loadSources(workspace, { date, windowDays = 7 }) {
       const captured = Date.parse(record.captured_at);
       return Number.isFinite(captured) && captured >= windowStart && captured < dayEnd;
     })
-    .sort((a, b) => Date.parse(b.captured_at) - Date.parse(a.captured_at));
+    .sort((a, b) => Date.parse(b.captured_at) - Date.parse(a.captured_at))
+    .filter(record => { const key = record.external_id ?? record.url; if (seen.has(key)) return false; seen.add(key); return true; });
 }

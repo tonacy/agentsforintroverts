@@ -49,6 +49,55 @@ final class ProviderStoreTests: XCTestCase {
         return store
     }
 
+    func testResearchFailureNeverRunsConversationAndKeepsUsefulError() async {
+        let bridge = StubRunnerBridge(responses: [
+            "research": #"{"written": [], "skipped": [], "errors": [{"url":"https://example.com", "error":"HTTP 403"}]}"#,
+        ])
+        let store = makeStore(bridge: bridge)
+        await store.researchAndRun(mode: .short)
+        XCTAssertTrue(store.lastError?.contains("HTTP 403") == true)
+        let calls = await bridge.calls
+        XCTAssertEqual(calls.map(\.name), ["research"])
+        XCTAssertFalse(calls[0].arguments.contains(store.publicTopics))
+        XCTAssertTrue(calls[0].input?.contains(store.publicTopics) == true)
+    }
+
+    func testWorkspaceChangeClearsOldProviderAndRecapState() async {
+        let bridge = StubRunnerBridge(responses: ["providers.list": Self.catalogPreferringClaude, "status": Self.statusBefore])
+        let store = makeStore(bridge: bridge)
+        await store.refreshProviders()
+        await store.refreshStatus()
+        XCTAssertNotNil(store.preferredProvider)
+        store.workspacePath = "/different"
+        XCTAssertNil(store.preferredProvider)
+        XCTAssertNil(store.status)
+        XCTAssertNil(store.lastRun)
+        XCTAssertNil(store.conversationText)
+    }
+
+    func testWorkspacePathEntryValidatesAndLoadsTheNewWorkspace() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        for folder in ["context", "preferences"] {
+            try FileManager.default.createDirectory(at: root.appendingPathComponent(folder), withIntermediateDirectories: true)
+        }
+        let bridge = StubRunnerBridge(responses: [
+            "providers.list": Self.catalogPreferringClaude, "status": Self.statusBefore, "check-in.read": "null",
+            "companion.status": #"{"revision":"0","open_questions":[],"updates":[]}"#
+        ])
+        let store = makeStore(bridge: bridge)
+        await store.setWorkspace(path: "/does-not-exist")
+        XCTAssertEqual(store.workspacePath, "/w")
+        XCTAssertNotNil(store.lastError)
+        await store.setWorkspace(path: root.path)
+        XCTAssertEqual(store.workspacePath, root.standardizedFileURL.path)
+        XCTAssertNotNil(store.status)
+        XCTAssertNotNil(store.companion)
+        XCTAssertNil(store.lastError)
+        let calls = await bridge.calls
+        XCTAssertTrue(calls.allSatisfy { $0.arguments.contains(root.standardizedFileURL.path) })
+    }
+
     func testRefreshProvidersFillsTheCatalog() async {
         let bridge = StubRunnerBridge(responses: ["providers.list": Self.catalog])
         let store = makeStore(bridge: bridge)

@@ -142,6 +142,7 @@ test("drops model claims that cite unknown sources and records what was dropped"
         stop_reason: "end_turn",
         usage: { input_tokens: 1, output_tokens: 1 },
         output: {
+          completion: { status: "completed", blocker: null },
           developments: [
             { title: "Good", distillation: "d", source_item_ids: [ids[0]], disagreement: null, why_it_matters: "w" },
             { title: "Invented", distillation: "d", source_item_ids: ["source_made_up"], disagreement: null, why_it_matters: "w" },
@@ -188,6 +189,7 @@ test("everything dropped means partial", async () => {
         stop_reason: "end_turn",
         usage: {},
         output: {
+          completion: { status: "completed", blocker: null },
           developments: [{ title: "x", distillation: "d", source_item_ids: ["ghost"], disagreement: null, why_it_matters: "w" }],
           inside_reading: { established_positions: [], forming: [] },
           places: [],

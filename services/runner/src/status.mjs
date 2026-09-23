@@ -68,12 +68,13 @@ export async function dayStatus({ workspace, date, windowDays = 7, now = () => n
     latest_run: await latestRun(workspace, date),
     conversation: {
       exists: conversation !== null,
-      path: conversationMd,
+      path: conversation?.mode === "no_new_input" ? null : conversation?.markdown_path ?? conversationMd,
       places: conversation?.places?.length ?? 0,
       developments: conversation?.developments?.length ?? 0,
       public_exported: publicExported,
       public_path: publicExported ? publicPath : null,
     },
+    public_topics: (await readJsonIfExists(join(workspace, "preferences", "check-in.json")))?.public_topics ?? null,
     provider_preference: (await readPreference(workspace).then((p) => (p ? { provider: p.provider, model: p.model } : null))),
   };
 }

@@ -13,6 +13,7 @@ export function fixtureProvider() {
         stop_reason: "end_turn",
         usage: { input_tokens: 0, output_tokens: 0, note: "fixture provider; no tokens were spent" },
         output: {
+          completion: { status: "completed", blocker: null },
           developments: [
             {
               title: "Agents that post for you",

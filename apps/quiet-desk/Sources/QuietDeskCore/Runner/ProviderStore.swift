@@ -10,6 +10,11 @@ import Observation
 @MainActor
 @Observable
 public final class ProviderStore {
+    public private(set) var companion: CompanionState?
+    public private(set) var recap: CheckInRecap?
+    public private(set) var conversationText: String?
+    public var conversationMode: DailyConversationMode = .short
+    public var publicTopics = "Personal agents, human authorship, and participation in online networks"
     public private(set) var catalog: ProviderCatalog?
     public private(set) var status: DayStatus?
     public private(set) var isBusy = false
@@ -21,7 +26,11 @@ public final class ProviderStore {
     public private(set) var runStartedAt: Date?
 
     public var workspacePath: String? {
-        didSet { persist(workspacePath, key: Key.workspacePath) }
+        didSet {
+            persist(workspacePath, key: Key.workspacePath)
+            companion = nil; catalog = nil; status = nil; recap = nil; lastRun = nil; conversationText = nil; lastError = nil; lastCollect = nil
+            publicTopics = "Personal agents, human authorship, and participation in online networks"
+        }
     }
 
     public var repoPathOverride: String? {
@@ -41,6 +50,7 @@ public final class ProviderStore {
     private let environmentProvider: () throws -> RunnerEnvironment
     private let today: @Sendable () -> String
     private var runTask: Task<Void, Never>?
+    private var preparationTask: Task<Void, Never>?
 
     public init(
         bridge: any RunnerBridge,
@@ -81,7 +91,13 @@ public final class ProviderStore {
         return URL(fileURLWithPath: workspacePath).lastPathComponent
     }
 
-    public var hasWorkspace: Bool { workspacePath != nil }
+    public var hasWorkspace: Bool {
+        guard let workspacePath else { return false }
+        return ["context", "preferences"].allSatisfy { folder in
+            var directory: ObjCBool = false
+            return FileManager.default.fileExists(atPath: URL(fileURLWithPath: workspacePath).appendingPathComponent(folder).path, isDirectory: &directory) && directory.boolValue
+        }
+    }
 
     public var preferredProvider: ProviderDescriptor? {
         if let catalog, let preferred = catalog.preferredProvider { return preferred }
@@ -108,6 +124,100 @@ public final class ProviderStore {
     public var isRunning: Bool { runTask != nil }
 
     // MARK: Actions
+
+    public func setWorkspace(path: String) async {
+        guard !isBusy else { return }
+        let expanded = NSString(string: path.trimmingCharacters(in: .whitespacesAndNewlines)).expandingTildeInPath
+        var directory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: expanded, isDirectory: &directory), directory.boolValue,
+              FileManager.default.fileExists(atPath: URL(fileURLWithPath: expanded).appendingPathComponent("context").path),
+              FileManager.default.fileExists(atPath: URL(fileURLWithPath: expanded).appendingPathComponent("preferences").path) else {
+            lastError = "Choose an existing Quiet Desk workspace containing context and preferences folders."
+            return
+        }
+        workspacePath = URL(fileURLWithPath: expanded).standardizedFileURL.path
+        await refreshProviders()
+        await refreshStatus()
+        await loadRecap()
+        await refreshCompanion()
+    }
+
+    private func payload(_ value: [String: String]) throws -> String {
+        String(decoding: try JSONEncoder().encode(value), as: UTF8.self)
+    }
+
+    public func refreshCompanion() async {
+        guard let workspacePath, hasWorkspace else { return }
+        await perform(nil) {
+            let output = try await self.bridge.run(.companion("status", workspace: workspacePath), in: try self.currentEnvironment())
+            guard self.workspacePath == workspacePath else { return }
+            self.companion = try Self.decode(CompanionState.self, output)
+        }
+    }
+
+    public func prepareCodexConversation() async -> URL? {
+        guard let workspacePath, hasWorkspace, !isBusy else { return nil }
+        var result: URL?
+        await perform("Opening your Codex conversation") {
+            let output = try await self.bridge.run(.companion("open", workspace: workspacePath), in: try self.currentEnvironment())
+            guard self.workspacePath == workspacePath else { return }
+            let state = try Self.decode(CompanionState.self, output)
+            self.companion = state
+            if let value = state.url, let url = URL(string: value), url.scheme == "codex" {
+                result = url
+            } else { throw RunnerError.decoding("Codex did not return a conversation link.") }
+        }
+        return result
+    }
+
+    /// Set one piece in the house style, beside any hand-built page.
+    public func renderPiece(folder: String, output: String? = nil) async {
+        guard let workspacePath else { return }
+        await perform("Setting the piece in the house style") {
+            _ = try await self.bridge.run(.renderPiece(workspace: workspacePath, folder: folder, output: output), in: try self.currentEnvironment())
+        }
+    }
+
+    public func loadRecap() async {
+        guard let workspacePath else { return }
+        await perform(nil) {
+            let out = try await self.bridge.run(.checkIn("read", workspace: workspacePath, date: self.today()), in: try self.currentEnvironment())
+            self.recap = try Self.decode(CheckInRecap?.self, out)
+        }
+    }
+
+    public func prepareRecap(context: String, useHistory: Bool) async {
+        guard let workspacePath, !isBusy else { return }
+        await performCancellable("Codex is preparing your recap") {
+            let data = try JSONSerialization.data(withJSONObject: ["context": context, "useHistory": useHistory])
+            let command = RunnerCommand.checkIn("prepare", workspace: workspacePath, date: self.today(), input: String(decoding: data, as: UTF8.self))
+            self.recap = try Self.decode(CheckInRecap.self, await self.bridge.run(command, in: try self.currentEnvironment()))
+        }
+    }
+
+    public func saveReflection(_ reflection: String) async {
+        guard let workspacePath, let recap, !isBusy else { return }
+        await perform("Saving your reflection") {
+            let input = try self.payload(["revision": recap.revision, "reflection": reflection])
+            _ = try await self.bridge.run(.checkIn("calibrate", workspace: workspacePath, date: self.today(), input: input), in: try self.currentEnvironment())
+        }
+        if lastError == nil { await refreshStatus() }
+    }
+
+    public func researchAndRun(mode: DailyConversationMode) async {
+        guard let workspacePath, !isBusy else { return }
+        if mode == .noNewInput { await runToday(mode: mode); return }
+        await performCancellable("Codex is researching public sources") {
+            let input = try self.payload(["topics": self.publicTopics])
+            let output = try await self.bridge.run(.research(workspace: workspacePath, date: self.today(), input: input), in: try self.currentEnvironment())
+            self.lastCollect = try Self.decode(CollectResult.self, output)
+            guard let collected = self.lastCollect, collected.written >= 2 else {
+                throw RunnerError.decoding("Fewer than two public sources could be verified. Try different public topics. " + (self.lastCollect?.errors.map(\.message).joined(separator: "; ") ?? ""))
+            }
+        }
+        guard lastError == nil else { return }
+        await runToday(mode: mode)
+    }
 
     public func refreshProviders() async {
         await perform("Checking providers") {
@@ -137,6 +247,10 @@ public final class ProviderStore {
         await perform(nil) {
             let output = try await self.bridge.run(.status(workspace: workspacePath, date: date ?? self.today()), in: try self.currentEnvironment())
             self.status = try Self.decode(DayStatus.self, output)
+            if let topics = self.status?.publicTopics { self.publicTopics = topics }
+            if let path = self.status?.conversation.path, self.status?.conversation.exists == true {
+                self.conversationText = try? String(contentsOfFile: path, encoding: .utf8)
+            } else { self.conversationText = nil }
         }
     }
 
@@ -194,6 +308,7 @@ public final class ProviderStore {
 
     public func cancelRun() {
         runTask?.cancel()
+        preparationTask?.cancel()
     }
 
     /// The approval gate. Calling this is the approval; the flag is always sent.
@@ -220,7 +335,15 @@ public final class ProviderStore {
         try environmentProvider()
     }
 
+    private func performCancellable(_ label: String, _ work: @escaping @MainActor () async throws -> Void) async {
+        let task = Task { await self.perform(label, work) }
+        preparationTask = task
+        await task.value
+        preparationTask = nil
+    }
+
     private func perform(_ label: String?, _ work: @MainActor () async throws -> Void) async {
+        guard !isBusy else { return }
         isBusy = true
         activity = label
         lastError = nil
