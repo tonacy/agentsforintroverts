@@ -6,14 +6,12 @@
   scroll-margin-top: 28px;
 }
 
-.story__intro,
 .story__loop {
   display: grid;
   grid-template-columns: 1fr 1.12fr;
   align-items: center;
   gap: clamp(40px, 6vw, 88px);
 }
-.story__intro { margin-bottom: 110px; }
 .story__illustration {
   width: calc(100% + 72px);
   margin-inline: -36px;
@@ -32,34 +30,9 @@
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 }
-.story__illustration--making { transform: rotate(-1.5deg); }
 .story__illustration--people { transform: rotate(1deg); }
-.story__intro-copy,
 .story__loop-copy { min-width: 0; position: relative; z-index: 1; }
-.story__intro h2 {
-  margin: 22px 0;
-  max-width: 700px;
-  font-family: var(--font-serif);
-  font-size: clamp(40px, 4.8vw, 64px);
-  line-height: 1.04;
-  font-weight: 400;
-  letter-spacing: -0.025em;
-  color: var(--color-leaf);
-  text-wrap: balance;
-}
-.story__lead {
-  max-width: 620px;
-  margin: 0;
-  font-size: 18px;
-  line-height: 29px;
-  color: var(--color-ink-muted);
-  text-wrap: pretty;
-}
-.story__loops { display: flex; flex-direction: column; gap: 110px; }
-.story__loop--making { grid-template-columns: 1.12fr 1fr; }
-.story__loop--making .story__illustration { grid-column: 1; grid-row: 1; }
-.story__loop--making .story__loop-copy { grid-column: 2; grid-row: 1; }
-.story__loop h3 {
+.story__loop h2 {
   margin: 18px 0 16px;
   font-family: var(--font-serif);
   font-size: clamp(34px, 3.8vw, 48px);
@@ -71,11 +44,21 @@
 }
 .story__loop-copy > p:not(.eyebrow) {
   max-width: 490px;
-  margin: 0;
+  margin: 0 0 16px;
   font-size: 16px;
   line-height: 27px;
   color: var(--color-ink-muted);
   text-wrap: pretty;
+}
+.story__loop-copy > .story__aside {
+  margin-top: 26px;
+  padding-left: 16px;
+  border-left: 1px solid var(--color-rule);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.45;
+  color: var(--color-leaf);
 }
 .story__record-note {
   font-family: var(--font-detail);
@@ -122,12 +105,7 @@
 
 @media (max-width: 899px) {
   .story { padding: 48px 0 56px; }
-  .story__intro, .story__loop { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .story__intro { margin-bottom: 56px; }
-  .story__lead { font-size: 17px; line-height: 27px; }
-  .story__loops { gap: 56px; }
-  .story__loop--making .story__illustration,
-  .story__loop--making .story__loop-copy { grid-column: auto; grid-row: auto; }
+  .story__loop { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .story__illustration { width: calc(100% + 32px); margin-inline: -16px; }
   .story__resolution { margin: 40px 0 28px; }
   .story__record > summary { flex-wrap: wrap; gap: 4px 16px; }

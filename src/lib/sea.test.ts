@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildSea, spreadFor, FRAGMENT_POOL } from "./sea";
+import { buildSea, seaWake, spreadFor, FRAGMENT_POOL } from "./sea";
 
 describe("spreadFor", () => {
   it("maps column index to a signed distance from the centre", () => {
@@ -47,5 +47,34 @@ describe("buildSea", () => {
       expect(column.spread).toBeGreaterThanOrEqual(-1);
       expect(column.spread).toBeLessThanOrEqual(1);
     }
+  });
+});
+
+describe("buildSea seeds", () => {
+  it("keeps the default sea stable and lets a second layer differ", () => {
+    const main = buildSea({ columns: 4, lines: 8 });
+    expect(buildSea({ columns: 4, lines: 8, seed: 1013 })).toEqual(main);
+    expect(buildSea({ columns: 4, lines: 8, seed: 4099 }).map((c) => c.text)).not.toEqual(main.map((c) => c.text));
+  });
+});
+
+describe("seaWake", () => {
+  it("parts the columns nearest the pointer and leaves distant ones alone", () => {
+    const near = seaWake(0.52, 0.5, 1);
+    const far = seaWake(0.95, 0.5, 1);
+    expect(near.shift).toBeGreaterThan(20);
+    expect(Math.abs(far.shift)).toBeLessThan(0.5);
+    expect(seaWake(0.48, 0.5, 1).shift).toBeLessThan(-20);
+  });
+
+  it("slows the feed under the pointer but never stops it", () => {
+    expect(seaWake(0.5, 0.5, 1).slow).toBeLessThan(0.6);
+    expect(seaWake(0.5, 0.5, 1).slow).toBeGreaterThan(0.2);
+    expect(seaWake(0.95, 0.5, 1).slow).toBeCloseTo(1, 2);
+  });
+
+  it("has no effect without a pointer or once the sea has parted", () => {
+    expect(seaWake(0.5, null, 1)).toEqual({ shift: 0, slow: 1 });
+    expect(seaWake(0.52, 0.5, 0)).toEqual({ shift: 0, slow: 1 });
   });
 });

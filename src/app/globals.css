@@ -9,6 +9,7 @@
   --font-serif: var(--font-serif), "Georgia", serif;
   --font-detail: var(--font-detail), "Trebuchet MS", sans-serif;
   --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, Menlo, monospace;
 
   /* Paper base - warm cream */
   --color-paper: #FDFBF7;

@@ -161,10 +161,28 @@ the field notes ↗”. Do not set it until substantive field notes are publishi
 ### Landing-page opening
 
 The opening is scrubbed by scroll, never timed. A sea of feed fragments runs
-behind the whole page (`src/components/Crossing.tsx`); scrolling parts it,
-slows it, and hands over to the day's ledger. The maths lives in
-`src/lib/stage-progress.ts` and `src/lib/sea.ts` so it is tested without a
-browser. Reduced motion and no-JavaScript rendering show everything at rest.
+behind the whole page (`src/components/Crossing.tsx`), with a slower far layer
+for depth; a resting pointer parts and slows the columns near it. Scrolling
+parts the sea and slows it, then tells the loop on a desk of paper
+(`src/components/Board.tsx`): most good work never gets published because
+publishing is a second job, so a day's loose pages land, the agents do the
+publishing work, the person reads and signs, and the essay, post and card go
+where their people are, who answer. The beat sheet and every object's pose
+live in `src/lib/passage.ts`, the sea's maths in `src/lib/stage-progress.ts` and
+`src/lib/sea.ts`, all tested without a browser. Reduced motion and no-JavaScript
+rendering show the whole story at rest. The example piece is the house-style
+specimen in `templates/quiet-desk-publishing/piece/specimen/`, about this page.
+
+Behind `?hero=3d`, the same passage plays as one three.js scene
+(`src/lib/hero3d/`): a swell drawn in ink lines like the site's prints, the
+feed as a flotilla of paper notification slips (generic icons, never platform
+logos), a pointer that stills the water, the pages landing on the calm it
+opens, and a crew of small flying robots that press each page into the piece
+section by section. It loads on demand, only with WebGL and when motion is
+welcome, and falls back to the flat opening otherwise. The swell, the
+flotilla, the camera path and the crew's routine are pure and tested without a
+GPU; the crew's routine is scheduled so no robot ever meets another robot or
+another robot's page.
 
 ### Build and verify
 

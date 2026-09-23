@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { publishingChannels, updatesPublicationUrl } from "@/lib/site";
+import { DeskShowcase } from "./DeskShowcase";
 
 import "./practice.css";
 
@@ -30,6 +31,8 @@ export function Practice() {
           </div>
         </div>
       </section>
+
+      <DeskShowcase />
 
       <section className="practice practice--sage" id="field-notes" aria-labelledby="follow-title">
         <div className="page-width practice__follow">

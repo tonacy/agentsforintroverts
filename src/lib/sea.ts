@@ -56,9 +56,9 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-export function buildSea({ columns, lines }: { columns: number; lines: number }): SeaColumn[] {
+export function buildSea({ columns, lines, seed = 1013 }: { columns: number; lines: number; seed?: number }): SeaColumn[] {
   return Array.from({ length: columns }, (_, columnIndex) => {
-    const random = mulberry32(1013 + columnIndex * 7919);
+    const random = mulberry32(seed + columnIndex * 7919);
     const offset = Math.floor(random() * FRAGMENT_POOL.length);
     const stride = 1 + Math.floor(random() * 5);
     const text = Array.from(
@@ -78,4 +78,19 @@ export function buildSea({ columns, lines }: { columns: number; lines: number })
       spread: Number(spread.toFixed(3)),
     };
   });
+}
+
+/**
+ * The wake a pointer leaves in the sea. `column` and `pointer` are fractions
+ * of the viewport width; `strength` fades the effect as the channel opens.
+ * Nearby columns step aside and slow down: in here, the feed makes way.
+ */
+export function seaWake(column: number, pointer: number | null, strength: number): { shift: number; slow: number } {
+  if (pointer === null || strength <= 0) return { shift: 0, slow: 1 };
+  const d = column - pointer;
+  const reach = Math.exp(-((d / 0.085) ** 2));
+  return {
+    shift: Math.sign(d) * 46 * Math.exp(-(((Math.abs(d) - 0.035) / 0.07) ** 2)) * strength,
+    slow: 1 - 0.62 * reach * strength,
+  };
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Newsreader, Source_Sans_3, Inter } from "next/font/google";
+import { Newsreader, Source_Sans_3, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -21,13 +21,21 @@ const inter = Inter({
   display: "swap",
 });
 
+// The agents' voice: ledgers, margin notes, provenance.
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
-    default: "Agents for Introverts — Network fluency on human terms",
+    default: "Agents for Introverts — Publish what you make. Find the people it’s for.",
     template: "%s | Agents for Introverts",
   },
   description:
-    "Agents that turn network-scale discourse into grounded context, common ground, and a few human conversations worth your time.",
+    "Bring what you’re making. Your agents do the publishing work, in your voice. You read it, sign it, and it goes where its people are.",
   authors: [{ name: "Tony Llongueras" }],
   alternates: {
     canonical: "/",
@@ -35,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Agents for Introverts",
     description:
-      "The world comes in. Your lived experience goes out. The human stays in focus.",
+      "Publish what you make, without the work of publishing. Find the two or three people it’s for.",
     url: "/",
     siteName: "Agents for Introverts",
     locale: "en_US",
@@ -45,7 +53,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Agents for Introverts",
     description:
-      "The world comes in. Your lived experience goes out. The human stays in focus.",
+      "Publish what you make, without the work of publishing. Find the two or three people it’s for.",
   },
   metadataBase: new URL("https://agentsforintroverts.com"),
 };
@@ -56,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${newsreader.variable} ${sourceSans.variable} ${inter.variable}`}>
+    <html lang="en" className={`${newsreader.variable} ${sourceSans.variable} ${inter.variable} ${plexMono.variable}`}>
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         {children}
       </body>
