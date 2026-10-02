@@ -118,8 +118,20 @@ swift test
 
 ```bash
 ./scripts/package-app.sh
-open ".build/arm64-apple-macosx/release/Quiet Desk.app"
 ```
+
+The script prints where the bundle went: `swift build -c release --show-bin-path`,
+which is `.build/out/Products/Release/` from Swift 6.4 on. An older
+`.build/arm64-apple-macosx/release/` copy may be stale. To use the app day to
+day, put it in Applications:
+
+```bash
+ditto "$(swift build -c release --show-bin-path)/Quiet Desk.app" "/Applications/Quiet Desk.app"
+open "/Applications/Quiet Desk.app"
+```
+
+Run from Applications, the app cannot find the runner by walking up from
+itself, so choose this repository once in Settings › Runner › Repository.
 
 The bundle is ad-hoc signed for local use. Distribution signing, notarization,
 a live read-only hub adapter, and unlocked-machine visual review are separate
