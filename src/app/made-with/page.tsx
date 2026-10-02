@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Footer, Nav } from "@/components";
+import { DayRecord, Footer, Nav } from "@/components";
+import { parseDay } from "@/lib/day";
+import dayJson from "@/content/day.json";
 import styles from "./made-with.module.css";
+
+// Parsed at build time: a malformed public day fails the export, never the visitor.
+const day = parseDay(dayJson);
 
 export const metadata: Metadata = {
   title: "Made with",
@@ -298,7 +303,7 @@ export default function MadeWithPage() {
             </section>
 
             <section
-              className={`${styles.section} ${styles.lastSection}`}
+              className={styles.section}
               aria-labelledby="responsibility-title"
             >
               <div className={styles.marker} aria-hidden="true">
@@ -324,6 +329,25 @@ export default function MadeWithPage() {
                   circulation without becoming full-time performers for the
                   feed.
                 </p>
+              </div>
+            </section>
+
+            <section
+              className={`${styles.section} ${styles.lastSection}`}
+              aria-labelledby="record-title"
+            >
+              <div className={styles.marker} aria-hidden="true">
+                <span>06</span>
+                <span>The record</span>
+              </div>
+              <div className={styles.prose}>
+                <h2 id="record-title">Every claim opens to its source</h2>
+                <p>
+                  A day of the practice is kept as a ledger: what came in, what
+                  I brought, and where the two met, each claim linked to where
+                  it came from. Here is one, an example day.
+                </p>
+                <DayRecord day={day} />
               </div>
             </section>
           </div>

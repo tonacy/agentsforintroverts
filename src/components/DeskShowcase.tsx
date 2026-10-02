@@ -13,11 +13,11 @@ const STEPS = [
   },
   {
     title: "Your mark",
-    text: "A signature covers one exact form. Change a word and it comes off, so nothing leaves that you did not see.",
+    text: "It still sounds like you because nothing leaves without it. A signature covers one exact form; change a word and it comes off.",
   },
 ] as const;
 
-/** The Mac app the opening describes: where the loop actually happens. */
+/** The Mac app the opening describes: where the loop actually happens, and where your mark goes on. */
 export function DeskShowcase() {
   return (
     <section className="desk-show" aria-labelledby="desk-title">
@@ -26,8 +26,9 @@ export function DeskShowcase() {
           <p className="eyebrow">Quiet Desk · for Mac</p>
           <h2 id="desk-title">Where the loop lives.</h2>
           <p className="desk-show__lead">
-            Your part is the small part. Put things on the desk as they happen, talk them through, and
-            sign what’s ready. Your agents do the writing, a version for each place, and the images.
+            Your part is the small part, and the deciding one. Put things on the desk as they happen,
+            talk them through, and sign what’s ready. A thought can stay private; a draft can wait.
+            Your agents do the writing, a version for each place, and the images.
           </p>
           <ol className="desk-show__steps">
             {STEPS.map((step, i) => (

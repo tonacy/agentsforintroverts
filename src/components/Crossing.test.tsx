@@ -40,7 +40,7 @@ describe("Crossing", () => {
 
   it("offers a way past the passage", () => {
     render(<Crossing />);
-    expect(screen.getByRole("link", { name: /skip ahead/i })).toHaveAttribute("href", "#practice");
+    expect(screen.getByRole("link", { name: /skip ahead/i })).toHaveAttribute("href", "#the-piece");
   });
 
   it("keeps the sea out of the accessibility tree", () => {

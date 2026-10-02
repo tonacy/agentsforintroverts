@@ -3,5 +3,8 @@ export { Nav } from "./Nav";
 export { Footer } from "./Footer";
 export { Crossing } from "./Crossing";
 export { Ledger } from "./Ledger";
+export { PieceReveal } from "./PieceReveal";
+export { DeskShowcase } from "./DeskShowcase";
 export { Story } from "./Story";
+export { DayRecord } from "./DayRecord";
 export { Practice } from "./Practice";

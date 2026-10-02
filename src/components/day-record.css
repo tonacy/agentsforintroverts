@@ -1,0 +1,40 @@
+/* A day's full ledger, folded away until it is asked for. */
+.day-record { margin-top: 28px; border-block: 1px solid var(--color-rule); }
+.day-record > summary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 72px;
+  padding: 20px 0;
+  cursor: pointer;
+  list-style: none;
+  color: var(--color-leaf);
+  font-size: 15px;
+}
+.day-record > summary::-webkit-details-marker { display: none; }
+.day-record__note {
+  margin-left: auto;
+  font-family: var(--font-detail);
+  font-size: 11px;
+  line-height: 18px;
+  color: var(--color-ink-faint);
+}
+.day-record__toggle { position: relative; width: 14px; height: 14px; flex: none; }
+.day-record__toggle::before,
+.day-record__toggle::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+.day-record__toggle::before { top: 6px; left: 0; width: 14px; height: 1px; }
+.day-record__toggle::after { left: 6px; top: 0; width: 1px; height: 14px; }
+.day-record[open] .day-record__toggle::after { display: none; }
+.day-record > .ledger { padding: 8px 0 40px; background: none; }
+.day-record > .ledger > .page-width { width: 100%; }
+.day-record .ledger__head { border-top: none; }
+
+@media (max-width: 899px) {
+  .day-record > summary { flex-wrap: wrap; gap: 4px 16px; }
+  .day-record__note { order: 3; width: 100%; margin: 0; }
+  .day-record__toggle { margin-left: auto; }
+}

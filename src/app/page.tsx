@@ -1,9 +1,4 @@
-import { Nav, Footer, Crossing, Story, Practice } from "@/components";
-import { parseDay } from "@/lib/day";
-import dayJson from "@/content/day.json";
-
-// Parsed at build time: a malformed public day fails the export, never the visitor.
-const day = parseDay(dayJson);
+import { Nav, Footer, Crossing, PieceReveal, DeskShowcase, Story, Practice } from "@/components";
 
 export default function Home() {
   return (
@@ -16,7 +11,9 @@ export default function Home() {
       </div>
       <main id="main-content" tabIndex={-1}>
         <Crossing />
-        <Story day={day} />
+        <PieceReveal />
+        <DeskShowcase />
+        <Story />
         <Practice />
       </main>
       <Footer />

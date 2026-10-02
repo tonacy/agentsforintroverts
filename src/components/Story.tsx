@@ -1,29 +1,26 @@
 import Image from "next/image";
-import type { Day } from "@/lib/day";
-import { Ledger } from "./Ledger";
+import Link from "next/link";
 
 import "./story.css";
 
 /**
- * What comes back. The opening ends on people answering; this is that half of
- * the loop, and the complete public record stays on demand.
+ * What comes back. The opening ends on the people the work was for; this is
+ * the other half of the loop, where their answers become the next day's work,
+ * and where the page's story ends.
  */
-export function Story({ day }: { day: Day }) {
+export function Story() {
   return (
-    <section className="story" id="practice" aria-labelledby="story-title">
+    <section className="story" aria-labelledby="story-title">
       <div className="page-width">
-        <section className="story__loop story__loop--people" aria-labelledby="story-title">
+        <div className="story__loop story__loop--people">
           <div className="story__loop-copy">
             <p className="eyebrow">What comes back</p>
-            <h2 id="story-title">Then the conversations start.</h2>
+            <h2 id="story-title">Their answers land on your desk.</h2>
             <p>
-              A reply, a question, someone working on the same problem. The team keeps finding the
-              places where your work belongs, and brings the people and conversations it finds back
-              to your Desk: something real to answer, or to carry into tomorrow’s work.
-            </p>
-            <p className="story__aside">
-              Four hundred people might share an interest. Two or three might want to build
-              something together.
+              A reply worth answering. A question you hadn’t thought of. Someone building the same
+              thing. The team keeps finding where your work belongs and brings back what it finds, as
+              loose pages for tomorrow: something real to answer, or to carry into the next thing you
+              make.
             </p>
           </div>
           <div className="story__illustration story__illustration--people">
@@ -36,18 +33,12 @@ export function Story({ day }: { day: Day }) {
               sizes="(max-width: 899px) 100vw, 55vw"
             />
           </div>
-        </section>
+        </div>
 
         <p className="story__resolution">Your work keeps moving. You keep making.</p>
-
-        <details className="story__record">
-          <summary>
-            <span>{day.example ? "See the full example day" : "See the published day"}</span>
-            <span className="story__record-note">sources, context, and suggested next steps</span>
-            <span className="story__toggle" aria-hidden="true" />
-          </summary>
-          <Ledger day={day} />
-        </details>
+        <Link className="story__belief" href="/manifesto/">
+          Read the manifesto →
+        </Link>
       </div>
     </section>
   );

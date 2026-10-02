@@ -50,24 +50,8 @@
   color: var(--color-ink-muted);
   text-wrap: pretty;
 }
-.story__loop-copy > .story__aside {
-  margin-top: 26px;
-  padding-left: 16px;
-  border-left: 1px solid var(--color-rule);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 19px;
-  line-height: 1.45;
-  color: var(--color-leaf);
-}
-.story__record-note {
-  font-family: var(--font-detail);
-  font-size: 11px;
-  line-height: 18px;
-  color: var(--color-ink-faint);
-}
 .story__resolution {
-  margin: 88px 0 40px;
+  margin: 88px 0 20px;
   font-family: var(--font-serif);
   font-size: clamp(26px, 3vw, 36px);
   line-height: 1.2;
@@ -75,40 +59,19 @@
   color: var(--color-leaf);
   text-wrap: balance;
 }
-.story__record { border-block: 1px solid var(--color-rule); }
-.story__record > summary {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  min-height: 72px;
-  padding: 20px 0;
-  cursor: pointer;
-  list-style: none;
+.story__belief {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding-block: 8px;
+  border-bottom: 1px solid var(--color-rule);
+  font-family: var(--font-serif);
+  font-size: 22px;
   color: var(--color-leaf);
-  font-size: 15px;
 }
-.story__record > summary::-webkit-details-marker { display: none; }
-.story__record-note { margin-left: auto; }
-.story__toggle { position: relative; width: 14px; height: 14px; flex: none; }
-.story__toggle::before,
-.story__toggle::after {
-  content: "";
-  position: absolute;
-  background: currentColor;
-}
-.story__toggle::before { top: 6px; left: 0; width: 14px; height: 1px; }
-.story__toggle::after { left: 6px; top: 0; width: 1px; height: 14px; }
-.story__record[open] .story__toggle::after { display: none; }
-.story__record > .ledger { padding: 8px 0 40px; background: none; }
-.story__record > .ledger > .page-width { width: 100%; }
-.story__record .ledger__head { border-top: none; }
 
 @media (max-width: 899px) {
   .story { padding: 48px 0 56px; }
   .story__loop { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .story__illustration { width: calc(100% + 32px); margin-inline: -16px; }
-  .story__resolution { margin: 40px 0 28px; }
-  .story__record > summary { flex-wrap: wrap; gap: 4px 16px; }
-  .story__record-note { order: 3; width: 100%; margin: 0; }
-  .story__toggle { margin-left: auto; }
+  .story__resolution { margin: 40px 0 20px; }
 }

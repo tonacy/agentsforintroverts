@@ -460,7 +460,7 @@ export function Crossing() {
 
         <Board />
 
-        <a className="crossing__skip" href="#practice">
+        <a className="crossing__skip" href="#the-piece">
           Skip ahead <span aria-hidden="true">↓</span>
         </a>
         <p className="crossing__scroll" aria-hidden="true">

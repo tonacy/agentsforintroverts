@@ -17,6 +17,13 @@ describe("DeskShowcase", () => {
     expect(screen.getByAltText(/LinkedIn draft.*fold/i)).toBeInTheDocument();
   });
 
+  it("makes the person's mark the reason it still sounds like them", () => {
+    render(<DeskShowcase />);
+    const mark = screen.getByRole("heading", { level: 3, name: "Your mark" }).closest("li")!;
+    expect(mark).toHaveTextContent(/still sounds like you/i);
+    expect(screen.getByText(/a thought can stay private/i)).toBeInTheDocument();
+  });
+
   it("is honest that it is a local prototype that never posts for you", () => {
     render(<DeskShowcase />);
     expect(screen.getByText(/local prototype/i)).toBeInTheDocument();
