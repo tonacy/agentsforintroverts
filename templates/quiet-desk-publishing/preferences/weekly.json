@@ -1,0 +1,9 @@
+{
+  "$comment": "What the Monday draft (services/runner/weekly.mjs) may read. List only projects you are happy to post about; a project with \"private\": true is never read. A commit subject containing any private term is dropped before the model sees it, and a draft that contains one is not saved. Commit subjects are read locally and sent only to the provider you chose.",
+  "schema": "afi.weekly_preferences.v1",
+  "since_days": 7,
+  "projects": [
+    { "name": "agentsforintroverts", "path": "~/Projects/agentsforintroverts" }
+  ],
+  "private_terms": []
+}
