@@ -1,6 +1,7 @@
 # Review packet: I built Woon and waited
 
-Status: **draft — not approved for publication**  
+Status: **superseded by the 2026-10-19 draft — not approved for publication**  
+Current draft: [`2026-10-19-i-built-woon-and-waited-draft.md`](./2026-10-19-i-built-woon-and-waited-draft.md)  
 Sequence: second essay candidate, after the social-network-keys launch essay  
 Human seed: Tony's spoken account of building Woon  
 Authorship threshold: satisfied for the lived experience; unresolved claims are marked below  
