@@ -68,3 +68,73 @@ export function fixtureProvider() {
     },
   };
 }
+
+/**
+ * The Monday draft's stand-in. It drafts from the first unused seed it is
+ * handed, in the shape the real prompt asks for, so the folder layout, the
+ * checks and the note can be exercised offline.
+ */
+export function fixtureWeeklyProvider() {
+  return {
+    name: "fixture",
+    model: "fixture-v1",
+    async converse({ seeds = [] }) {
+      const usage = { input_tokens: 0, output_tokens: 0, note: "fixture provider; no tokens were spent" };
+      const seed = seeds[0];
+      if (!seed) {
+        return {
+          stop_reason: "end_turn",
+          usage,
+          output: {
+            decision: "nothing_this_week",
+            reason: "No unused seed had enough facts to carry a piece.",
+            seed: { source: "none", backlog_number: null, title: "none" },
+            slug: "nothing",
+            essay: null,
+            posts: null,
+            you_add: [],
+            note: "Add a seed to notes/story-backlog.md when something from the week is worth telling.",
+          },
+        };
+      }
+      const paragraph = `${seed.facts ?? "The work moved this week."} This is the part the commits can show.`;
+      const body = [
+        "## What happened",
+        "",
+        paragraph,
+        "",
+        "[YOU ADD: why this mattered to you]",
+        "",
+        ...Array.from({ length: 6 }, () => `${paragraph} It is written plainly so the sample stays readable, and so the essay is long enough to pass the length check on its own.`),
+        "",
+        "## What I'd tell someone else",
+        "",
+        "[YOU ADD: what you believe now]",
+        "",
+        "If you've built something like this, tell me what you tried.",
+        "",
+        "Tony",
+        "",
+        "*Made with Agents for Introverts. My agent helped shape this version. The experience and point of view are mine.*",
+      ].join("\n");
+      return {
+        stop_reason: "end_turn",
+        usage,
+        output: {
+          decision: "draft",
+          reason: `Seed ${seed.number} has the clearest facts.`,
+          seed: { source: "backlog", backlog_number: seed.number, title: seed.title },
+          slug: seed.title,
+          essay: { title: seed.title, subtitle: "A sample draft from the offline fixture.", body_markdown: body },
+          posts: {
+            linkedin: `${seed.title}.\n\n${seed.facts ?? ""}\n\n[YOU ADD: the decision behind it]\n\nWhat would you have done?\n\n[LINK]\n\nMade with Agents for Introverts. The experience and point of view are mine; my agent helped shape this version.`,
+            x: [`${seed.title}.`, "[YOU ADD: the one example]", "What would you have done?\n\nFull story: [LINK]\n\nMade with Agents for Introverts. My agent helped shape this version."],
+            threads: `${seed.title}. [YOU ADD: how it felt]\n\nWhat are you building?\n\n[LINK]\n\nMade with Agents for Introverts. The point of view is mine; my agent helped shape this.`,
+          },
+          you_add: ["Why this mattered to you", "What you believe now"],
+          note: `I drafted seed ${seed.number}, "${seed.title}". The two [YOU ADD] lines are yours.`,
+        },
+      };
+    },
+  };
+}

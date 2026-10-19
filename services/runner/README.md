@@ -172,6 +172,52 @@ node services/runner/status.mjs --workspace "$QD" --date 2026-09-07     # afi.da
 node services/runner/capture.mjs new --workspace "$QD" --date 2026-09-07 # creates capture.md from the template, never overwrites
 ```
 
+## The Monday draft
+
+Once a week, `weekly.mjs` drafts the next piece in the kickoff's shape: an
+essay for Substack and its LinkedIn, X and Threads posts, or a note saying
+nothing this week. It reads three things from the workspace and writes one new
+folder. It never posts.
+
+```bash
+node services/runner/weekly.mjs --workspace "$QD" [--date 2026-10-19] [--provider claude] [--dry-run --out /tmp/monday]
+node services/runner/weekly.mjs schedule --workspace "$QD" > ~/Library/LaunchAgents/com.agentsforintroverts.monday-draft.plist
+```
+
+| Reads | From |
+|---|---|
+| Unused seeds and the public/private table | `notes/story-backlog.md` (`**N. Title**: tag` with `Facts`, `You add`, `Best on` lines) |
+| Last week's links and pasted replies | the newest `drafts/<date>-*/receipts.md` before today, including its `## Replies` section |
+| This week's commit subjects | the projects listed in `preferences/weekly.json`; `private: true` projects are never read |
+
+What lands in the workspace:
+
+```text
+drafts/2026-10-19-<slug>/essay.md      title, subtitle, body with [YOU ADD] and [CONFIRM] markers
+drafts/2026-10-19-<slug>/posts.md      LinkedIn, X (thread), Threads, publish checklist
+drafts/2026-10-19-<slug>/receipts.md   empty links and a Replies section for next Monday
+drafts/2026-10-19-<slug>/draft.json    which seed was used, so it isn't drafted again
+notes/monday/2026-10-19.md             what was drafted, what only you can add, what to fix
+runs/weekly_<date>_<time>.json         status, blocker, inputs counted, usage
+```
+
+The agent may arrange facts the backlog and commits already state. Wherever a
+piece needs Tony's reason, feeling or belief it leaves `[YOU ADD: question]`
+instead of writing one. A private term from `preferences/weekly.json` anywhere
+in the draft stops the run before anything is saved; length limits (280 for X
+with links at 23, 500 for Threads, 3,000 for LinkedIn), missing `[LINK]` or
+footer lines, em dashes and a repeated seed are listed in the note to fix by
+hand. An existing folder is never overwritten.
+
+`schedule` prints a launchd agent that runs the draft every Monday at 08:00
+through the chosen provider (default `claude`). launchd runs a missed job when
+the Mac wakes. Load it with
+`launchctl load ~/Library/LaunchAgents/com.agentsforintroverts.monday-draft.plist`;
+output goes to `runs/monday-draft.log`.
+
+[`examples/weekly-sample/`](./examples/weekly-sample) is a made-up workspace
+with a dry-run draft beside it.
+
 ## What it deliberately does not do
 
 - It does not send, post, reply, follow, like, schedule, or publish anything.
