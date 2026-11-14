@@ -33,7 +33,8 @@ export type LoosePage = (typeof LOOSE_PAGES)[number];
 export type PassageFrame = {
   /** Opacity of each headline. */
   lines: { feed: number; slow: number; bring: number; shape: number; mark: number; travel: number; answer: number };
-  sea: { rate: number; spread: number; opacity: number };
+  /** How far the opening's water has sunk away: 0 at rest, 1 gone. */
+  sea: { spread: number };
   /** Each loose page: how far it has dropped onto the desk, then into the piece. */
   loose: { drop: number; merge: number }[];
   page: { enter: number; title: number; deck: number; figure: number; body: number; colophon: number; notes: number };
@@ -59,11 +60,7 @@ export function passageAt(progress: number): PassageFrame {
       travel: hold(p, 0.805, 0.855, 0.9, 0.94),
       answer: hold(p, 0.912, 0.952, 2, 3),
     },
-    sea: {
-      rate: 1 - 0.92 * ramp(0.06, 0.3, p) + 0.27 * closing,
-      spread: ramp(0.08, 0.32, p) * (1 - 0.45 * closing),
-      opacity: 1 - 0.68 * ramp(0.08, 0.34, p) + 0.2 * closing,
-    },
+    sea: { spread: ramp(0.08, 0.32, p) * (1 - 0.45 * closing) },
     loose: LOOSE_PAGES.map((_, i) => ({
       drop: ramp(0.285 + i * 0.022, 0.335 + i * 0.022, p),
       merge: ramp(0.475 + i * 0.018, 0.525 + i * 0.018, p),
@@ -213,8 +210,8 @@ function travel(pose: Pose, board: Board, t: number, to: [number, number], turn:
     cx: lerp(pose.cx, board.width * (0.5 + to[0]), eased),
     cy: lerp(pose.cy, board.height * (0.5 + to[1]), eased),
     r: pose.r + turn * t,
-    s: pose.s * lerp(1, 0.28, eased),
-    o: pose.o * (1 - 0.35 * eased),
+    s: pose.s * lerp(1, 0.34, eased),
+    o: pose.o * (1 - 0.15 * eased),
   };
 }
 
@@ -290,7 +287,7 @@ export function posesAt(frame: PassageFrame, kind: BoardKind): Poses {
     page: travelled[0],
     arrivals: travelled.map((form) => ({
       cx: Math.min(board.width - ARRIVAL_WIDTH / 2, Math.max(ARRIVAL_WIDTH / 2, form.cx)),
-      cy: form.cy + 74,
+      cy: form.cy + 88,
       r: 0,
       s: 1,
       o: frame.arrivals,

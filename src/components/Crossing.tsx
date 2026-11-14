@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 
-import { buildSea, seaWake } from "@/lib/sea";
 import { stageProgress } from "@/lib/stage-progress";
 import {
   ARRIVAL_WIDTH,
@@ -20,10 +19,10 @@ import {
   type PassageFrame,
   type Pose,
 } from "@/lib/passage";
-import { createContourRenderer, type ContourRenderer } from "@/lib/contour-shader";
+import { CREW_SCREENS, storyProgress } from "@/lib/hero3d/director";
 import type { Hero3D } from "@/lib/hero3d/scene";
 import { Board } from "./Board";
-import { ContourSea } from "./ContourSea";
+import { Water } from "./Water";
 
 import "./crossing.css";
 
@@ -66,19 +65,6 @@ const FINALE_LEAD = "Not more followers.";
 const FINALE_REST = "The two or three who get it.";
 export const FINALE = `${FINALE_LEAD} ${FINALE_REST}`;
 
-const COLUMNS = 10;
-/** A farther, slower layer of the same feed, for depth. */
-const FAR_COLUMNS = 16;
-const LINES = 90;
-/** Must match `.sea__text` line-height in crossing.css. */
-const LINE_HEIGHT = 22;
-/** Must match `.sea--far .sea__text` line-height in crossing.css. */
-const FAR_LINE_HEIGHT = 16;
-/** Pixels per second at full rate. */
-const BASE_SPEED = 46;
-
-type SeaStyle = CSSProperties & { "--speed"?: string };
-
 const SIZES = {
   voice: { w: 270, h: 128 },
   commit: { w: 340, h: 74 },
@@ -97,25 +83,19 @@ function place(element: HTMLElement | null, pose: Pose, size: { w: number; h: nu
 }
 
 /**
- * The opening. A sea of feed fragments runs behind the whole page; a sticky
- * stage holds the story while scrolling parts the sea, slows it, and lets a
- * day's loose pages become one piece that carries your mark out to the people
- * it was for. Progress is scrubbed by scroll, never timed, so the visitor sets the
+ * The opening. The page floats on still water, the feed a few notices far
+ * off; a sticky stage holds the story while scrolling lets the water sink
+ * away and a day's loose pages become one piece that carries your mark out to
+ * the people it was for. Progress is scrubbed by scroll, never timed, so the visitor sets the
  * pace. Reduced motion, or no script, shows the whole story at rest.
  */
 export function Crossing() {
   const stageRef = useRef<HTMLElement>(null);
-  const seaRef = useRef<HTMLDivElement>(null);
-  const farRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLCanvasElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sea = useMemo(() => buildSea({ columns: COLUMNS, lines: LINES }), []);
-  const far = useMemo(() => buildSea({ columns: FAR_COLUMNS, lines: LINES, seed: 4099 }), []);
 
   useEffect(() => {
     const stage = stageRef.current;
-    const seaElement = seaRef.current;
-    if (!stage || !seaElement) return;
+    if (!stage) return;
 
     const find = (name: string) => stage.querySelector<HTMLElement>(`[data-obj="${name}"]`);
     const objects = {
@@ -142,7 +122,6 @@ export function Crossing() {
       stage.style.setProperty("--step-mark", lines.mark.toFixed(3));
       stage.style.setProperty("--step-travel", lines.travel.toFixed(3));
       stage.style.setProperty("--step-answer", lines.answer.toFixed(3));
-      stage.style.setProperty("--sea", frame.sea.opacity.toFixed(3));
       stage.style.setProperty("--spread", frame.sea.spread.toFixed(3));
       if (!flatDesk) return;
 
@@ -172,26 +151,15 @@ export function Crossing() {
 
     // The motion mode is written straight onto the DOM: it is a fact about the
     // visitor's preference, not React state, and flipping it must not re-render
-    // the sea or the desk.
+    // the desk.
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const columns = Array.from(seaElement.querySelectorAll<HTMLElement>(".sea__scroll"));
-    const farColumns = Array.from(farRef.current?.querySelectorAll<HTMLElement>(".sea__scroll") ?? []);
-    const blockHeight = LINES * LINE_HEIGHT;
-    const farBlockHeight = LINES * FAR_LINE_HEIGHT;
-    // Each column keeps its own place so a pointer can slow some and not others.
-    const offsets = sea.map(() => 0);
-    let centres = sea.map((_, i) => (i + 0.5) / COLUMNS);
-    let pointerTarget: number | null = null;
-    let pointerX: number | null = null;
-    let presence = 0;
     // The 3D opening is opt-in while it is being built: `?hero=3d`.
     const wants3D = new URLSearchParams(window.location.search).get("hero") === "3d";
     let hero: Hero3D | null = null;
+    // Where in the scroll the crew finished, if it did so while the visitor watched.
+    let finishedAt: number | null = null;
     let heroLoading = false;
     let disposed = false;
-    let contours: ContourRenderer | null = null;
-    let shaderTime = 0;
-    let lastShaderAt = -Infinity;
     let stageVisible = true;
 
     let top = 0;
@@ -205,82 +173,34 @@ export function Crossing() {
       stageHeight = stage.offsetHeight;
       viewportHeight = window.innerHeight;
       viewportWidth = window.innerWidth;
-      centres = columns.map((scroll, i) => {
-        const column = scroll.parentElement;
-        if (!column || column.offsetWidth === 0) return (i + 0.5) / COLUMNS;
-        return (column.offsetLeft + column.offsetWidth / 2) / Math.max(1, viewportWidth);
-      });
       kind = boardKindFor(viewportWidth, viewportHeight);
       hero?.resize();
       stage.dataset.board = kind;
       stage.style.setProperty("--fit", boardFit(kind, viewportWidth, viewportHeight).toFixed(4));
       stage.style.setProperty("--board-w", `${BOARDS[kind].width}px`);
       stage.style.setProperty("--board-h", `${BOARDS[kind].height}px`);
-      contours?.resize(viewportWidth, viewportHeight);
-      lastShaderAt = -Infinity;
       lastProgress = -1;
     };
     measure();
 
-    let travelled = 0;
-    let last = performance.now();
     let frame = 0;
 
     const tick = (now: number) => {
       frame = 0;
       if (document.hidden || reduced.matches) return;
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-
-      const p = stageProgress(top, stageHeight, window.scrollY, viewportHeight);
+      const raw = stageProgress(top, stageHeight, window.scrollY, viewportHeight);
+      // The 3D passage is longer than its story: the extra scroll is the crew's.
+      const p = hero ? storyProgress(raw, CREW_SCREENS, finishedAt) : raw;
       const current = passageAt(p);
       if (Math.abs(p - lastProgress) > 0.00005) {
         applyFrame(current, hero === null);
         lastProgress = p;
       }
-      if (hero) {
-        // The scene draws the sea and the desk; only the words stay in the page.
-        if (stageVisible) hero.frame(now, p);
-        frame = window.requestAnimationFrame(tick);
-        return;
+      // The 3D scene draws its own sea and desk; only the words stay in the page.
+      if (hero && stageVisible) {
+        if (!hero.frame(now, p)) finishedAt = null;
+        else if (finishedAt === null) finishedAt = raw;
       }
-      travelled += dt * BASE_SPEED * current.sea.rate;
-      shaderTime += dt * current.sea.rate;
-
-      // Share the sea's clock. The GPU draws at most 30fps and only while the
-      // channel is still opening; after that the contours have hushed.
-      const opening = Math.min(1, p / 0.34);
-      if (stageVisible && opening < 1 && now - lastShaderAt >= 1000 / 30) {
-        contours?.draw(shaderTime, opening);
-        lastShaderAt = now;
-      }
-
-      // The pointer's wake: it eases in, follows, and fades when the pointer leaves.
-      const ease = 1 - Math.exp(-dt * 7);
-      presence += ((pointerTarget === null ? 0 : 1) - presence) * ease;
-      if (pointerTarget !== null) pointerX = pointerX === null ? pointerTarget : pointerX + (pointerTarget - pointerX) * ease;
-      const wakeStrength = presence * (1 - current.sea.spread);
-
-      for (let i = 0; i < columns.length; i += 1) {
-        const column = sea[i];
-        const wake = seaWake(centres[i], pointerX, wakeStrength);
-        offsets[i] += dt * BASE_SPEED * current.sea.rate * column.speed * wake.slow;
-        const y = (offsets[i] + column.phase * blockHeight) % blockHeight;
-        // The channel opens from the centre: inner columns step aside most.
-        const away = Math.sign(column.spread) * (0.05 + (1 - Math.abs(column.spread)) * 0.11);
-        const x = away * current.sea.spread * viewportWidth + wake.shift;
-        // The column moves sideways as a whole; only its text scrolls inside the clip.
-        if (columns[i].parentElement) columns[i].parentElement!.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0)`;
-        columns[i].style.transform = `translate3d(0, ${(-y).toFixed(1)}px, 0)`;
-      }
-      for (let i = 0; i < farColumns.length; i += 1) {
-        const column = far[i];
-        const y = (travelled * 0.45 * column.speed + column.phase * farBlockHeight) % farBlockHeight;
-        const away = Math.sign(column.spread) * (0.03 + (1 - Math.abs(column.spread)) * 0.06);
-        if (farColumns[i].parentElement) farColumns[i].parentElement!.style.transform = `translate3d(${(away * current.sea.spread * viewportWidth).toFixed(1)}px, 0, 0)`;
-        farColumns[i].style.transform = `translate3d(0, ${(-y).toFixed(1)}px, 0)`;
-      }
-
       frame = window.requestAnimationFrame(tick);
     };
 
@@ -288,7 +208,6 @@ export function Crossing() {
       window.cancelAnimationFrame(frame);
       frame = 0;
       if (document.hidden || reduced.matches) return;
-      last = performance.now();
       frame = window.requestAnimationFrame(tick);
     };
 
@@ -313,13 +232,9 @@ export function Crossing() {
           stage.style.setProperty(name, "1");
         }
         stage.style.setProperty("--spread", "1");
-        stage.style.setProperty("--sea", "0.35");
-        contours?.dispose();
-        contours = null;
       } else {
         stage.dataset.motion = "scroll";
         void startHero();
-        if (!contours && canvasRef.current) contours = createContourRenderer(canvasRef.current);
         measure();
         applyFrame(passageAt(stageProgress(top, stageHeight, window.scrollY, viewportHeight)));
         onVisibility();
@@ -328,11 +243,9 @@ export function Crossing() {
 
     const onPointer = (event: PointerEvent) => {
       const mouse = event.pointerType === "mouse";
-      pointerTarget = mouse ? event.clientX / Math.max(1, viewportWidth) : null;
       hero?.pointer(mouse ? event.clientX : null, mouse ? event.clientY : null);
     };
     const onLeave = () => {
-      pointerTarget = null;
       hero?.pointer(null, null);
     };
 
@@ -352,6 +265,8 @@ export function Crossing() {
         }
         hero = created;
         stage.dataset.hero = "3d";
+        stage.style.setProperty("--extra-screens", String(CREW_SCREENS));
+        measure();
       } catch {
         if (!disposed) stage.dataset.hero = "flat";
       } finally {
@@ -360,6 +275,8 @@ export function Crossing() {
     };
     const stopHero = () => {
       hero = null;
+      finishedAt = null;
+      stage.style.removeProperty("--extra-screens");
       lease?.release();
       lease = null;
       if (wants3D) delete stage.dataset.hero;
@@ -386,9 +303,8 @@ export function Crossing() {
       document.removeEventListener("visibilitychange", onVisibility);
       reduced.removeEventListener("change", onPreference);
       observer?.disconnect();
-      contours?.dispose();
     };
-  }, [sea, far]);
+  }, []);
 
   return (
     <section
@@ -400,41 +316,20 @@ export function Crossing() {
       aria-label="Opening"
     >
       <canvas ref={heroRef} className="hero3d" aria-hidden="true" />
-      <ContourSea canvasRef={canvasRef} />
-      <div ref={farRef} className="sea sea--far" aria-hidden="true">
-        {far.map((column, index) => (
-          <div className="sea__col" key={index}>
-            <div className="sea__scroll">
-              <div className="sea__text">{column.text}</div>
-              <div className="sea__text">{column.text}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div ref={seaRef} className="sea" aria-hidden="true">
-        {sea.map((column, index) => (
-          <div className="sea__col" key={index} style={{ "--speed": String(column.speed) } as SeaStyle}>
-            {/* The column is the clip box; only the inner scroll moves. */}
-            <div className="sea__scroll">
-              <div className="sea__text">{column.text}</div>
-              <div className="sea__text">{column.text}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
       <div className="crossing__stage">
-        <div className="crossing__pool" aria-hidden="true" />
+        <Water />
 
         <div className="crossing__copy">
-          <Image
-            className="crossing__vessel"
-            src="/brand/drifting-page-mark.png"
-            alt=""
-            width={210}
-            height={210}
-            priority
-          />
+          <span className="crossing__afloat">
+            <Image
+              className="crossing__vessel"
+              src="/brand/drifting-page-mark.png"
+              alt=""
+              width={210}
+              height={210}
+              priority
+            />
+          </span>
           <div className="crossing__lines">
             <h1 className="crossing__line crossing__line--a">{LINE_A}</h1>
             <p className="crossing__line crossing__line--b">{LINE_B}</p>

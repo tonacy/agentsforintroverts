@@ -45,9 +45,9 @@ import {
 } from "three";
 
 import { BOARDS, LOOSE_PAGES, boardKindFor, type BoardKind, type LoosePage } from "../passage";
-import { PX, deskPlacements, droppedAt, seaAt, shotAt, standAt, viewOf, type DeskPlace } from "./director";
-import { ASSEMBLY, PRINT_HEIGHT, READING_ORDER, SECTIONS, advanceTask, crewAt, planCrew, printPlacement, restHeight, type Crew } from "./crew";
-import { advanceClock, fallPose } from "./fall";
+import { PX, deskPlacements, seaAt, shotAt, standAt, viewOf, type DeskPlace } from "./director";
+import { PRINT_HEIGHT, READING_ORDER, SECTIONS, advanceStory, crewAt, planCrew, printPlacement, restHeight, type Crew, type StoryClocks } from "./crew";
+import { fallPose } from "./fall";
 import { buildRobot, robotKit, type Robot } from "./robot";
 import { afloat, partSlip, scatterSlips, type Parting, type Slip } from "./slips";
 import { stepSpring, type Spring } from "./springs";
@@ -55,8 +55,8 @@ import { SWELL_GLSL } from "./swell";
 import { PAGE_SIZES, SLIP_CELL, drawFaces, drawPage, drawPrint, drawShadow, drawSlipAtlas, loadFonts, loadImage, readFonts } from "./textures";
 
 export type Hero3D = {
-  /** Advance and draw one frame. `progress` is the passage's scroll progress. */
-  frame(now: number, progress: number): void;
+  /** Advance and draw one frame. `progress` is the story's progress. Returns whether the crew has finished the piece. */
+  frame(now: number, progress: number): boolean;
   /** The visitor's pointer, in client pixels, or null when it leaves. */
   pointer(clientX: number | null, clientY: number | null): void;
   resize(): void;
@@ -456,7 +456,6 @@ type Sheet = {
   group: Group;
   paper: Mesh<PlaneGeometry, ShaderMaterial>;
   shadow: Mesh<PlaneGeometry, MeshBasicMaterial>;
-  clock: number;
   seed: number;
 };
 
@@ -613,7 +612,7 @@ export async function createHero3D(canvas: HTMLCanvasElement): Promise<Hero3D | 
     shadow.renderOrder = 2;
     scene.add(group, shadow);
     disposables.push(geometry, material, shadow.geometry, shadowMaterial);
-    return { name, group, paper, shadow, clock: 0, seed: (i * 0.618 + 0.2) % 1 };
+    return { name, group, paper, shadow, seed: (i * 0.618 + 0.2) % 1 };
   });
 
   // ---------- The piece, and the crew that makes it ----------
@@ -654,7 +653,7 @@ export async function createHero3D(canvas: HTMLCanvasElement): Promise<Hero3D | 
     return robot;
   });
   let crew: Crew = planCrew("wide");
-  let crewClock = 0;
+  let clocks: StoryClocks = { crew: 0, sheets: sheets.map(() => 0) };
 
   // ---------- Layout, camera, pointer ----------
 
@@ -750,10 +749,10 @@ export async function createHero3D(canvas: HTMLCanvasElement): Promise<Hero3D | 
       marksDirty = common.uStand.value > 0.01;
     }
 
-    // The crew works in real time once its moment comes, never behind the scroll.
-    crewClock = advanceTask(crewClock, dt, p, ASSEMBLY, crew.duration);
+    // The pages and the crew play in real time once their moments come, and never out of step with the scroll.
+    clocks = advanceStory(clocks, dt, p, crew.duration);
     const time = (now - started) / 1000;
-    const work = crewAt(crew, crewClock, time);
+    const work = crewAt(crew, clocks.crew, time);
     print.visible = work.print > 0.001;
     print.position.y = PRINT_HEIGHT - 0.03 * (1 - work.print);
     printMaterial.uniforms.uOpacity.value = work.print;
@@ -761,15 +760,13 @@ export async function createHero3D(canvas: HTMLCanvasElement): Promise<Hero3D | 
     robots.forEach((robot, i) => robot.pose(work.bots[i], time));
 
     // Pages fall in their own time once their moment arrives; then they are the crew's.
-    const drops = droppedAt(p);
     const fallFrom = view.position[1] * 0.46;
     sheets.forEach((sheet, i) => {
-      sheet.clock = advanceClock(sheet.clock, drops[i], dt);
       const place = places[sheet.name];
       const held = work.pages[sheet.name];
       const pose = held
         ? { ...held, x: held.x - place.x, z: held.z - place.z, yaw: held.yaw - place.yaw, shadow: Math.max(0.25, 1 - held.y * 0.5) }
-        : { ...fallPose(sheet.clock, sheet.seed, fallFrom), scale: 1 };
+        : { ...fallPose(clocks.sheets[i], sheet.seed, fallFrom), scale: 1 };
       const y = held ? held.y : pose.y + restHeight(sheet.name);
       sheet.group.position.set(place.x + pose.x, y, place.z + pose.z);
       sheet.group.rotation.set(pose.pitch, place.yaw + pose.yaw, pose.roll, "YXZ");
@@ -788,6 +785,7 @@ export async function createHero3D(canvas: HTMLCanvasElement): Promise<Hero3D | 
     });
 
     renderer.render(scene, camera);
+    return clocks.crew >= crew.duration;
   };
 
   // Draw once at rest so the first visible frame is already composed.

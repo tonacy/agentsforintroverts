@@ -79,8 +79,8 @@ body {
 .site-nav { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-block: 16px; }
 .site-brand { display: inline-flex; align-items: center; gap: 12px; font-family: var(--font-serif); font-size: 21px; line-height: 31px; min-height: 48px; }
 .site-brand img { flex: none; width: 48px; height: 48px; }
-.site-nav__links { display: flex; align-items: center; gap: 16px; }
-.site-nav__links a { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; min-width: 140px; font-family: var(--font-detail); font-size: 16px; line-height: 22px; color: var(--color-leaf); }
+.site-nav__links { display: flex; align-items: center; gap: 44px; }
+.site-nav__links a { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; font-family: var(--font-detail); font-size: 16px; line-height: 22px; color: var(--color-leaf); }
 .site-nav__links [aria-current="page"] { text-decoration: underline; text-underline-offset: 8px; }
 
 .action { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; width: 270px; max-width: 100%; padding: 16px; border-radius: 4px; color: var(--color-leaf); font-family: var(--font-detail); font-size: 14px; font-weight: 500; line-height: 20px; text-align: center; transition: background-color 160ms ease, color 160ms ease; }
@@ -105,13 +105,11 @@ body {
 
 @media (max-width: 1200px) {
   .page-width { width: calc(100% - 80px); }
-  .site-nav__links a { min-width: 110px; }
 }
 @media (max-width: 899px) {
   .page-width { width: calc(100% - 48px); max-width: 680px; }
   .site-nav { flex-direction: column; align-items: flex-start; gap: 8px; padding-block: 24px; }
-  .site-nav__links { width: 100%; gap: 8px; justify-content: space-between; }
-  .site-nav__links a { min-width: 0; flex: 1; }
+  .site-nav__links { gap: 28px; }
   .site-footer { padding-block: 48px; }
   .site-footer__main { flex-direction: column; gap: 24px; }
 }
@@ -122,3 +120,7 @@ body {
 
 /* On the home page the nav floats over the opening sea; a soft paper fade keeps it legible. */
 .home-chrome { position: relative; z-index: 2; background: linear-gradient(180deg, var(--color-paper) 0%, rgba(253, 251, 247, 0.85) 60%, rgba(253, 251, 247, 0) 100%); }
+/* The stacked nav is taller, so the paper holds until the links end. */
+@media (max-width: 899px) {
+  .home-chrome { background: linear-gradient(180deg, var(--color-paper) 0%, var(--color-paper) 88%, rgba(253, 251, 247, 0) 100%); }
+}

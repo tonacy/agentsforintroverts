@@ -1,13 +1,14 @@
 /**
  * A sheet of paper dropped onto a desk. It glides down with a little sway,
  * tilting into each swing and flexing as it goes, then lands and settles.
- * Driven by its own clock in real time, so the fall reads the same however
- * fast the visitor scrolls, and plays backwards if they scroll back.
+ * Driven by its own clock, which `advanceTask` steps in real time and keeps
+ * in step with the scroll, so it plays backwards if the visitor scrolls back.
  */
 
 export const FALL_SECONDS = 1.15;
 export const SETTLE_SECONDS = 0.55;
-const TOTAL = FALL_SECONDS + SETTLE_SECONDS;
+/** A page's whole fall, from let go to lying still. */
+export const LANDED_SECONDS = FALL_SECONDS + SETTLE_SECONDS;
 
 export type FallPose = {
   /** Offsets from the resting place, in world units. */
@@ -27,11 +28,6 @@ export type FallPose = {
 
 function clamp01(value: number): number {
   return value < 0 ? 0 : value > 1 ? 1 : value;
-}
-
-/** Forward while dropped; back, a little faster, when the visitor scrolls up. */
-export function advanceClock(clock: number, dropped: boolean, dt: number): number {
-  return dropped ? Math.min(TOTAL, clock + dt) : Math.max(0, clock - dt * 1.6);
 }
 
 export function fallPose(clock: number, seed: number, height: number): FallPose {

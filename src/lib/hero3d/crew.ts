@@ -9,7 +9,8 @@
  */
 
 import { BOARDS, LOOSE_PAGES, type BoardKind, type LoosePage } from "../passage";
-import { PX, deskPlacements, type DeskPlace } from "./director";
+import { PX, deskPlacements, dropWindow, type DeskPlace } from "./director";
+import { LANDED_SECONDS } from "./fall";
 
 /** When the crew works, as progress through the passage: from "They do the publishing work." until the piece is yours to sign. */
 export const ASSEMBLY = [0.47, 0.62] as const;
@@ -68,13 +69,36 @@ function ease(t: number): number {
 /**
  * A task that plays in real time once its moment in the passage comes, but
  * never falls behind the scroll: by the end of its window it is done. Before
- * its window it rewinds, so scrolling back undoes it.
+ * its window it rewinds, and never trails the scroll that way either: `lead`
+ * before its window it is wholly undone, however fast the visitor went back.
  */
-export function advanceTask(clock: number, dt: number, progress: number, window: readonly [number, number], duration: number): number {
+export function advanceTask(
+  clock: number,
+  dt: number,
+  progress: number,
+  window: readonly [number, number],
+  duration: number,
+  lead = 0.04,
+): number {
   const [start, done] = window;
-  if (progress < start) return Math.max(0, clock - dt * 1.6);
   const floor = clamp01((progress - start) / (done - start)) * duration;
-  return Math.min(duration, Math.max(floor, clock + dt));
+  const ceiling = clamp01((progress - (start - lead)) / lead) * duration;
+  const next = progress < start ? clock - dt * 1.6 : clock + dt;
+  return Math.min(ceiling, Math.max(floor, next));
+}
+
+export type StoryClocks = { crew: number; sheets: number[] };
+
+/**
+ * Step every clock on the desk together. Their windows are in story order, so
+ * wherever the scroll stops or jumps, the pages have landed before the crew
+ * touches them and the crew is gone before a page lifts off again.
+ */
+export function advanceStory(clocks: StoryClocks, dt: number, progress: number, crewSeconds: number): StoryClocks {
+  return {
+    crew: advanceTask(clocks.crew, dt, progress, ASSEMBLY, crewSeconds),
+    sheets: clocks.sheets.map((clock, i) => advanceTask(clock, dt, progress, dropWindow(i), LANDED_SECONDS, 0.03)),
+  };
 }
 
 // ---------- The plan ----------

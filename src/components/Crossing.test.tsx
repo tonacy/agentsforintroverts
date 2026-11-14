@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { act, render, screen } from "@testing-library/react";
 import { setReducedMotion } from "../../vitest.setup";
+import { FRAGMENT_POOL } from "@/lib/sea";
 import { Crossing, FINALE, LINE_A, LINE_B, STEPS } from "./Crossing";
 
 describe("Crossing", () => {
@@ -43,11 +44,32 @@ describe("Crossing", () => {
     expect(screen.getByRole("link", { name: /skip ahead/i })).toHaveAttribute("href", "#the-piece");
   });
 
-  it("keeps the sea out of the accessibility tree", () => {
+  it("keeps the water out of the accessibility tree", () => {
     const { container } = render(<Crossing />);
-    const sea = container.querySelector(".sea");
-    expect(sea).not.toBeNull();
-    expect(sea).toHaveAttribute("aria-hidden", "true");
+    const water = container.querySelector(".water");
+    expect(water).not.toBeNull();
+    expect(water).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("opens on still water with a few of the feed's notices far off, not a wall of them", () => {
+    const { container } = render(<Crossing />);
+    const slips = Array.from(container.querySelectorAll(".water .water__slip"));
+    expect(slips.length).toBeGreaterThanOrEqual(3);
+    expect(slips.length).toBeLessThanOrEqual(8);
+    const pool = new Set<string>(FRAGMENT_POOL);
+    for (const slip of slips) {
+      const source = slip.querySelector("small")?.textContent;
+      const message = slip.querySelector("b")?.textContent;
+      expect(pool.has(`${source} · ${message}`)).toBe(true);
+    }
+    expect(container.querySelector(".sea")).toBeNull();
+    expect(container.querySelector(".contour-sea")).toBeNull();
+  });
+
+  it("floats the page on the water, as decoration", () => {
+    const { container } = render(<Crossing />);
+    const vessel = container.querySelector(".crossing__afloat .crossing__vessel");
+    expect(vessel).toHaveAttribute("alt", "");
   });
 
   it("exposes the headline as the page's h1", () => {
@@ -77,12 +99,10 @@ describe("Crossing", () => {
     expect(stage).toHaveAttribute("data-motion", "scroll");
   });
 
-  it("keeps a decorative static fallback and readable copy when WebGL is unavailable", () => {
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
-    const { container } = render(<Crossing />);
-    expect(container.querySelector(".contour-sea")).toHaveAttribute("aria-hidden", "true");
-    expect(container.querySelector(".contour-sea__still")).toBeInTheDocument();
-    expect(container.querySelector("canvas")).not.toHaveAttribute("data-ready");
+  it("needs no graphics context for the default opening", () => {
+    const graphics = vi.spyOn(HTMLCanvasElement.prototype, "getContext");
+    render(<Crossing />);
+    expect(graphics).not.toHaveBeenCalled();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(LINE_A);
   });
 
@@ -102,7 +122,7 @@ describe("Crossing", () => {
       const { container } = render(<Crossing />);
       const stage = container.querySelector("[data-stage]");
       await vi.waitFor(() => expect(stage).toHaveAttribute("data-hero", "flat"), { timeout: 10_000 });
-      expect(container.querySelector(".sea")).toBeInTheDocument();
+      expect(container.querySelector(".water")).toBeInTheDocument();
     } finally {
       window.history.replaceState(null, "", "/");
     }

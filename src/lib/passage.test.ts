@@ -8,7 +8,6 @@ describe("passageAt: the beat sheet", () => {
     const f = passageAt(0);
     expect(f.lines.feed).toBe(1);
     expect(f.lines.slow + f.lines.bring + f.lines.shape + f.lines.mark + f.lines.travel + f.lines.answer).toBe(0);
-    expect(f.sea.rate).toBe(1);
     expect(f.sea.spread).toBe(0);
   });
 
@@ -35,10 +34,7 @@ describe("passageAt: the beat sheet", () => {
     expect(order.every((p) => p <= 1)).toBe(true);
   });
 
-  it("slows the sea but never stops it, and lets the world move again at the end", () => {
-    for (const p of samples) expect(passageAt(p).sea.rate).toBeGreaterThan(0);
-    expect(passageAt(0.5).sea.rate).toBeLessThan(0.15);
-    expect(passageAt(1).sea.rate).toBeGreaterThan(passageAt(0.5).sea.rate);
+  it("lets the water sink away for the story, and brings some of it back at the end", () => {
     expect(passageAt(0.5).sea.spread).toBe(1);
     expect(passageAt(1).sea.spread).toBeLessThan(1);
     expect(passageAt(1).sea.spread).toBeGreaterThan(0.4);

@@ -1,7 +1,7 @@
 .story {
   position: relative;
   z-index: 1;
-  padding: 72px 0 80px;
+  padding: 72px 0 112px;
   background: var(--color-paper);
   scroll-margin-top: 28px;
 }
@@ -45,23 +45,28 @@
 .story__loop-copy > p:not(.eyebrow) {
   max-width: 490px;
   margin: 0 0 16px;
-  font-size: 16px;
-  line-height: 27px;
+  font-family: var(--font-serif);
+  font-size: 19px;
+  line-height: 1.5;
   color: var(--color-ink-muted);
   text-wrap: pretty;
 }
 .story__resolution {
-  margin: 88px 0 20px;
+  /* The story's last line, centred like the opening it answers. */
+  margin: 120px 0 24px;
   font-family: var(--font-serif);
-  font-size: clamp(26px, 3vw, 36px);
-  line-height: 1.2;
+  font-size: clamp(30px, 4.2vw, 54px);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-align: center;
   font-style: italic;
   color: var(--color-leaf);
   text-wrap: balance;
 }
 .story__belief {
-  display: inline-block;
-  margin-bottom: 8px;
+  display: block;
+  width: fit-content;
+  margin: 0 auto 8px;
   padding-block: 8px;
   border-bottom: 1px solid var(--color-rule);
   font-family: var(--font-serif);
@@ -70,8 +75,8 @@
 }
 
 @media (max-width: 899px) {
-  .story { padding: 48px 0 56px; }
+  .story { padding: 48px 0 72px; }
   .story__loop { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .story__illustration { width: calc(100% + 32px); margin-inline: -16px; }
-  .story__resolution { margin: 40px 0 20px; }
+  .story__resolution { margin: 56px 0 20px; }
 }

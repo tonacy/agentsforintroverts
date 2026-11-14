@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { BOARDS, LOOSE_PAGES } from "../passage";
-import { ASSEMBLY, READING_ORDER, SECTIONS, advanceTask, crewAt, planCrew, printPlacement, slotFor } from "./crew";
-import { PX, deskPlacements } from "./director";
+import { ASSEMBLY, READING_ORDER, SECTIONS, advanceStory, advanceTask, crewAt, planCrew, printPlacement, slotFor } from "./crew";
+import { PX, deskPlacements, dropWindow } from "./director";
+import { LANDED_SECONDS } from "./fall";
 
 describe("the crew's clock", () => {
   const window = [0.4, 0.6] as const;
@@ -25,6 +26,40 @@ describe("the crew's clock", () => {
     let clock = 6;
     for (let i = 0; i < 600; i += 1) clock = advanceTask(clock, 1 / 60, 0.39, window, 6);
     expect(clock).toBe(0);
+  });
+
+  it("never runs ahead of the scroll on the way back: it is undone a little before its window", () => {
+    expect(advanceTask(6, 1 / 60, 0.38, window, 6)).toBeLessThanOrEqual(3);
+    expect(advanceTask(6, 1 / 60, 0.36, window, 6)).toBe(0);
+    expect(advanceTask(6, 1 / 60, 0, window, 6)).toBe(0);
+  });
+});
+
+describe("the desk's clocks, however the visitor scrolls", () => {
+  const crew = planCrew("wide");
+
+  it("keeps the story in order: pages land before the crew starts, and the crew is undone before a page lifts off", () => {
+    let seed = 7;
+    const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+    let clocks = { crew: 0, sheets: LOOSE_PAGES.map(() => 0) };
+    let p = 0;
+    const broken: string[] = [];
+    for (let step = 0; step < 30_000 && broken.length === 0; step += 1) {
+      // Mostly small scrolls either way, sometimes a jump to anywhere, sometimes holding still.
+      const roll = random();
+      if (roll < 0.02) p = random();
+      else if (roll < 0.6) p = Math.min(1, Math.max(0, p + (random() - 0.5) * 0.03));
+      clocks = advanceStory(clocks, 1 / 60, p, crew.duration);
+      if (clocks.crew > 0 && clocks.sheets.some((sheet) => sheet !== LANDED_SECONDS)) broken.push(`crew at work on a page still in the air, p=${p}`);
+      if (p <= ASSEMBLY[0] - 0.05 && clocks.crew !== 0) broken.push(`crew still out before its moment, p=${p}`);
+      if (p >= ASSEMBLY[1] && clocks.crew !== crew.duration) broken.push(`piece unfinished after its moment, p=${p}`);
+      if (p <= dropWindow(0)[0] - 0.04 && clocks.sheets.some((sheet) => sheet !== 0)) broken.push(`a page on the desk before any has dropped, p=${p}`);
+    }
+    expect(broken).toEqual([]);
+  });
+
+  it("has every page landed before the crew's moment, with room to spare", () => {
+    LOOSE_PAGES.forEach((_, i) => expect(dropWindow(i)[1]).toBeLessThan(ASSEMBLY[0]));
   });
 });
 

@@ -85,6 +85,40 @@ export function viewOf(shot: Shot): { position: Vec3; direction: Vec3; up: Vec3 
   return { position: shot.position, direction, up: [u[0] / m, u[1] / m, u[2] / m] };
 }
 
+/** The crew's work is the part worth watching, so the 3D passage gives it this many extra screens of scroll. */
+export const CREW_SCREENS = 3;
+/** The passage's own scroll, in screens: `.crossing` is seven tall and one is always in view. */
+const SCREENS = 6;
+/**
+ * The stretch the extra scroll goes to: from the camera having leaned in and
+ * the line being up, to the crew's deadline (`ASSEMBLY[1]`). Nothing but the
+ * crew changes in between, so stretching it slows nothing else down.
+ */
+const CREW_STRETCH = [0.5, 0.62] as const;
+
+/**
+ * Story progress from scroll progress, when the passage is `extra` screens
+ * longer than its story: the extra all goes to the crew's stretch. Left alone,
+ * the crew works in real time, so it can finish while the visitor is still
+ * part-way through that stretch (`finishedAt`, as scroll progress); the rest
+ * of the story then picks up from there instead of leaving dead scroll.
+ */
+export function storyProgress(raw: number, extra: number, finishedAt: number | null = null): number {
+  const r = clamp01(raw);
+  if (extra <= 0) return r;
+  const total = SCREENS + extra;
+  const s = r * total;
+  const from = CREW_STRETCH[0] * SCREENS;
+  const until = CREW_STRETCH[1] * SCREENS + extra;
+  if (finishedAt !== null) {
+    const done = finishedAt * total;
+    if (done >= from && done < until && s > done) return CREW_STRETCH[1] + ((s - done) / (total - done)) * (1 - CREW_STRETCH[1]);
+  }
+  if (s <= from) return s / SCREENS;
+  if (s < until) return CREW_STRETCH[0] + ((s - from) / (until - from)) * (CREW_STRETCH[1] - CREW_STRETCH[0]);
+  return (s - extra) / SCREENS;
+}
+
 export function seaAt(progress: number): { spread: number; rate: number } {
   const p = clamp01(progress);
   const closing = ramp(0.86, 1, p);
@@ -100,9 +134,19 @@ export function standAt(progress: number): number {
   return 1 - ramp(0.07, 0.26, p) + ramp(0.82, 0.98, p);
 }
 
+/**
+ * When each loose page falls, as progress through the passage: let go at the
+ * first moment, and lying still by the second however fast the scroll. The
+ * last has landed before the crew's moment comes.
+ */
+export function dropWindow(index: number): readonly [number, number] {
+  const at = 0.285 + index * 0.022;
+  return [at, at + 0.07];
+}
+
 /** Each loose page drops when its moment in the story arrives. */
 export function droppedAt(progress: number): boolean[] {
-  return LOOSE_PAGES.map((_, i) => progress >= 0.285 + i * 0.022);
+  return LOOSE_PAGES.map((_, i) => progress >= dropWindow(i)[0]);
 }
 
 export type DeskPlace = { x: number; z: number; w: number; h: number; yaw: number };

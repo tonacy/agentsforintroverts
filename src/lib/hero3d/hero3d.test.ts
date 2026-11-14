@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { stepSpring } from "./springs";
-import { FALL_SECONDS, SETTLE_SECONDS, advanceClock, fallPose } from "./fall";
-import { deskPlacements, droppedAt, seaAt, shotAt, standAt, viewOf, type Vec3 } from "./director";
+import { FALL_SECONDS, LANDED_SECONDS, SETTLE_SECONDS, fallPose } from "./fall";
+import { CREW_SCREENS, deskPlacements, dropWindow, droppedAt, seaAt, shotAt, standAt, storyProgress, viewOf, type Vec3 } from "./director";
+import { ASSEMBLY, advanceTask } from "./crew";
 import { LOOSE_PAGES } from "../passage";
 import { FRAGMENT_POOL } from "../sea";
 import { SLIP_ICONS, afloat, partSlip, scatterSlips, slipFor } from "./slips";
@@ -58,12 +59,13 @@ describe("fallPose: a page dropped onto the desk", () => {
   });
 
   it("falls in real time when dropped, and rises again when the visitor scrolls back", () => {
+    const [dropped] = dropWindow(0);
     let clock = 0;
-    for (let i = 0; i < 30; i += 1) clock = advanceClock(clock, true, 1 / 60);
+    for (let i = 0; i < 30; i += 1) clock = advanceTask(clock, 1 / 60, dropped, dropWindow(0), LANDED_SECONDS);
     expect(clock).toBeCloseTo(0.5, 5);
-    for (let i = 0; i < 600; i += 1) clock = advanceClock(clock, true, 1 / 60);
-    expect(clock).toBe(FALL_SECONDS + SETTLE_SECONDS);
-    for (let i = 0; i < 600; i += 1) clock = advanceClock(clock, false, 1 / 60);
+    for (let i = 0; i < 600; i += 1) clock = advanceTask(clock, 1 / 60, dropped, dropWindow(0), LANDED_SECONDS);
+    expect(clock).toBe(LANDED_SECONDS);
+    for (let i = 0; i < 600; i += 1) clock = advanceTask(clock, 1 / 60, dropped - 0.005, dropWindow(0), LANDED_SECONDS);
     expect(clock).toBe(0);
   });
 });
@@ -328,6 +330,60 @@ describe("the flotilla", () => {
         const nudged = partSlip(x, z, { ...part, pointer: { x: 1.01, z: -5 } });
         expect(Math.hypot(nudged.x - moved.x, nudged.z - moved.z)).toBeLessThan(0.05);
       }
+    }
+  });
+});
+
+describe("the crew's share of the scroll", () => {
+  const steps = Array.from({ length: 2001 }, (_, i) => i / 2000);
+
+  it("leaves the passage as it is when there is no extra scroll", () => {
+    for (const raw of [0, 0.2, 0.5, 0.61, 1]) expect(storyProgress(raw, 0)).toBe(raw);
+  });
+
+  it("runs the whole story, in order and without a jump, over the longer scroll", () => {
+    expect(storyProgress(0, CREW_SCREENS)).toBe(0);
+    expect(storyProgress(1, CREW_SCREENS)).toBeCloseTo(1, 10);
+    for (let i = 1; i < steps.length; i += 1) {
+      const step = storyProgress(steps[i], CREW_SCREENS) - storyProgress(steps[i - 1], CREW_SCREENS);
+      expect(step).toBeGreaterThanOrEqual(0);
+      expect(step).toBeLessThan(0.002);
+    }
+  });
+
+  it("gives the crew's work several screens, and every other beat the scroll it had", () => {
+    const screens = 6 + CREW_SCREENS;
+    const working = steps.filter((raw) => {
+      const p = storyProgress(raw, CREW_SCREENS);
+      return p > 0.5 && p < ASSEMBLY[1];
+    });
+    expect((working.length / steps.length) * screens).toBeGreaterThan(3);
+    // Before the crew, a screen of scroll is still a sixth of the story.
+    expect(storyProgress(1.2 / screens, CREW_SCREENS)).toBeCloseTo(0.2, 10);
+    // After it, too.
+    const after = storyProgress(1 - 0.6 / screens, CREW_SCREENS);
+    expect(after).toBeCloseTo(0.9, 10);
+  });
+
+  it("picks the story up from where the visitor is if the crew finishes while they watch", () => {
+    const screens = 6 + CREW_SCREENS;
+    const watching = 4.5 / screens; // well inside the crew's stretch
+    expect(storyProgress(watching, CREW_SCREENS)).toBeLessThan(ASSEMBLY[1]);
+    // Behind that point nothing changes; just past it the next beat begins; and it still ends at the end.
+    expect(storyProgress(watching - 0.05, CREW_SCREENS, watching)).toBe(storyProgress(watching - 0.05, CREW_SCREENS));
+    expect(storyProgress(watching + 0.0005, CREW_SCREENS, watching)).toBeCloseTo(ASSEMBLY[1], 2);
+    expect(storyProgress(1, CREW_SCREENS, watching)).toBeCloseTo(1, 10);
+    let last = 0;
+    for (const raw of steps.filter((r) => r > watching)) {
+      const p = storyProgress(raw, CREW_SCREENS, watching);
+      expect(p).toBeGreaterThanOrEqual(last);
+      last = p;
+    }
+  });
+
+  it("ignores a finish that happened outside the crew's stretch", () => {
+    for (const finishedAt of [0.1, 0.99]) {
+      for (const raw of [0.3, 0.6, 0.995]) expect(storyProgress(raw, CREW_SCREENS, finishedAt)).toBe(storyProgress(raw, CREW_SCREENS));
     }
   });
 });
