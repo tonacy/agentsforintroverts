@@ -31,11 +31,11 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Agents for Introverts — Publish what you make. Find the people it’s for.",
+    default: "Agents for Introverts — Your work, represented.",
     template: "%s | Agents for Introverts",
   },
   description:
-    "Bring what you’re making. Your agents do the publishing work, in your voice. You read it, sign it, and it goes where its people are.",
+    "Writers have agents. Now you do too. Stay at your desk; your agents carry what you make to the few people who’d want it, and nothing leaves without your mark.",
   authors: [{ name: "Tony Llongueras" }],
   alternates: {
     canonical: "/",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Agents for Introverts",
     description:
-      "Publish what you make, without the work of publishing. Find the two or three people it’s for.",
+      "Writers have agents. Now you do too: your work, carried to the few who’d want it.",
     url: "/",
     siteName: "Agents for Introverts",
     locale: "en_US",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Agents for Introverts",
     description:
-      "Publish what you make, without the work of publishing. Find the two or three people it’s for.",
+      "Writers have agents. Now you do too: your work, carried to the few who’d want it.",
   },
   metadataBase: new URL("https://agentsforintroverts.com"),
 };

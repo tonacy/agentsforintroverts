@@ -10,7 +10,7 @@ describe("Crossing", () => {
 
   it("renders both lines of the thesis in the document so nothing depends on scrolling", () => {
     render(<Crossing />);
-    expect(screen.getByText(LINE_A)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(LINE_A);
     expect(screen.getByText(LINE_B)).toBeInTheDocument();
   });
 
@@ -32,6 +32,14 @@ describe("Crossing", () => {
   it("ends on the people the work was for, not on publishing", () => {
     render(<Crossing />);
     expect(screen.getByText(FINALE)).toBeInTheDocument();
+  });
+
+  it("speaks as a representative, not a content tool, and says when not to send", () => {
+    render(<Crossing />);
+    const story = [LINE_A, LINE_B, ...STEPS.flatMap((s) => [s.title, s.detail]), FINALE].join(" ");
+    expect(story).toMatch(/agents/i);
+    expect(story).toMatch(/isn’t worth sending/);
+    expect(story).not.toMatch(/content|in your voice|audience|followers|publishing work/i);
   });
 
   it("keeps the desk of paper out of the accessibility tree", () => {

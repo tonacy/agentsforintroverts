@@ -5,7 +5,7 @@ import { Story } from "./Story";
 describe("Story", () => {
   it("moves the story on from the opening's ending instead of repeating it", () => {
     const { container } = render(<Story />);
-    expect(screen.getByRole("heading", { level: 2, name: "Their answers land on your desk." })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "What comes home." })).toBeInTheDocument();
     expect(container).not.toHaveTextContent(/two or three/i);
     expect(container).not.toHaveTextContent(/four hundred/i);
   });

@@ -11,8 +11,8 @@ describe("Home", () => {
     const headings = Array.from(container.querySelectorAll("h2")).map((h) => h.textContent?.trim());
     const order = [
       "You just watched one come together.",
-      "Where the loop lives.",
-      "Their answers land on your desk.",
+      "You stay here. Your agents go out.",
+      "What comes home.",
       "See what takes shape.",
     ].map((title) => headings.indexOf(title));
     expect(order.every((i) => i >= 0)).toBe(true);

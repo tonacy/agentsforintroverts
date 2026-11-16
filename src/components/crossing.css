@@ -1091,3 +1091,5 @@
     justify-self: center;
   }
 }
+
+.crossing__sentence { display: inline-block; }

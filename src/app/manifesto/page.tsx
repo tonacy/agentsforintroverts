@@ -79,6 +79,11 @@ export default function ManifestoPage() {
               never reached the people who could have challenged it, shaped it,
               or helped it grow.
             </p>
+            <p>
+              Writers have long had agents, people whose job is to carry the
+              work to where it belongs so the writer can keep writing. Most of
+              us never had one. Now we can.
+            </p>
             <p>Agents for Introverts is the tool I wish I’d had then.</p>
 
             <hr className={styles.divider} />

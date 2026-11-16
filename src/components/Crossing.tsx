@@ -26,8 +26,8 @@ import { Water } from "./Water";
 
 import "./crossing.css";
 
-export const LINE_A = "Most good work never makes it out there.";
-export const LINE_B = "Not because it isn’t good. Because publishing is a second job.";
+export const LINE_A = "Writers have agents. Painters have galleries.";
+export const LINE_B = "Most people who make good work have no one, so the work stays in the room.";
 
 /**
  * The rest of the story, told over the desk as the page takes shape. Each
@@ -37,32 +37,32 @@ export const STEPS = [
   {
     key: "bring",
     who: "you",
-    title: "Just bring what you’re making.",
-    detail: "A voice note, a commit, a sketch, a half-thought. Nothing has to be finished.",
+    title: "Stay at your desk.",
+    detail: "Put down what you’re making as it happens: a voice note, a commit, a sketch. The thinking is already yours.",
   },
   {
     key: "shape",
     who: "your agents",
-    title: "They do the publishing work.",
-    detail: "They find what’s worth sharing, write it up in your voice, make a version for each place, and keep every source.",
+    title: "They read it the way a good agent would.",
+    detail: "They find what’s worth carrying out, shape it for each place, and keep every source. If it isn’t worth sending, they say so.",
   },
   {
     key: "mark",
     who: "you",
-    title: "Your part: read it and sign.",
-    detail: "Nothing goes out without your mark.",
+    title: "Nothing leaves without your mark.",
+    detail: "You sign one exact version. Change a word and the mark comes off.",
   },
   {
     key: "travel",
     who: "your agents",
-    title: "It goes where its people are.",
-    detail: "An essay, a post, a card, each one ready to post.",
+    title: "They carry it to where its people are.",
+    detail: "And they bring back who answered.",
   },
 ] as const;
 
 /** Where the story lands: the people it was for, answering. */
-const FINALE_LEAD = "Not more followers.";
-const FINALE_REST = "The two or three who get it.";
+const FINALE_LEAD = "Not the crowd.";
+const FINALE_REST = "The few who’d want it.";
 export const FINALE = `${FINALE_LEAD} ${FINALE_REST}`;
 
 const SIZES = {
@@ -331,7 +331,15 @@ export function Crossing() {
             />
           </span>
           <div className="crossing__lines">
-            <h1 className="crossing__line crossing__line--a">{LINE_A}</h1>
+            <h1 className="crossing__line crossing__line--a">
+              {/* Each sentence wraps as a unit, so a narrow screen never splits "Painters have galleries." */}
+              {LINE_A.split(/(?<=\.) /).map((sentence, i) => (
+                <span key={sentence} className="crossing__sentence">
+                  {i > 0 && " "}
+                  {sentence}
+                </span>
+              ))}
+            </h1>
             <p className="crossing__line crossing__line--b">{LINE_B}</p>
           </div>
         </div>

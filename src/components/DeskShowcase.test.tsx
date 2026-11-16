@@ -5,7 +5,7 @@ import { DeskShowcase } from "./DeskShowcase";
 describe("DeskShowcase", () => {
   it("names the app and what happens there", () => {
     render(<DeskShowcase />);
-    expect(screen.getByRole("heading", { level: 2, name: "Where the loop lives." })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "You stay here. Your agents go out." })).toBeInTheDocument();
     for (const step of ["Loose pages", "Pieces", "Your mark"]) {
       expect(screen.getByRole("heading", { level: 3, name: step })).toBeInTheDocument();
     }

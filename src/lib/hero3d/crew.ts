@@ -12,7 +12,7 @@ import { BOARDS, LOOSE_PAGES, type BoardKind, type LoosePage } from "../passage"
 import { PX, deskPlacements, dropWindow, type DeskPlace } from "./director";
 import { LANDED_SECONDS } from "./fall";
 
-/** When the crew works, as progress through the passage: from "They do the publishing work." until the piece is yours to sign. */
+/** When the crew works, as progress through the passage: from "They read it the way a good agent would." until the piece is yours to sign. */
 export const ASSEMBLY = [0.47, 0.62] as const;
 
 /** The piece, top to bottom: the title from your voice note, the figure from your sketch, two paragraphs, the kept source. */

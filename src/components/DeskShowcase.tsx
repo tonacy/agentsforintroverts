@@ -24,11 +24,11 @@ export function DeskShowcase() {
       <div className="page-width desk-show__grid">
         <div className="desk-show__copy">
           <p className="eyebrow">Quiet Desk · for Mac</p>
-          <h2 id="desk-title">Where the loop lives.</h2>
+          <h2 id="desk-title">You stay here. Your agents go out.</h2>
           <p className="desk-show__lead">
             Your part is the small part, and the deciding one. Put things on the desk as they happen,
-            talk them through, and sign what’s ready. A thought can stay private; a draft can wait.
-            Your agents do the writing, a version for each place, and the images.
+            talk them through, and sign what’s ready. A thought can stay private; a draft can wait; a
+            piece can go nowhere at all.
           </p>
           <ol className="desk-show__steps">
             {STEPS.map((step, i) => (

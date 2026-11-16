@@ -15,12 +15,11 @@ export function Story() {
         <div className="story__loop story__loop--people">
           <div className="story__loop-copy">
             <p className="eyebrow">What comes back</p>
-            <h2 id="story-title">Their answers land on your desk.</h2>
+            <h2 id="story-title">What comes home.</h2>
             <p>
               A reply worth answering. A question you hadn’t thought of. Someone building the same
-              thing. The team keeps finding where your work belongs and brings back what it finds, as
-              loose pages for tomorrow: something real to answer, or to carry into the next thing you
-              make.
+              thing. Not a count, not a feed: the few people worth your time, as loose pages for
+              tomorrow.
             </p>
           </div>
           <div className="story__illustration story__illustration--people">
