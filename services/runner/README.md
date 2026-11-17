@@ -56,6 +56,24 @@ only while a saved approval matches the exact words of `article.md`. See
 [the piece guide](../../templates/quiet-desk-publishing/piece/PIECE.md). Agents
 never write `approvals/` or `receipts/`: those are the person's marks.
 
+### Copy desk
+
+`copy-desk.mjs render --workspace <path> --draft drafts/<folder>` writes
+`copy-desk.html` into a draft: one page for moving it into Substack, LinkedIn,
+X and Threads by hand. It has a tab per channel, copy buttons for the title,
+subtitle and body, editable posts with character meters, one link bar that
+fills `[LINK]` in every post, and the publish checklist. Leave out `--draft` to
+render every folder under `drafts/`.
+
+It reads `essay.md` (or a piece's `article.md`) and `posts.md`, whose
+`## LinkedIn`, `## X (thread)`, `## Threads` and `## Publish checklist`
+sections become the tabs; a thread numbered `1/`, `2/` … becomes one post per
+number. A piece's `adaptations/<channel>.md` work too. `[CONFIRM: …]` in the
+essay is shown highlighted with a keep switch, and HTML comments are shown as
+notes and never copied. The page changes nothing on disk, and edits made on it
+stay in that browser. Like the piece renderer, it never replaces a hand-built
+page of the same name without `--force`.
+
 ## Codex check-in
 
 The Mac app can now prepare today's recap through Codex and the installed

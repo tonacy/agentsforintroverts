@@ -26,6 +26,13 @@ node services/runner/piece.mjs render --workspace <desk> --piece drafts/<folder>
 The renderer never replaces a hand-built `index.html`. Use `--output
 edition.html` to set one beside it.
 
+When the words are ready to go out, set the copy desk beside them: one page
+with a tab per channel and a copy button for every field.
+
+```sh
+node services/runner/copy-desk.mjs render --workspace <desk> --draft drafts/<folder>
+```
+
 ## The words
 
 `article.md` supports a small, safe subset. Everything else is shown as text.
