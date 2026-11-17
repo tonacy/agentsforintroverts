@@ -1,0 +1,9 @@
+{
+  "schema": "afi.weekly_preferences.v1",
+  "since_days": 7,
+  "projects": [
+    { "name": "agentsforintroverts", "commits_file": "work/agentsforintroverts.txt", "note": "public repo" },
+    { "name": "sample-client", "path": "~/Projects/sample-client", "private": true }
+  ],
+  "private_terms": ["Sample Client Co"]
+}

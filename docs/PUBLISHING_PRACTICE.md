@@ -181,6 +181,8 @@ The daily conversation continues throughout the week. The table below describes 
 | Friday | One response digest, not constant notifications. | 15–20 minutes |
 | Following Monday | Decide whether one human continuation has been earned. | 10 minutes |
 
+The Monday step has a first tool: `services/runner/weekly.mjs` drafts one piece and its posts from the story backlog, the week's public commits and last week's receipts, into a dated folder in the private workspace. It drafts only. See the [runner guide](../services/runner/README.md#the-monday-draft).
+
 The target is no more than two hours of human feed time per week, excluding a mutually chosen one-to-one conversation.
 
 ## The first 30 days

@@ -8,6 +8,7 @@
     "test": "node --test test/*.test.mjs",
     "collect": "node collect.mjs",
     "run-day": "node run-day.mjs",
+    "weekly": "node weekly.mjs",
     "export-public": "node export-public.mjs"
   },
   "dependencies": {

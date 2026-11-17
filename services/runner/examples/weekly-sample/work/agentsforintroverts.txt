@@ -1,0 +1,7 @@
+2026-10-13 Add the Monday draft command to the runner
+2026-10-14 Count X links as 23 characters when checking post length
+2026-10-14 Stop the draft when it names a private term
+2026-10-15 Publish the kickoff essay and its three posts
+2026-10-16 Fix the Sample Client Co export header
+2026-10-17 Keep replies pasted into receipts.md for the next Monday
+2026-09-30 Older work outside the week
